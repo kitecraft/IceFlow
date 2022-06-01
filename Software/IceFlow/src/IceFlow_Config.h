@@ -1,0 +1,63 @@
+#pragma once
+
+#define __DEVICE_NAME__ "IceFlow"
+#define __DEVICE_VERSION__ "0.1"
+
+// Task priorites and core assignments
+#define STACK_SIZE (ESP_TASK_MAIN_STACK) // Stack size for each new thread
+
+#define OVEN_CONTROLLER_PRIORITY tskIDLE_PRIORITY+18
+#define WEB_SERVER_PRIORITY tskIDLE_PRIORITY+10
+#define OTA_PRIORITY tskIDLE_PRIORITY+15
+#define DISPLAY_MANAGER_PRIORITY tskIDLE_PRIORITY+10
+
+#define OVEN_CONTROLLER_CORE 0
+#define WEBSERVER_CORE	1
+#define OTA_CORE	1
+#define DISPLAY_MANAGER_CORE 0
+
+
+// NETWORK
+#define NETWORK_WAIT_TIME_PER_TRY 30 //seconds
+#define NETWORK_TRY_TIMES 3
+
+#define WIFI_PREFERENCES_FILENAME "wifi"
+#define WIFI_PREFERENCES_SSID_KEY "ssid"
+#define WIFI_PREFERENCES_PASWORD_KEY "password"
+
+//Webpages
+#define WEBPAGE_NETWORK "/net.htm"
+
+//Hardware connections
+//#define PROBE_A_CS_PIN 12
+//#define PROBE_B_CS_PIN 13
+#define PROBE_CLK 27
+#define PROBE_MISO 14
+#define TEMPERATURE_REFRESH_RATE 1000
+
+#define RELAY_TOP_PIN 14
+#define RELAY_BOTTOM_PIN 5
+#define RELAY_CONVECTION_FAN 15
+
+//Hardware definintions
+#define RELAY_OFF HIGH
+#define RELAY_ON LOW
+
+//Profile stuff
+#define PROFILE_MANAGER_FILENAME "PM"
+#define CURRENT_LOADED_PROFILE "CLP"
+#define PROFILE_SPIFFS_FILE_DIRECTORY "/profiles"
+
+
+#define MINIUM_OVEN_TEMPERATURE_FOR_FAN 50
+
+#define GLOBAL_TEXT_COLOR 0xCE59
+#define GLOBAL_PANEL_HCOLOR 0x5AEB
+#define GLOBAL_PANEL_BGCOLOR 0x738E
+#define GLOBAL_BOX_BORDER_COLOR 0x9CD3
+#define GLOBAL_BOX_DROP_SHADOW 0x4208
+
+#define AA_FONT_10PT "SegoeUI-10"
+#define AA_FONT_14PT "SegoeUI-14"
+#define AA_FONT_18PT "SegoeUI-18"
+#define AA_FONT_20PT "SegoeUI-20"
