@@ -103,5 +103,13 @@ MSSB_RETURN_VALUES MainScreenSideBar::Touched(int x, int y)
 		return MSSB_TOUCHED;
 	}
 
+	if (_preHeatIcon.Touched(x, y)) {
+		vector<String> filelist = g_profileManager.GetListOfProfileFileNames();
+		for (int i = 0; i < filelist.size(); i++) {
+			Serial.println(filelist.at(i));
+		}
+		return MSSB_TOUCHED;
+	}
+
 	return MSSB_NOT_TOUCHED;
 }

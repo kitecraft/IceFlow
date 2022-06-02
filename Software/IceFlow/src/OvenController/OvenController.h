@@ -6,8 +6,6 @@ class OvenController
 {
 private:
 	bool _ovenOn = false;
-	bool _topBurnerOn = false;
-	bool _bottomBurnerOn = false;
 	bool _convectionFanOn = false;
 	bool _convectionFanOnManual = false;
 
@@ -15,7 +13,6 @@ private:
 	uint16_t _temperatureSecondary = 0;
 
 	void CheckConvectionFanStatus();
-	void CheckOvenOnStatus();
 
 public:
 	bool Init();
@@ -23,10 +20,7 @@ public:
 
 	void EnableConvectionFan();
 	void DisableConvectionFan();
-	void EnableTopBurner();
-	void DisableTopBurner();
-	void EnableBottomBurner();
-	void DisableBottomBurner();
-	void DisableAllBurners();
+	void EnableOvenHeaters();
+	void DisableOvenHeaters();
 };
 

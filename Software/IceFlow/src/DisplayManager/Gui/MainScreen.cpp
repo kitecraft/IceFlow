@@ -7,10 +7,7 @@ MainScreen::MainScreen(TFT_eSPI* newTFT) : ScreenBase(newTFT)
 	_sideBar.Init(newTFT);
 	_currentProfileFileName = GetSavedProfile();
 	DrawScreen();
-
-	if (!_currentProfileFileName.isEmpty()) {
-		DrawProfile();
-	}
+	DrawProfile();
 }
 
 MainScreen::~MainScreen()
@@ -63,7 +60,22 @@ void MainScreen::DrawScreen()
 
 void MainScreen::DrawProfile()
 {
-	Profile currentProfile = g_profileManager.GetProfile(_currentProfileFileName);
+	String profileText;
+	//g_profileManager.SaveProfileNameToPreferences("profile_1.json");
+	//_currentProfileFileName = GetSavedProfile();
 
+	if (_currentProfileFileName.isEmpty()) {
+		profileText = "No Profile Loaded";
+	}
+	else {
+	}
+
+	Profile currentProfile;
+	if (!g_profileManager.GetProfile("profile_1.json", currentProfile))
+	{
+		profileText = "Error loading profile";
+	}
+	
+	profileText = currentProfile.name;
 
 }

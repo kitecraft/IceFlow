@@ -51,7 +51,7 @@ static String GetSavedProfile()
 }
 
 
-static String SaveProfileName(String profileFileName)
+static void SaveProfileName(String profileFileName)
 {
     Preferences preferences;
     preferences.begin(PROFILE_MANAGER_FILENAME, false);

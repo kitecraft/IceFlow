@@ -12,8 +12,8 @@ private:
 public:
 	vector<String> GetListOfProfileFileNames();
 	bool SaveProfileToDisk(Profile profile); //saved as Profile <name>.json with spaces to _
-	Profile GetProfile(String profileName); // 
+	bool GetProfile(String profileName, Profile &profile); // 
 	String GetNameOfLastLoadedProfile();
-	bool SaveNameToLastLoadedProfile(String profileFileName);
+	void SaveProfileNameToPreferences(String profileFileName);
 };
 

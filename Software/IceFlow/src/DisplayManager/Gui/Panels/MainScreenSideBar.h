@@ -1,6 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include <TFT_eSPI.h>
+#include "../../../IceFlow_Config.h"
+#include "../../../Utilities/PreferencesManager.h"
 #include "../Icons/SettingsIcon.h"
 #include "../Icons/StartIcon.h"
 #include "../Icons/PreHeatIcon.h"
@@ -10,25 +12,31 @@
 #include "../../Utilities/StarsideCoordinates.h"
 #include "../../Utilities/StarsideTheme.h"
 #include "../../../Utilities/CommandQueue.h"
+#include "../../../ProfileManager/ProfileManager.h"
+
+extern ProfileManager g_profileManager;
+
+using namespace std;
+#include <vector>
 
 #define MAXIMUM_ICONS 5
 //#define SIDEBAR_BACKGROUND_COLOR 0x9578
 
 #define Y_OFFSET 1
 
-#define SIDEBAR_X 250
-#define SIDEBAR_Y 0
-#define SIDEBAR_WIDTH (320 - SIDEBAR_X)
-#define SIDEBAR_HEIGHT (240 - SIDEBAR_Y)
+#define SIDEBAR_WIDTH 69
+#define SIDEBAR_X (TFT_DISPLAY_WIDTH - SIDEBAR_WIDTH)
 
-#define LEFT_MARGIN 5
+#define SIDEBAR_Y 0
+#define SIDEBAR_HEIGHT TFT_DISPLAY_HEIGHT
+
+#define LEFT_MARGIN 2
 #define RIGHT_MARGIN 3
 #define VERTICAL_MARGIN 3
 
-#define ICON_AREA_WIDTH (SIDEBAR_WIDTH - (Y_OFFSET*2) - LEFT_MARGIN)
 #define ICON_AREA_HEIGHT ((SIDEBAR_HEIGHT - (Y_OFFSET*2)) / 5)
 
-#define ICON_WIDTH (ICON_AREA_WIDTH - LEFT_MARGIN)
+#define ICON_WIDTH (SIDEBAR_WIDTH - RIGHT_MARGIN - LEFT_MARGIN)
 #define ICON_HEIGHT (ICON_AREA_HEIGHT - (VERTICAL_MARGIN * 2))
 #define ICON_RADIUS 8
 

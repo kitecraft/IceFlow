@@ -2,11 +2,8 @@
 
 bool OvenController::Init()
 {
-    pinMode(RELAY_TOP_PIN, OUTPUT);
-    digitalWrite(RELAY_TOP_PIN, RELAY_OFF);
-
-    pinMode(RELAY_BOTTOM_PIN, OUTPUT);
-    digitalWrite(RELAY_BOTTOM_PIN, RELAY_OFF);
+    pinMode(SSR_OVEN_HEATERS, OUTPUT);
+    digitalWrite(SSR_OVEN_HEATERS, RELAY_OFF);
 
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
@@ -60,58 +57,26 @@ void OvenController::DisableConvectionFan()
     _convectionFanOnManual = false;
 }
 
-void OvenController::EnableTopBurner()
+void OvenController::EnableOvenHeaters()
 {
-    digitalWrite(RELAY_TOP_PIN, RELAY_ON);
-    _topBurnerOn = true;
+    digitalWrite(SSR_OVEN_HEATERS, RELAY_ON);
+    _ovenOn = true;
 }
 
-void OvenController::DisableTopBurner()
+void OvenController::DisableOvenHeaters()
 {
-    digitalWrite(RELAY_TOP_PIN, RELAY_OFF);
-    _topBurnerOn = false;
-}
-
-void OvenController::EnableBottomBurner()
-{
-    digitalWrite(RELAY_BOTTOM_PIN, RELAY_ON);
-    _bottomBurnerOn = true;
-}
-
-void OvenController::DisableBottomBurner()
-{
-    digitalWrite(RELAY_BOTTOM_PIN, RELAY_OFF);
-    _bottomBurnerOn = false;
-}
-
-//Disable both top and bottom burners
-void OvenController::DisableAllBurners() 
-{
-    DisableTopBurner();
-    DisableBottomBurner();
-}
-
-void OvenController::CheckOvenOnStatus()
-{
-    if (_ovenOn && (_bottomBurnerOn || _topBurnerOn)) {
-        return;
-    }
-    else if (!_ovenOn && (!_bottomBurnerOn && !_topBurnerOn)) {
-        return;
-    }
-    else if (!_ovenOn && (_bottomBurnerOn || _topBurnerOn)) {
-        _ovenOn = true;
-        return;
-    }
-    else {
-        _ovenOn = false;
-    }
+    digitalWrite(SSR_OVEN_HEATERS, RELAY_OFF);
+    _ovenOn = false;
 }
 
 void OvenController::Run()
 {
     while (true) {
-        CheckOvenOnStatus();
+        if (_ovenOn) {
+            //check if temperature is over OVEN_MAXIMUM_TEMPERATURE
+
+            //do other stuff
+        }
         CheckConvectionFanStatus();
 
         vTaskDelay(1);

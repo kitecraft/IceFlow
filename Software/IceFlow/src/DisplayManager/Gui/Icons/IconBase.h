@@ -4,7 +4,7 @@
 #include "../../../IceFlow_Config.h"
 #include "../../Utilities/StarsideCoordinates.h"
 
-#define ICON_BASE_SPRITE_X_OFFSET 7
+#define ICON_BASE_SPRITE_X_OFFSET 2
 #define ICON_BASE_BACKGROUND_COLOR 0xCE1B
 #define ICON_BASE_BORDER_WIDTH 2
 #define ICON_BASE_ICON_RADIUS 6
