@@ -105,7 +105,8 @@ void HandleCommandQueue()
         case STARSIDE_CMD_DELETE_TOUCH_CALIBRATION:
             g_displayManager.DeleteTouchCalibrationFile();
             break;
-
+        case STARSIDE_CMD_START_MANUAL_PREHEAT:
+            g_ovenController.StartManualPreHeat(currItem.value.toInt());
         default:
             break;
         }

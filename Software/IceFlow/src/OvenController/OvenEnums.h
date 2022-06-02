@@ -1,0 +1,16 @@
+#pragma once
+
+enum OvenStatus {
+	OS_IDLE = -1,
+	OS_MANUAL_HEAT,
+	OS_REFLOW_ACTIVE
+};
+
+enum REFLOW_PHASE {
+	RP_NOT_ACTIVE = -1,
+	RP_PREHEAT,
+	RP_PREHEAT_SOAK,
+	RP_RAMP_TO_REFLOW,
+	RP_RELOW,
+	RP_COOLING
+};
