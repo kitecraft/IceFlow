@@ -4,7 +4,6 @@
 #include <FS.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include "Display_Defs.h"
 #include "Utilities/DisplayQueue.h"
 
 #define CALIBRATION_FILENAME "/_calData_"

@@ -19,7 +19,7 @@ extern ProfileManager g_profileManager;
 using namespace std;
 #include <vector>
 
-#define MAXIMUM_ICONS 5
+#define NUMBER_OF_ICONS 6
 //#define SIDEBAR_BACKGROUND_COLOR 0x9578
 
 #define Y_OFFSET 1
@@ -34,7 +34,7 @@ using namespace std;
 #define RIGHT_MARGIN 3
 #define VERTICAL_MARGIN 3
 
-#define ICON_AREA_HEIGHT ((SIDEBAR_HEIGHT - (Y_OFFSET*2)) / 5)
+#define ICON_AREA_HEIGHT ((SIDEBAR_HEIGHT - (Y_OFFSET*2)) / NUMBER_OF_ICONS)
 
 #define ICON_WIDTH (SIDEBAR_WIDTH - RIGHT_MARGIN - LEFT_MARGIN)
 #define ICON_HEIGHT (ICON_AREA_HEIGHT - (VERTICAL_MARGIN * 2))
@@ -51,12 +51,15 @@ using namespace std;
 
 extern CommandQueue g_commandQueue;
 
+//Main Screen Side Bar icon touched 
 enum MSSB_RETURN_VALUES {
 	MSSB_GENERIC_BADNESS = -1,
 	MSSB_OK,
 	MSSB_TOUCHED,
 	MSSB_TOUCHED_AND_REFRESH_REQUIRED,
-	MSSB_NOT_TOUCHED
+	MSSB_NOT_TOUCHED,
+	MSSB_START_REFLOW,
+	MSSB_START_MANUAL_PREHEAT
 };
 
 class MainScreenSideBar
@@ -68,6 +71,7 @@ private:
 	SettingsIcon _settingsIcon;
 	ProfilesIcon _profilesIcon;
 	OpenDoorIcon _openDoorIcon;
+	
 
 	IconPopUpMenu _popUpMenu;
 

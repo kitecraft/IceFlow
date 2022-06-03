@@ -3,8 +3,13 @@
 #include <PID_v2.h>
 #include "../IceFlow_Config.h"
 #include "OvenEnums.h"
+#include "../DisplayManager/Utilities/DisplayQueue.h"
+#include "../DisplayManager/Utilities/Display_Enums.h"
+#include "../ProfileManager/ProfileManager.h"
+#include "../ProfileManager/Profile.h"
 
 extern DisplayQueue g_displayQueue;
+extern ProfileManager g_profileManager;
 
 class OvenController
 {
@@ -16,7 +21,8 @@ private:
 	bool _convectionFanOn = false;
 	bool _convectionFanOnManual = false;
 
-	double _temperaturePrimary = 0;
+	double _temperaturePrimary = 50;
+	bool _testDirection = true;
 	double _temperatureSecondary = 0;
 
 	//PID
@@ -24,6 +30,8 @@ private:
 	double _kp;
 	double _ki;
 	double _kd;
+
+	Profile _profile;
 
 	void CheckConvectionFanStatus();
 	void EnableConvectionFan();
@@ -43,7 +51,7 @@ public:
 	bool Init();
 	void Run();
 
-	void EmergencyStop() { DisableOvenHeaters(); DisableConvectionFan(); }
+	void EmergencyStop();
 
 	void StartReflowSession(String profileFileName);
 	void StartManualPreHeat(uint16_t targetTemperature);

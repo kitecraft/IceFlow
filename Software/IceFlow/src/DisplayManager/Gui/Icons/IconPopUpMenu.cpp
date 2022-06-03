@@ -71,9 +71,9 @@ void IconPopUpMenu::Create(StarsideCoordinates inCoordinates, String* menuOption
 	coordinates.x = coordinates.x - coordinates.w;
 	coordinates.h = (numOptions * ((TEXT_VERTICAL_BUFFER * 2) + MENU_FONT_HEIGHT + MENU_AREA_MARGIN)) + MENU_AREA_MARGIN;
 
-	if (coordinates.y + coordinates.h > 240)
+	if (coordinates.y + coordinates.h > TFT_DISPLAY_HEIGHT)
 	{
-		coordinates.y = 240 - coordinates.h;
+		coordinates.y = TFT_DISPLAY_HEIGHT - coordinates.h;
 	}
 
 	TFT->unloadFont();
@@ -88,8 +88,22 @@ void IconPopUpMenu::Open(String selected)
 	}
 
 	//screenReadBuffer = (uint16_t*)malloc(((coordinates.w + 1) * (coordinates.h + 1)) * 2);
-	//screenReadBuffer = new uint16_t[(coordinates.w + 1) * (coordinates.h + 1)];
-	//TFT->readRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, screenReadBuffer);
+	/*
+	if (screenReadBuffer != NULL)
+	{
+		//free(screenReadBuffer);
+		delete[] screenReadBuffer;
+		screenReadBuffer = NULL;
+	}
+	Serial.print("Before: ");
+	Serial.println(ESP.getFreeHeap());
+	screenReadBuffer = new uint16_t[(coordinates.w * coordinates.h) * 2];
+	Serial.print("After: ");
+	Serial.println(ESP.getFreeHeap());
+
+	TFT->readRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, screenReadBuffer);
+	*/
+
 	if (sprite != NULL)
 	{
 		sprite->unloadFont();
@@ -130,12 +144,13 @@ void IconPopUpMenu::Open(String selected)
 
 void IconPopUpMenu::Close()
 {
+	/*
 	if (clean)
 	{
 		return;
 	}
-	//TFT->pushRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, screenReadBuffer);
-
+	TFT->pushRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, screenReadBuffer);
+	*/
 	CleanUp();
 }
 

@@ -41,6 +41,13 @@ void MainScreen::HandleTouch(int x, int y)
 	case MSSB_TOUCHED_AND_REFRESH_REQUIRED:
 		DrawScreen();
 		return;
+	case MSSB_START_MANUAL_PREHEAT:
+		g_commandQueue.AddItemToQueue(STARSIDE_CMD_START_MANUAL_PREHEAT, "150");
+		break;
+	case MSSB_START_REFLOW:
+		if (!_currentProfileFileName.isEmpty()) {
+			g_commandQueue.AddItemToQueue(STARSIDE_CMD_START_REFLOW, _currentProfileFileName);
+		}
 	default:
 		break;
 	}
@@ -55,6 +62,7 @@ void MainScreen::HandleTouch(int x, int y)
 void MainScreen::DrawScreen()
 {
 	TFT->fillScreen(TFT_BLACK);
+	TFT->fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
 	_sideBar.Draw();
 }
 

@@ -12,6 +12,9 @@
 #include "src/OvenController/OvenController.h"
 #include "src/DisplayManager/DisplayManager.h"
 #include "src/ProfileManager/ProfileManager.h"
+#include <Bounce2.h>
+
+ProfileManager g_profileManager;
 
 OvenController g_ovenController;
 TaskHandle_t g_ovenControllerHandle = nullptr;
@@ -20,7 +23,6 @@ void IRAM_ATTR OvenControllerThread(void*)
     g_ovenController.Run();
 }
 
-ProfileManager g_profileManager;
 
 TaskHandle_t g_webServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
@@ -35,6 +37,8 @@ void IRAM_ATTR DisplayManagerThread(void*)
     g_displayManager.Run();
 }
 
+Bounce2::Button g_stopOvenBtn;
+
 //Adafruit_MAX31855 g_probeA(PROBE_CLK, PROBE_A_CS_PIN, PROBE_MISO);
 //Adafruit_MAX31855 g_probeB(PROBE_CLK, PROBE_B_CS_PIN, PROBE_MISO);
 //unsigned long g_nextTemperatureUpdate = 0;
@@ -45,6 +49,10 @@ void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
     
+    g_stopOvenBtn.attach(EMERGENCY_STOP_BTN_PIN, INPUT_PULLUP);
+    g_stopOvenBtn.interval(BUTTON_DEBOUNCE_TIME);
+    g_stopOvenBtn.setPressedState(LOW);
+
     g_ovenController.Init();
     xTaskCreatePinnedToCore(
         OvenControllerThread,
@@ -83,6 +91,7 @@ void setup() {
 
 
 void loop() {
+    HandleButtonPress();
     HandleCommandQueue();
     /*
     if (!GetTemperatures()) {
@@ -107,10 +116,22 @@ void HandleCommandQueue()
             break;
         case STARSIDE_CMD_START_MANUAL_PREHEAT:
             g_ovenController.StartManualPreHeat(currItem.value.toInt());
+            break;
+        case STARSIDE_CMD_START_REFLOW:
+            g_ovenController.StartReflowSession(currItem.value);
+            break;
         default:
             break;
         }
         yield();
+    }
+}
+
+void HandleButtonPress()
+{
+    g_stopOvenBtn.update();
+    if (g_stopOvenBtn.pressed()) {
+        g_ovenController.EmergencyStop();
     }
 }
 

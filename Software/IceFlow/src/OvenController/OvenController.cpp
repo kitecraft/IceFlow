@@ -1,4 +1,5 @@
 #include "OvenController.h"
+#include "../Utilities/PreferencesManager.h"
 
 bool OvenController::Init()
 {
@@ -7,10 +8,20 @@ bool OvenController::Init()
 
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
+    _kp = GetDefaultPidKP();
+    _ki = GetDefaultPidKI();
+    _kd = GetDefaultPidKD();
+
+    Serial.print("PID: ");
+    Serial.print(_kp);
+    Serial.print(" - ");
+    Serial.print(_ki);
+    Serial.print(" - ");
+    Serial.println(_kd);
 
     _pidController = new PID_v2(_kp, _ki, _kd, PID::Direct);
     _pidController->SetSampleTime(20);
-    _pidController->SetMode(MANUAL);
+    _pidController->Start(_temperaturePrimary, 0, 20.0);
     return true;
 }
 
@@ -58,6 +69,7 @@ void OvenController::DisableConvectionFan()
 {
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
     _convectionFanOnManual = false;
+    _convectionFanOn = false;
 }
 
 void OvenController::EnableOvenHeaters()
@@ -73,6 +85,15 @@ void OvenController::DisableOvenHeaters()
 {
     digitalWrite(SSR_OVEN_HEATERS, RELAY_OFF);
     _heatersOn = false;
+}
+
+void OvenController::EmergencyStop() 
+{
+    Serial.println("\n-----\nEMERGENCY STOP\n-----\n");
+    _ovenStatus = OS_IDLE;
+    _reflowPhase = RP_NOT_ACTIVE;
+    DisableOvenHeaters(); 
+    DisableConvectionFan();
 }
 
 void OvenController::FetchPrimaryTemperature()
@@ -96,12 +117,17 @@ void OvenController::StartManualPreHeat(uint16_t targetTemperature)
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
     }
-    _pidController->Start(_temperaturePrimary, 0, (double)targetTemperature);
+    Serial.print("Starting pre-heat: ");
+    Serial.println(targetTemperature);
+    _pidController->Setpoint(targetTemperature);
     _ovenStatus = OS_MANUAL_HEAT;
 }
 
 void OvenController::StartReflowSession(String profileFileName)
 {
+    if (!g_profileManager.GetProfile(profileFileName, _profile)) {
+        return;
+     }
 
     // _pidController->Start(_temperaturePrimary, 0, (double) pre_heat_temperature);
 }
@@ -109,8 +135,33 @@ void OvenController::StartReflowSession(String profileFileName)
 void OvenController::HandleManualPreHeat()
 {
     //get temperature
-    double primaryTemperature = 50;
-    const double output = _pidController->Run(primaryTemperature);
+    if (_testDirection){
+        _temperaturePrimary++;
+        if (_temperaturePrimary >= 180) {
+            _testDirection = false;
+        }
+    }
+    else {
+        _temperaturePrimary--;
+        if (_temperaturePrimary <= 25) {
+            _testDirection = true;
+        }
+    }
+
+    Serial.print("Temp: ");
+    Serial.print(_temperaturePrimary);
+    const double output = _pidController->Run(_temperaturePrimary);
+    if (output == 0 && _heatersOn)
+    {
+        DisableOvenHeaters();
+    }
+    else if (output > 0 && !_heatersOn) {
+        EnableOvenHeaters();
+    }
+
+    Serial.print("  | Output: ");
+    Serial.println(output);
+    delay(500);
 }
 
 void OvenController::HandleReflowSession()

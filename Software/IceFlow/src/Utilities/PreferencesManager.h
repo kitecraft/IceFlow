@@ -50,11 +50,64 @@ static String GetSavedProfile()
     return ret;
 }
 
-
 static void SaveProfileName(String profileFileName)
 {
     Preferences preferences;
     preferences.begin(PROFILE_MANAGER_FILENAME, false);
     preferences.putString(CURRENT_LOADED_PROFILE, profileFileName);
     preferences.end();
+}
+
+static void SavePidKP(double kp)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putDouble(DEFAULT_PID_KP_PREF, kp);
+    preferences.end();
+}
+
+static double GetDefaultPidKP()
+{
+    double ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    ret = preferences.getDouble(DEFAULT_PID_KP_PREF, PID_DEFAULT_KP);
+    preferences.end();
+    return ret;
+}
+
+static void SavePidKI(double ki)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putDouble(DEFAULT_PID_KI_PREF, ki);
+    preferences.end();
+}
+
+static double GetDefaultPidKI()
+{
+    double ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    ret = preferences.getDouble(DEFAULT_PID_KI_PREF, PID_DEFAULT_KI);
+    preferences.end();
+    return ret;
+}
+
+static void SavePidKD(double kd)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putDouble(DEFAULT_PID_KD_PREF, kd);
+    preferences.end();
+}
+
+static double GetDefaultPidKD()
+{
+    double ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    ret = preferences.getDouble(DEFAULT_PID_KD_PREF, PID_DEFAULT_KD);
+    preferences.end();
+    return ret;
 }

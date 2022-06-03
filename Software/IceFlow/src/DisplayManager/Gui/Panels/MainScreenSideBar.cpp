@@ -39,7 +39,7 @@ void MainScreenSideBar::DrawSidebarBox(TFT_eSprite* sprite)
 	sprite->fillSmoothRoundRect(1, 1, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 3, 8, g_GlobalTheme.panelBorderColor);
 
 	_startIcon.Draw(sprite);
-	_preHeatIcon.Draw(sprite);
+	_preHeatIcon.DrawDisabled(sprite);
 	_profilesIcon.Draw(sprite);
 	_openDoorIcon.Draw(sprite);
 	_settingsIcon.Draw(sprite);
@@ -66,14 +66,14 @@ MSSB_RETURN_VALUES MainScreenSideBar::Touched(int x, int y)
 
 	//If touch was not on sidebar and popUp is open
 	//Check if popUp needs to handle the touch and 
-	//If not, return false
+	//If it did, return touched
 	if (x < (SIDEBAR_X + LEFT_MARGIN) && _popUpMenu.IsMenuOpen())
 	{
 		//handle touching the open menu here
 		String touchedOption = _popUpMenu.Touched(x, y);
-		if (touchedOption.isEmpty())
+		if (!touchedOption.isEmpty())
 		{
-			return MSSB_NOT_TOUCHED;
+			return MSSB_TOUCHED;
 		}
 		//Settings Icon
 		/*
@@ -95,19 +95,27 @@ MSSB_RETURN_VALUES MainScreenSideBar::Touched(int x, int y)
 	}
 
 	//Iterate each icon in sidebar to see if it was touched
+	if (_startIcon.Touched(x, y)) {
+		return MSSB_START_REFLOW;
+	}
+
+	if (_preHeatIcon.Touched(x, y)) {
+		return MSSB_START_MANUAL_PREHEAT;
+	}
+
+	if(_profilesIcon.Touched(x, y)){
+		vector<String> filelist = g_profileManager.GetListOfProfileFileNames();
+		for (int i = 0; i < filelist.size(); i++) {
+			Serial.println(filelist.at(i));
+		}
+		return MSSB_TOUCHED;
+	}
+
 	if (_settingsIcon.Touched(x, y))
 	{
 		String options[2] = { "Settings","Info" };
 		_popUpMenu.Create(StarsideCoordinates(ICON_X - 2, _settingsIcon.coordinates.y, 0, 0), options, 2);
 		_popUpMenu.Open();
-		return MSSB_TOUCHED;
-	}
-
-	if (_preHeatIcon.Touched(x, y)) {
-		vector<String> filelist = g_profileManager.GetListOfProfileFileNames();
-		for (int i = 0; i < filelist.size(); i++) {
-			Serial.println(filelist.at(i));
-		}
 		return MSSB_TOUCHED;
 	}
 
