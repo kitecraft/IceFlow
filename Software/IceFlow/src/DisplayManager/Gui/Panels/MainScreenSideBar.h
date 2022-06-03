@@ -54,7 +54,6 @@ extern CommandQueue g_commandQueue;
 //Main Screen Side Bar icon touched 
 enum MSSB_RETURN_VALUES {
 	MSSB_GENERIC_BADNESS = -1,
-	MSSB_OK,
 	MSSB_TOUCHED,
 	MSSB_TOUCHED_AND_REFRESH_REQUIRED,
 	MSSB_NOT_TOUCHED,
@@ -72,7 +71,6 @@ private:
 	ProfilesIcon _profilesIcon;
 	OpenDoorIcon _openDoorIcon;
 	
-
 	IconPopUpMenu _popUpMenu;
 
 	void DrawSidebarBox(TFT_eSprite* sprite);

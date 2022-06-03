@@ -9,6 +9,7 @@
 class StartIcon : public IconBase
 {
 public:
+	bool enabled = false;
 	void Draw(TFT_eSprite* sprite) {
 		DrawBase(sprite);
 
@@ -56,6 +57,14 @@ public:
 		sprite->setTextDatum(CC_DATUM);
 		sprite->drawString("Go", ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2, 1 + (coordinates.y + coordinates.h / 2));
 		sprite->unloadFont();
+	}
+
+	bool Touched(int x, int y)
+	{
+		if (enabled) {
+			return IconBase::Touched(x, y);
+		}
+		return false;
 	}
 };
 
