@@ -4,14 +4,15 @@
  Author:	Kitecraft
 */
 #include <Adafruit_MAX31855.h>
-#include "./src/IceFlow_Config.h"
-#include "./src/Network/IceNetwork.h"
-#include "./src/Network/IceOTAManager.h"
-#include "./src/Network/IceWebServer.h"
+#include "src/IceFlow_Config.h"
+#include "src/Network/IceNetwork.h"
+#include "src/Network/IceOTAManager.h"
+#include "src/Network/IceWebServer.h"
 #include "src/Utilities/CommandQueue.h"
 #include "src/OvenController/OvenController.h"
 #include "src/DisplayManager/DisplayManager.h"
 #include "src/ProfileManager/ProfileManager.h"
+#include "src/Utilities/PreferencesManager.h"
 #include <Bounce2.h>
 #include <ESPDateTime.h>
 #include <DateTimeTZ.h>
@@ -110,6 +111,11 @@ void HandleCommandQueue()
         COMMAND_QUEUE_ITEM currItem = g_commandQueue.GetNextItem();
         switch (currItem.command) {
         case STARSIDE_CMD_BEGIN_OTA:
+            g_ovenController.DisableOven();
+            g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_OTA_SCREEN);
+            g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_WIFI_SSID, GetSsid());
+            g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_WIFI_LOCAL_IP, WiFi.localIP().toString());
+            g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_OTA_STARTING, "");
             break;
         case STARSIDE_CMD_RESTART:
             ESP.restart();

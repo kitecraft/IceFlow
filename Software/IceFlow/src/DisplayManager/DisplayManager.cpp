@@ -1,7 +1,8 @@
 #include "DisplayManager.h"
-#include "Gui/SplashScreen_Interface.h"
-#include "Gui/OTAScreen_Interface.h"
-#include "Gui/MainScreen_Interface.h"
+#include "Gui/SplashScreen.h"
+#include "Gui/OTAScreen.h"
+#include "Gui/MainScreen.h"
+#include "Gui/PreHeatScreen.h"
 
 DisplayManager::DisplayManager()
 {
@@ -57,6 +58,12 @@ void DisplayManager::HandleTouch()
 
 void DisplayManager::LoadNewScreen(DISPLAY_SCREEN_TYPES newScreenType)
 {	
+	if (_currentScreen == newScreenType)
+	{
+		return;
+	}
+	_currentScreen = newScreenType;
+
 	if (DestroyCurrentScreen != NULL) {
 		DestroyCurrentScreen();
 		DestroyCurrentScreen = NULL;
@@ -88,6 +95,14 @@ void DisplayManager::LoadNewScreen(DISPLAY_SCREEN_TYPES newScreenType)
 		UpdateCurentScreenOnInterval = Update_MainScreen_OnInterval;
 		HandleTouchPoint = Handle_MainScreen_Touch;
 		Create_MainScreen(&tftDisplay);
+		break;
+	case DISPLAY_SCREEN_TYPE_PREHEAT_SCREEN:
+		Serial.println("DM:  DISPLAY_SCREEN_TYPE_PREHEAT_SCREEN");
+		DestroyCurrentScreen = Destroy_PreHeatScreen;
+		UpdateCurentScreen = Update_PreHeatScreen;
+		UpdateCurentScreenOnInterval = Update_PreHeatScreen_OnInterval;
+		HandleTouchPoint = Handle_PreHeatScreen_Touch;
+		Create_PreHeatScreen(&tftDisplay);
 		break;
 		/*
 	case DISPLAY_SCREEN_TYPE_HOME_SCREEN:

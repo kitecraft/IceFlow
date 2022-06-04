@@ -14,6 +14,9 @@ extern ProfileManager g_profileManager;
 class OvenController
 {
 private:
+	bool _ovenEnabled = true;
+	portMUX_TYPE _ovenEnabledMutex;
+
 	OvenStatus _ovenStatus = OS_IDLE;
 	REFLOW_PHASE _reflowPhase = RP_NOT_ACTIVE;
 
@@ -47,6 +50,7 @@ private:
 
 	void HandleManualPreHeat();
 	void HandleReflowSession();
+	void EnableDisableOven(bool state);
 public:
 	bool Init();
 	void Run();
@@ -55,5 +59,8 @@ public:
 
 	void StartReflowSession(String profileFileName);
 	void StartManualPreHeat(uint16_t targetTemperature);
+	void DisableOven() { EnableDisableOven(false); }
+	void EnableOven() { EnableDisableOven(true); }
+	bool IsOvenEnabled();
 };
 

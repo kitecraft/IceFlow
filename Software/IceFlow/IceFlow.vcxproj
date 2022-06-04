@@ -124,13 +124,12 @@
     <ClInclude Include="src\DisplayManager\Gui\Icons\SettingsIcon.h" />
     <ClInclude Include="src\DisplayManager\Gui\Icons\StartIcon.h" />
     <ClInclude Include="src\DisplayManager\Gui\MainScreen.h" />
-    <ClInclude Include="src\DisplayManager\Gui\MainScreen_Interface.h" />
     <ClInclude Include="src\DisplayManager\Gui\OTAScreen.h" />
-    <ClInclude Include="src\DisplayManager\Gui\OTAScreen_Interface.h" />
     <ClInclude Include="src\DisplayManager\Gui\Panels\MainScreenSideBar.h" />
+    <ClInclude Include="src\DisplayManager\Gui\Panels\TemperaturePanel.h" />
+    <ClInclude Include="src\DisplayManager\Gui\PreHeatScreen.h" />
     <ClInclude Include="src\DisplayManager\Gui\ScreenBase.h" />
     <ClInclude Include="src\DisplayManager\Gui\SplashScreen.h" />
-    <ClInclude Include="src\DisplayManager\Gui\SplashScreen_Interface.h" />
     <ClInclude Include="src\DisplayManager\Utilities\DisplayQueue.h" />
     <ClInclude Include="src\DisplayManager\Utilities\Display_Enums.h" />
     <ClInclude Include="src\DisplayManager\Utilities\StarsideCoordinates.h" />
@@ -157,12 +156,13 @@
     <ClCompile Include="src\DisplayManager\Gui\MainScreen.cpp" />
     <ClCompile Include="src\DisplayManager\Gui\OTAScreen.cpp" />
     <ClCompile Include="src\DisplayManager\Gui\Panels\MainScreenSideBar.cpp" />
+    <ClCompile Include="src\DisplayManager\Gui\Panels\TemperaturePanel.cpp" />
+    <ClCompile Include="src\DisplayManager\Gui\PreHeatScreen.cpp" />
     <ClCompile Include="src\DisplayManager\Gui\ScreenBase.cpp" />
     <ClCompile Include="src\DisplayManager\Gui\SplashScreen.cpp" />
     <ClCompile Include="src\DisplayManager\Utilities\DisplayQueue.cpp" />
     <ClCompile Include="src\DisplayManager\Utilities\StarsideTheme.cpp" />
     <ClCompile Include="src\OvenController\OvenController.cpp" />
-    <ClCompile Include="src\ProfileManager\Profile.cpp" />
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp" />
     <ClCompile Include="src\Utilities\CommandQueue.cpp" />
   </ItemGroup>
@@ -171,7 +171,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="192.168.50.13" config.Debug.customdebug_esp32_esp32_debugger_type="universal" custom_esp32_esp32_PartitionScheme="min_spiffs" />
+      <UserProperties arduino.upload.port="COM5" config.Debug.customdebug_esp32_esp32_debugger_type="universal" custom_esp32_esp32_PartitionScheme="min_spiffs" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

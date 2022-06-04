@@ -19,6 +19,7 @@ private:
 	void(*HandleTouchPoint)(int x, int y) = NULL;
 
 	TFT_eSPI tftDisplay;
+	DISPLAY_SCREEN_TYPES _currentScreen = DISPLAY_SCREEN_TYPE_NO_SCREEN;
 
 	void DispatchCommand();
 	void LoadNewScreen(DISPLAY_SCREEN_TYPES screenID);

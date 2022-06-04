@@ -3,7 +3,7 @@
 #include "SPIFFS.h"
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include "../Display_Defs.h"
+#include "../../IceFlow_Config.h"
 #include "../Utilities/StarsideCoordinates.h"
 #include "../Utilities/StarsideTheme.h"
 #include "../Utilities/Display_Enums.h"
@@ -25,6 +25,7 @@ public:
 	void DrawBoxWithBorderAndDropShadow(StarsideCoordinates coords, StarsideTheme theme);
 	void DrawBorderandDropShadow(StarsideCoordinates coords, StarsideTheme theme);
 	void DrawBorderandDropShadow(TFT_eSprite *sprite, StarsideCoordinates coords, StarsideTheme theme);
+	void DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border);
 
 	bool CheckForErrorOnLast();
 	StarsideError GetLastError();

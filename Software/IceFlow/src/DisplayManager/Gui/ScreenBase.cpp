@@ -24,7 +24,6 @@ bool ScreenBase::SPIFFS_Load_Fonts()
 		return false;
 	}
 
-	if (SPIFFS.exists("/SegoeUI-10.vlw") == false) font_is_missing = true;
 	if (SPIFFS.exists("/SegoeUI-14.vlw") == false) font_is_missing = true;
 	if (SPIFFS.exists("/SegoeUI-18.vlw") == false) font_is_missing = true;
 	if (SPIFFS.exists("/SegoeUI-20.vlw") == false) font_is_missing = true;
@@ -70,6 +69,29 @@ void ScreenBase::DrawBorderandDropShadow(TFT_eSprite *sprite, StarsideCoordinate
 	sprite->drawRect(coords.x + 1, coords.y + 1, coords.w - 3, coords.h - 3, theme.panelBorderColor);
 }
 
+void ScreenBase::DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border)
+{
+
+	sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelBorderColor, TFT_TRANSPARENT);
+	sprite->fillSmoothRoundRect(
+		coordinates.x + border,
+		coordinates.y + border,
+		coordinates.w - (border * 2),
+		coordinates.h - (border * 2),
+		radius,
+		theme.panelHeaderColor,
+		TFT_TRANSPARENT);
+
+	/*
+	sprite->fillRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelHeaderColor);
+
+	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDropShadowColor);
+	sprite->drawRoundRect(coordinates.x + 2, coordinates.y + 2, coordinates.w - 3, coordinates.h - 4, radius, theme.panelDropShadowColor);
+
+	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w - 1, coordinates.h - 1, radius, theme.panelBorderColor);
+	sprite->drawRoundRect(coordinates.x + 1, coordinates.y + 1, coordinates.w - 3, coordinates.h - 3, radius, theme.panelBorderColor);
+	*/
+}
 /*
 
 void ScreenBase::DrawBoxWithBorderDropShadowAndText(TFT_eSprite *sprite, StarsideCoordinates coords, StarsideTheme theme)
@@ -94,16 +116,6 @@ void ScreenBase::DrawPillBoxWithDropShadow(TFT_eSprite *sprite, StarsideCoordina
 	sprite->drawRoundRect(coordinates.x + 1, coordinates.y + 1, textAreaWidth - 3, textAreaHeight - 3, textAreaHeight / 2, theme.panelBorderColor);
 }
 
-void ScreenBase::DrawRoundedBoxWithDropShadow(TFT_eSprite *sprite, StarsideCoordinates coordinates, int radius)
-{
-	sprite->fillRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, g_GlobalTheme.panelHeaderColor);
-
-	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, g_GlobalTheme.panelDropShadowColor);
-	sprite->drawRoundRect(coordinates.x + 2, coordinates.y + 2, coordinates.w - 3, coordinates.h - 4, radius, g_GlobalTheme.panelDropShadowColor);
-
-	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w - 1, coordinates.h - 1, radius, g_GlobalTheme.panelBorderColor);
-	sprite->drawRoundRect(coordinates.x + 1, coordinates.y + 1, coordinates.w - 3, coordinates.h - 3, radius, g_GlobalTheme.panelBorderColor);
-}
 */
 
 bool ScreenBase::CheckForErrorOnLast()

@@ -40,3 +40,28 @@ public:
 	void UpdateScreen(DISPLAY_UPDATE_KEYS inKey, String inPayload);
 	void UpdateScreenOnInterval();
 };
+
+
+static SplashScreen* splashScreen = NULL;
+static void Create_SplashScreen(TFT_eSPI* TFT) {
+	splashScreen = new SplashScreen(TFT);
+}
+
+static void Destroy_SplashScreen()
+{
+	if (splashScreen != NULL)
+	{
+		delete(splashScreen);
+		splashScreen = NULL;
+	}
+}
+
+static void Update_SplashScreen(DISPLAY_UPDATE_KEYS inKey, String inPayload)
+{
+	splashScreen->UpdateScreen(inKey, inPayload);
+}
+
+static void Update_SplashScreen_OnInterval()
+{
+	splashScreen->UpdateScreenOnInterval();
+}

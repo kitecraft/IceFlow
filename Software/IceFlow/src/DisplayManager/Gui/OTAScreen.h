@@ -46,3 +46,32 @@ public:
 	void HandleTouch(int x, int y);
 };
 
+
+static OTAScreen* otaScreen = NULL;
+static void Create_OTAScreen(TFT_eSPI* TFT) {
+	otaScreen = new OTAScreen(TFT);
+}
+
+static void Destroy_OTAScreen()
+{
+	if (otaScreen != NULL)
+	{
+		delete(otaScreen);
+		otaScreen = NULL;
+	}
+}
+
+static void Update_OTAScreen(DISPLAY_UPDATE_KEYS inKey, String inPayload)
+{
+	otaScreen->UpdateScreen(inKey, inPayload);
+}
+
+static void Update_OTAScreen_OnInterval()
+{
+	otaScreen->UpdateScreenOnInterval();
+}
+
+static void Handle_OTAScreen_Touch(int x, int y)
+{
+	otaScreen->HandleTouch(x, y);
+}

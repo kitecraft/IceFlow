@@ -1,7 +1,8 @@
 #pragma once
 
 enum OvenStatus {
-	OS_IDLE = -1,
+	OS_BADNESS = -1,
+	OS_IDLE,
 	OS_MANUAL_HEAT,
 	OS_REFLOW_ACTIVE
 };

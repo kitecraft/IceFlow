@@ -48,22 +48,13 @@
     <ClInclude Include="src\DisplayManager\Gui\MainScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DisplayManager\Gui\MainScreen_Interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\DisplayManager\Gui\OTAScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DisplayManager\Gui\OTAScreen_Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\DisplayManager\Gui\ScreenBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\DisplayManager\Gui\SplashScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DisplayManager\Gui\SplashScreen_Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\DisplayManager\Utilities\Display_Enums.h">
@@ -123,6 +114,12 @@
     <ClInclude Include="src\OvenController\OvenEnums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\DisplayManager\Gui\PreHeatScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DisplayManager\Gui\Panels\TemperaturePanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -164,7 +161,10 @@
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ProfileManager\Profile.cpp">
+    <ClCompile Include="src\DisplayManager\Gui\PreHeatScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DisplayManager\Gui\Panels\TemperaturePanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

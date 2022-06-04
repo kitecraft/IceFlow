@@ -1,9 +1,5 @@
 #include "MainScreenSideBar.h"
 
-MainScreenSideBar::~MainScreenSideBar()
-{
-}
-
 void MainScreenSideBar::Init(TFT_eSPI* newTFT)
 {
 	TFT = newTFT;
@@ -39,7 +35,7 @@ void MainScreenSideBar::DrawSidebarBox(TFT_eSprite* sprite)
 	sprite->fillSmoothRoundRect(1, 1, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 3, 8, g_GlobalTheme.panelBorderColor);
 
 	_startIcon.Draw(sprite);
-	_preHeatIcon.DrawDisabled(sprite);
+	_preHeatIcon.Draw(sprite);
 	_profilesIcon.Draw(sprite);
 	_openDoorIcon.Draw(sprite);
 	_settingsIcon.Draw(sprite);

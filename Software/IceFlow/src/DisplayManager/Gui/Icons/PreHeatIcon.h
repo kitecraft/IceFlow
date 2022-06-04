@@ -7,7 +7,6 @@ class PreHeatIcon : public IconBase
 {
 public:
 	void Draw(TFT_eSprite* sprite) {
-		enabled = false;
 		DrawBase(sprite);
 		sprite->loadFont(AA_FONT_18PT);
 		sprite->setTextColor(ICON_BASE_TEXT_COLOR);

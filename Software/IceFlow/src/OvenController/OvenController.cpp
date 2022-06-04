@@ -8,21 +8,41 @@ bool OvenController::Init()
 
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
+
+    _ovenEnabledMutex = portMUX_INITIALIZER_UNLOCKED;
+
     _kp = GetDefaultPidKP();
     _ki = GetDefaultPidKI();
     _kd = GetDefaultPidKD();
-
+    /*
     Serial.print("PID: ");
     Serial.print(_kp);
     Serial.print(" - ");
     Serial.print(_ki);
     Serial.print(" - ");
     Serial.println(_kd);
-
+    */
     _pidController = new PID_v2(_kp, _ki, _kd, PID::Direct);
     _pidController->SetSampleTime(20);
     _pidController->Start(_temperaturePrimary, 0, 20.0);
     return true;
+}
+
+
+void OvenController::EnableDisableOven(bool state)
+{
+    EmergencyStop();
+    portENTER_CRITICAL(&_ovenEnabledMutex);
+    _ovenEnabled = state;
+    portEXIT_CRITICAL(&_ovenEnabledMutex);
+}
+bool OvenController::IsOvenEnabled()
+{
+    bool ret;
+    portENTER_CRITICAL(&_ovenEnabledMutex);
+    ret = _ovenEnabled;
+    portEXIT_CRITICAL(&_ovenEnabledMutex);
+    return ret;
 }
 
 void OvenController::CheckConvectionFanStatus()
@@ -94,6 +114,7 @@ void OvenController::EmergencyStop()
     _reflowPhase = RP_NOT_ACTIVE;
     DisableOvenHeaters(); 
     DisableConvectionFan();
+    g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_MAIN);
 }
 
 void OvenController::FetchPrimaryTemperature()
@@ -108,8 +129,34 @@ void OvenController::FetchSecondaryTemperature()
 
 void OvenController::FetchTemperatures()
 {
+    /*
     FetchPrimaryTemperature();
     FetchSecondaryTemperature();
+    
+    if (_temperaturePrimary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
+        _temperaturePrimary <= OVEN_MINIUMUM_TEMPERATURE_PANIC ||
+        _temperatureSecondary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
+        _temperatureSecondary <= OVEN_MINIUMUM_TEMPERATURE_PANIC) {
+        _ovenStatus = OS_BADNESS;
+    }
+    */
+
+    if (_testDirection) {
+        _temperaturePrimary++;
+        _temperatureSecondary++;
+        if (_temperaturePrimary >= 245) {
+            _testDirection = false;
+        }
+
+    }
+    else {
+        _temperaturePrimary--;
+        _temperatureSecondary--;
+        if (_temperaturePrimary <= 25) {
+            _testDirection = true;
+        }
+    }
+    delay(100);
 }
 
 void OvenController::StartManualPreHeat(uint16_t targetTemperature)
@@ -117,6 +164,7 @@ void OvenController::StartManualPreHeat(uint16_t targetTemperature)
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
     }
+    g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_PREHEAT_SCREEN);
     Serial.print("Starting pre-heat: ");
     Serial.println(targetTemperature);
     _pidController->Setpoint(targetTemperature);
@@ -129,27 +177,12 @@ void OvenController::StartReflowSession(String profileFileName)
         return;
      }
 
-    // _pidController->Start(_temperaturePrimary, 0, (double) pre_heat_temperature);
 }
 
 void OvenController::HandleManualPreHeat()
 {
-    //get temperature
-    if (_testDirection){
-        _temperaturePrimary++;
-        if (_temperaturePrimary >= 180) {
-            _testDirection = false;
-        }
-    }
-    else {
-        _temperaturePrimary--;
-        if (_temperaturePrimary <= 25) {
-            _testDirection = true;
-        }
-    }
-
-    Serial.print("Temp: ");
-    Serial.print(_temperaturePrimary);
+    //Serial.print("Temp: ");
+    //Serial.print(_temperaturePrimary);
     const double output = _pidController->Run(_temperaturePrimary);
     if (output == 0 && _heatersOn)
     {
@@ -159,9 +192,9 @@ void OvenController::HandleManualPreHeat()
         EnableOvenHeaters();
     }
 
-    Serial.print("  | Output: ");
-    Serial.println(output);
-    delay(500);
+    //Serial.print("  | Output: ");
+    //Serial.println(output);
+    //delay(500);
 }
 
 void OvenController::HandleReflowSession()
@@ -172,6 +205,10 @@ void OvenController::HandleReflowSession()
 void OvenController::Run()
 {
     while (true) {
+        while (!IsOvenEnabled()) {
+            vTaskDelay(1);
+        }
+
         FetchTemperatures();
 
         switch (_ovenStatus) {
@@ -189,13 +226,14 @@ void OvenController::Run()
             break;
         }
         CheckConvectionFanStatus();
-
+        
         if (_nextTemperatureDisplayUpdate < millis()) {
             g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_PRIMARY_TEMPERATURE, String(_temperaturePrimary));
             g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_SECONDARY_TEMPERATURE, String(_temperatureSecondary));
             _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
         }
-
+        
+        //vTaskDelay(500);
         vTaskDelay(1);
     }
 }
