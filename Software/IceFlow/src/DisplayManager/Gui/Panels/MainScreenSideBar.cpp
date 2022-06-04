@@ -34,7 +34,7 @@ void MainScreenSideBar::DrawSidebarBox(TFT_eSprite* sprite)
 	sprite->fillSmoothRoundRect(0, 0, SIDEBAR_WIDTH - 1, SIDEBAR_HEIGHT - 1, 8, g_GlobalTheme.panelBorderColor);
 	sprite->fillSmoothRoundRect(1, 1, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 3, 8, g_GlobalTheme.panelBorderColor);
 
-	_startIcon.Draw(sprite);
+	_startIcon.Draw(sprite, _startIconStatus);
 	_preHeatIcon.Draw(sprite);
 	_profilesIcon.Draw(sprite);
 	_openDoorIcon.Draw(sprite);

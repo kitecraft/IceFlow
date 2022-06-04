@@ -10,7 +10,6 @@ MainScreen::MainScreen(TFT_eSPI* newTFT) : ScreenBase(newTFT)
 
 	LoadProfile();
 	DrawScreen();
-	//DrawProfile();
 }
 
 MainScreen::~MainScreen()
@@ -19,7 +18,6 @@ MainScreen::~MainScreen()
 
 void MainScreen::UpdateScreen(DISPLAY_UPDATE_KEYS inKey, String inPayload)
 {
-	// Keys for Display 1
 	switch (inKey) {
 	case DISPLAY_UPDATE_KEY_PRIMARY_TEMPERATURE:
 		_temperaturePanel.UpdatePrimaryTemperature(inPayload.toDouble());
@@ -46,7 +44,9 @@ void MainScreen::HandleTouch(int x, int y)
 		DrawScreen();
 		return;
 	case MSSB_START_MANUAL_PREHEAT:
-		g_commandQueue.AddItemToQueue(STARSIDE_CMD_START_MANUAL_PREHEAT, "150");
+		g_commandQueue.AddItemToQueue(
+			STARSIDE_CMD_START_MANUAL_PREHEAT,
+			_currentProfile.pre_heat_target_temperature == 0 ? String(GetDefaultPreHeatTemp()) : String(_currentProfile.pre_heat_target_temperature));
 		break;
 	case MSSB_START_REFLOW:
 		if (!_currentProfileFileName.isEmpty()) {
@@ -66,10 +66,18 @@ void MainScreen::HandleTouch(int x, int y)
 void MainScreen::LoadProfile()
 {
 	_currentProfileFileName = GetSavedProfile();
+
 	if (!_currentProfileFileName.isEmpty()) {
 		if (!g_profileManager.GetProfile(_currentProfileFileName, &_currentProfile)) {
 			_currentProfile.name = String(PROFILE_ERROR_NAME_TEXT);
+			_sideBar.SetStartIconStatus(false);
 		}
+		else {
+			_sideBar.SetStartIconStatus(true);
+		}
+	}
+	else {
+		_sideBar.SetStartIconStatus(false);
 	}
 }
 
@@ -79,25 +87,4 @@ void MainScreen::DrawScreen()
 	_msmHeader.DrawPanel(_currentProfile.name);
 	_sideBar.DrawPanel();
 	_temperaturePanel.DrawPanel();
-}
-
-void MainScreen::DrawProfile()
-{
-	String profileText;
-	//g_profileManager.SaveProfileNameToPreferences("profile_1.json");
-	//_currentProfileFileName = GetSavedProfile();
-
-	if (_currentProfileFileName.isEmpty()) {
-		profileText = "No Profile Loaded";
-	}
-	else {
-	}
-
-	Profile currentProfile;
-	if (!g_profileManager.GetProfile("profile_1.json", &currentProfile))
-	{
-		profileText = "Error loading profile";
-	}
-	
-	profileText = currentProfile.name;
 }

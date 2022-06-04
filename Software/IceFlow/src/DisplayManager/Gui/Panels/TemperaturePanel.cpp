@@ -1,10 +1,5 @@
 #include "TemperaturePanel.h"
 
-void TemperaturePanel::Init(TFT_eSPI* newTFT)
-{
-	TFT = newTFT;
-}
-
 void TemperaturePanel::DrawPanel()
 {
 	TFT_eSprite sprite = TFT_eSprite(TFT);
@@ -76,17 +71,4 @@ void TemperaturePanel::UpdateSecondaryTemperature(double value)
 {
 	StarsideCoordinates coords(SECONDARY_TEMP_VALUE_X, TEMP_VALUE_Y, TEMP_VALUE_WIDTH, TEMP_VAlUE_HEIGHT);
 	UpdateTemperatureValue(coords, value, SECONDARY_TEMP_TEXT_COLOR);
-}
-
-void TemperaturePanel::DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border)
-{
-	sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelBorderColor, TFT_TRANSPARENT);
-	sprite->fillSmoothRoundRect(
-		coordinates.x + border,
-		coordinates.y + border,
-		coordinates.w - (border * 2),
-		coordinates.h - (border * 2),
-		radius,
-		theme.panelHeaderColor,
-		TFT_TRANSPARENT);
 }

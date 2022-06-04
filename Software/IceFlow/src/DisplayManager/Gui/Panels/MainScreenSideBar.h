@@ -66,6 +66,7 @@ class MainScreenSideBar
 private:
 	TFT_eSPI* TFT;
 	StartIcon _startIcon;
+	bool _startIconStatus = false;
 	PreHeatIcon _preHeatIcon;
 	SettingsIcon _settingsIcon;
 	ProfilesIcon _profilesIcon;
@@ -78,6 +79,7 @@ public:
 	~MainScreenSideBar() {}
 	void Init(TFT_eSPI* newTFT);
 	void DrawPanel();
+	void SetStartIconStatus(bool status) { _startIconStatus = status; }
 	bool IsMenuOpen() { return _popUpMenu.IsMenuOpen(); }
 
 

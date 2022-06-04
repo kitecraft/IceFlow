@@ -8,11 +8,9 @@
 
 class StartIcon : public IconBase
 {
-public:
-	bool enabled = false;
-	void Draw(TFT_eSprite* sprite) {
-		DrawBase(sprite);
-
+private:
+	bool _enabled = false;
+	void DrawEnabled(TFT_eSprite* sprite) {
 		sprite->fillSmoothCircle(
 			ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2,
 			coordinates.y + coordinates.h / 2,
@@ -21,11 +19,34 @@ public:
 		sprite->fillSmoothCircle(
 			ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2,
 			coordinates.y + coordinates.h / 2,
-			(coordinates.h / 2) - 5, 
+			(coordinates.h / 2) - 5,
+			START_ICON_ENABLED_COLOR);
+
+		sprite->loadFont(AA_FONT_20PT);
+		sprite->setTextColor(START_ICON_TEXT_COLOR);
+		sprite->setTextDatum(CC_DATUM);
+		sprite->drawString("Go", ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2, 1 + (coordinates.y + coordinates.h / 2));
+
+	}
+	void DrawDisabled(TFT_eSprite* sprite) {
+		sprite->fillSmoothCircle(
+			ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2,
+			coordinates.y + coordinates.h / 2,
+			(coordinates.h / 2) - 4,
+			START_ICON_BACKGROUND_COLOR);
+		sprite->fillSmoothCircle(
+			ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2,
+			coordinates.y + coordinates.h / 2,
+			(coordinates.h / 2) - 5,
 			START_ICON_DISABLED_COLOR);
-		
+
+		sprite->loadFont(AA_FONT_20PT);
+		sprite->setTextColor(START_ICON_TEXT_COLOR);
+		sprite->setTextDatum(CC_DATUM);
+		sprite->drawString("Go", ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2, 1 + (coordinates.y + coordinates.h / 2));
+
 		sprite->drawLine(
-			ICON_BASE_SPRITE_X_OFFSET + 4, 
+			ICON_BASE_SPRITE_X_OFFSET + 4,
 			coordinates.y + 4,
 			ICON_BASE_SPRITE_X_OFFSET + coordinates.w - 4,
 			coordinates.y + coordinates.h - 4,
@@ -52,16 +73,30 @@ public:
 			coordinates.y + coordinates.h - 5,
 			TFT_BLACK);
 
-		sprite->loadFont(AA_FONT_20PT);
-		sprite->setTextColor(START_ICON_TEXT_COLOR);
-		sprite->setTextDatum(CC_DATUM);
-		sprite->drawString("Go", ICON_BASE_SPRITE_X_OFFSET + coordinates.w / 2, 1 + (coordinates.y + coordinates.h / 2));
 		sprite->unloadFont();
+	}
+public:
+	
+	bool Status() 
+	{ 
+		return _enabled; 
+	}
+
+	void Draw(TFT_eSprite* sprite, bool status) {
+		_enabled = status;
+		DrawBase(sprite);
+		if (_enabled) {
+			DrawEnabled(sprite);
+		}
+		else {
+			DrawDisabled(sprite);
+		}
+
 	}
 
 	bool Touched(int x, int y)
 	{
-		if (enabled) {
+		if (_enabled) {
 			return IconBase::Touched(x, y);
 		}
 		return false;

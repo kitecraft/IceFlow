@@ -1,10 +1,5 @@
 #include "MainScreenHeader.h"
 
-void MainScreenHeader::Init(TFT_eSPI* newTFT)
-{
-	TFT = newTFT;
-}
-
 void MainScreenHeader::DrawPanel(String profileName)
 {
 	TFT_eSprite sprite = TFT_eSprite(TFT);
@@ -46,7 +41,7 @@ void MainScreenHeader::DrawPanel(String profileName)
 	}
 	else {
 		sprite.setTextColor(PROFILE_TEXT_COLOR);
-		sprite.drawString("Profile", PROFILE_LABEL_X, ICEFLOW_LABEL_Y);
+		sprite.drawString("Profile:", PROFILE_LABEL_X, ICEFLOW_LABEL_Y);
 
 		int tWidth = sprite.textWidth(profileName) + (MSH_PANEL_RADIUS*2) + 2;
 		DrawRoundedBox(
@@ -60,22 +55,4 @@ void MainScreenHeader::DrawPanel(String profileName)
 
 	sprite.pushSprite(MSH_PANEL_X, MSH_PANEL_Y, TFT_TRANSPARENT);
 	sprite.deleteSprite();
-}
-
-void MainScreenHeader::UpdateProfileName(String newProfileName)
-{
-
-}
-
-void MainScreenHeader::DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border)
-{
-	sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelBorderColor, TFT_TRANSPARENT);
-	sprite->fillSmoothRoundRect(
-		coordinates.x + border,
-		coordinates.y + border,
-		coordinates.w - (border * 2),
-		coordinates.h - (border * 2),
-		radius,
-		theme.panelHeaderColor,
-		TFT_TRANSPARENT);
 }

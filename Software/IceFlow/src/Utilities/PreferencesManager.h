@@ -45,7 +45,10 @@ static String GetSavedProfile()
     String ret = "";
     Preferences preferences;
     preferences.begin(PROFILE_MANAGER_FILENAME, false);
-    ret = preferences.getString(CURRENT_LOADED_PROFILE, "");
+    ret = preferences.getString(CURRENT_LOADED_PROFILE, String(PROFILE_DEFAULT_FILE));
+    if (ret.isEmpty()) {
+        ret = String(PROFILE_DEFAULT_FILE);
+    }
     preferences.end();
     return ret;
 }
@@ -110,4 +113,22 @@ static double GetDefaultPidKD()
     ret = preferences.getDouble(DEFAULT_PID_KD_PREF, PID_DEFAULT_KD);
     preferences.end();
     return ret;
+}
+
+static void SaveDefaultPreHeatTemp(uint16_t temp)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putInt(DEFAULT_PID_KD_PREF, temp);
+    preferences.end();
+}
+
+static uint16_t GetDefaultPreHeatTemp()
+{
+    int ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    ret = preferences.getInt(DEFAULT_PRE_HEAT_PREF, DEFAULT_PRE_HEAT_TEMPERATURE);
+    preferences.end();
+    return (uint16_t)ret;
 }

@@ -21,7 +21,6 @@ private:
 	void LoadProfile();
 
 	void DrawScreen();
-	void DrawProfile();
 
 public:
 	MainScreen(TFT_eSPI* newTFT);

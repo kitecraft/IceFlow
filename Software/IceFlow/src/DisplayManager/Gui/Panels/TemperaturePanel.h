@@ -1,9 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include <TFT_eSPI.h>
-#include "../../../IceFlow_Config.h"
-#include "../../Utilities/StarsideCoordinates.h"
-#include "../../Utilities/StarsideTheme.h"
+#include "PanelBase.h"
 
 #define TEMPERATURE_PANEL_WIDTH (TFT_DISPLAY_WIDTH - 72)
 #define TEMPERATURE_PANEL_HEIGHT 38
@@ -32,15 +29,13 @@
 #define TEMP_VAlUE_HEIGHT (TEMP_PILLBOX_HEIGHT - 10)
 
 
-class TemperaturePanel
+class TemperaturePanel :
+	public PanelBase
 {
 private:
-	TFT_eSPI* TFT;
-	void DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border);
 	void UpdateTemperatureValue(StarsideCoordinates coords, double value, uint16_t color);
 public:
 	~TemperaturePanel() {}
-	void Init(TFT_eSPI* newTFT);
 	void DrawPanel();
 	void UpdatePrimaryTemperature(double value);
 	void UpdateSecondaryTemperature(double value);
