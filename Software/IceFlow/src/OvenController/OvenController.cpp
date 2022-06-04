@@ -173,7 +173,7 @@ void OvenController::StartManualPreHeat(uint16_t targetTemperature)
 
 void OvenController::StartReflowSession(String profileFileName)
 {
-    if (!g_profileManager.GetProfile(profileFileName, _profile)) {
+    if (!g_profileManager.GetProfile(profileFileName, &_profile)) {
         return;
      }
 

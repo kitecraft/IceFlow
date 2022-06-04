@@ -120,6 +120,9 @@
     <ClInclude Include="src\DisplayManager\Gui\Panels\TemperaturePanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\DisplayManager\Gui\Panels\MainScreenHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -165,6 +168,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DisplayManager\Gui\Panels\TemperaturePanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DisplayManager\Gui\Panels\MainScreenHeader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -77,7 +77,7 @@ private:
 public:
 	~MainScreenSideBar() {}
 	void Init(TFT_eSPI* newTFT);
-	void Draw();
+	void DrawPanel();
 	bool IsMenuOpen() { return _popUpMenu.IsMenuOpen(); }
 
 

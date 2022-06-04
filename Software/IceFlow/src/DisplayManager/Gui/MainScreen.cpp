@@ -4,11 +4,13 @@
 
 MainScreen::MainScreen(TFT_eSPI* newTFT) : ScreenBase(newTFT)
 {
+	_msmHeader.Init(newTFT);
 	_sideBar.Init(newTFT);
 	_temperaturePanel.Init(newTFT);
-	_currentProfileFileName = GetSavedProfile();
+
+	LoadProfile();
 	DrawScreen();
-	DrawProfile();
+	//DrawProfile();
 }
 
 MainScreen::~MainScreen()
@@ -61,10 +63,21 @@ void MainScreen::HandleTouch(int x, int y)
 
 }
 
+void MainScreen::LoadProfile()
+{
+	_currentProfileFileName = GetSavedProfile();
+	if (!_currentProfileFileName.isEmpty()) {
+		if (!g_profileManager.GetProfile(_currentProfileFileName, &_currentProfile)) {
+			_currentProfile.name = String(PROFILE_ERROR_NAME_TEXT);
+		}
+	}
+}
+
 void MainScreen::DrawScreen()
 {
 	TFT->fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
-	_sideBar.Draw();
+	_msmHeader.DrawPanel(_currentProfile.name);
+	_sideBar.DrawPanel();
 	_temperaturePanel.DrawPanel();
 }
 
@@ -81,7 +94,7 @@ void MainScreen::DrawProfile()
 	}
 
 	Profile currentProfile;
-	if (!g_profileManager.GetProfile("profile_1.json", currentProfile))
+	if (!g_profileManager.GetProfile("profile_1.json", &currentProfile))
 	{
 		profileText = "Error loading profile";
 	}

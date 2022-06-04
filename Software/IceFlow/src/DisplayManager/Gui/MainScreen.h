@@ -4,6 +4,7 @@
 #include "../../ProfileManager/Profile.h"
 #include "Panels/MainScreenSideBar.h"
 #include "Panels/TemperaturePanel.h"
+#include "Panels/MainScreenHeader.h"
 
 extern ProfileManager g_profileManager;
 
@@ -11,9 +12,13 @@ class MainScreen :
     public ScreenBase
 {
 private:
+	MainScreenHeader _msmHeader;
 	MainScreenSideBar _sideBar;
 	TemperaturePanel _temperaturePanel;
 	String _currentProfileFileName = "";
+	Profile _currentProfile;
+
+	void LoadProfile();
 
 	void DrawScreen();
 	void DrawProfile();

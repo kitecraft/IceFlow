@@ -15,10 +15,6 @@ void TemperaturePanel::DrawPanel()
 
 	sprite.fillSprite(TFT_TRANSPARENT);
 
-
-	//sprite.drawFastHLine(0, 0, TEMPERATURE_PANEL_WIDTH, g_GlobalTheme.panelBorderColor);
-	//sprite.drawFastHLine(0, 1, TEMPERATURE_PANEL_WIDTH, g_GlobalTheme.panelBorderColor);
-
 	StarsideTheme theme = g_GlobalTheme;
 	theme.panelHeaderColor = theme.panelBGColor;
 	DrawRoundedBox(
@@ -82,10 +78,8 @@ void TemperaturePanel::UpdateSecondaryTemperature(double value)
 	UpdateTemperatureValue(coords, value, SECONDARY_TEMP_TEXT_COLOR);
 }
 
-
 void TemperaturePanel::DrawRoundedBox(TFT_eSprite* sprite, StarsideCoordinates coordinates, StarsideTheme theme, int radius, int border)
 {
-
 	sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelBorderColor, TFT_TRANSPARENT);
 	sprite->fillSmoothRoundRect(
 		coordinates.x + border,

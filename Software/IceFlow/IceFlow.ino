@@ -17,7 +17,6 @@
 #include <ESPDateTime.h>
 #include <DateTimeTZ.h>
 
-
 ProfileManager g_profileManager;
 
 OvenController g_ovenController;
@@ -26,7 +25,6 @@ void IRAM_ATTR OvenControllerThread(void*)
 {
     g_ovenController.Run();
 }
-
 
 TaskHandle_t g_webServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;

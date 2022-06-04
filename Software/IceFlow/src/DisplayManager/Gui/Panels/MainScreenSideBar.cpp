@@ -11,7 +11,7 @@ void MainScreenSideBar::Init(TFT_eSPI* newTFT)
 	_popUpMenu.Init(TFT);
 }
 
-void MainScreenSideBar::Draw()
+void MainScreenSideBar::DrawPanel()
 {
 	TFT_eSprite sprite = TFT_eSprite(TFT);
 	sprite.setColorDepth(16);

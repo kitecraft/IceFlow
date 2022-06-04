@@ -4,7 +4,7 @@
 class Profile
 {
 public:
-	String name;
+	String name = "";
 	uint16_t pre_heat_target_temperature = 0;
 	uint16_t pre_heat_ramp_time = 0;
 	uint16_t pre_heat_soak_time = 60;
