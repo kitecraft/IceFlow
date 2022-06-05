@@ -55,3 +55,5 @@ DISPLAY_QUEUE_ITEM DisplayQueue::GetNextItem()
 
 	return ret;
 }
+
+DisplayQueue g_displayQueue;

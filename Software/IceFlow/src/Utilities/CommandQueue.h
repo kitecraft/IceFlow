@@ -23,3 +23,4 @@ public:
 	COMMAND_QUEUE_ITEM GetNextItem();
 };
 
+extern CommandQueue g_commandQueue;

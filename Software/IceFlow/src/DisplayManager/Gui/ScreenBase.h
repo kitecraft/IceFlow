@@ -3,10 +3,10 @@
 #include "SPIFFS.h"
 #include <SPI.h>
 #include <TFT_eSPI.h>
+#include "../Utilities/DisplayQueue.h"
 #include "../../IceFlow_Config.h"
 #include "../Utilities/StarsideCoordinates.h"
 #include "../Utilities/StarsideTheme.h"
-#include "../Utilities/Display_Enums.h"
 #include "../../Utilities/StarsideError.h"
 
 class ScreenBase

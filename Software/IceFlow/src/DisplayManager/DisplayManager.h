@@ -8,7 +8,6 @@
 
 #define CALIBRATION_FILENAME "/_calData_"
 #define TOUCH_DEBOUNCE_TIME 500
-extern DisplayQueue g_displayQueue;
 
 class DisplayManager
 {

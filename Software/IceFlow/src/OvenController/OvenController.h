@@ -4,12 +4,9 @@
 #include "../IceFlow_Config.h"
 #include "OvenEnums.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
-#include "../DisplayManager/Utilities/Display_Enums.h"
 #include "../ProfileManager/ProfileManager.h"
-#include "../ProfileManager/Profile.h"
 
-extern DisplayQueue g_displayQueue;
-extern ProfileManager g_profileManager;
+
 
 class OvenController
 {

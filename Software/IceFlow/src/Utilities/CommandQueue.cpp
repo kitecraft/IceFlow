@@ -32,3 +32,5 @@ COMMAND_QUEUE_ITEM CommandQueue::GetNextItem()
 
 	return ret;
 }
+
+CommandQueue g_commandQueue;

@@ -8,7 +8,6 @@
 #include "../Utilities/IceFS.h"
 
 static WebServer server(80);
-extern CommandQueue g_commandQueue;
 
 void IRAM_ATTR WebSeverThread(void*)
 {

@@ -5,8 +5,6 @@
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Utilities/PreferencesManager.h"
 
-extern DisplayQueue g_displayQueue;
-
 static bool connectToNetwork()
 {
     WiFi.hostname(__DEVICE_NAME__);

@@ -17,3 +17,4 @@ public:
 	void SaveProfileNameToPreferences(String profileFileName);
 };
 
+extern ProfileManager g_profileManager;

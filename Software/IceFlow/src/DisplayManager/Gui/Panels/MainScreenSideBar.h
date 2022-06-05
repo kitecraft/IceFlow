@@ -14,7 +14,6 @@
 #include "../../../Utilities/CommandQueue.h"
 #include "../../../ProfileManager/ProfileManager.h"
 
-extern ProfileManager g_profileManager;
 
 using namespace std;
 #include <vector>
@@ -48,8 +47,6 @@ using namespace std;
 #define PROFILE_SELECTION_ICON_Y	((ICON_AREA_HEIGHT * 2) + VERTICAL_MARGIN + Y_OFFSET)
 #define OPEN_DOOR_VIEW_ICON_Y	((ICON_AREA_HEIGHT * 3) + VERTICAL_MARGIN + Y_OFFSET)
 #define SETTINGS_ICON_Y				((ICON_AREA_HEIGHT * 4) + VERTICAL_MARGIN + Y_OFFSET)
-
-extern CommandQueue g_commandQueue;
 
 //Main Screen Side Bar icon touched 
 enum MSSB_RETURN_VALUES {

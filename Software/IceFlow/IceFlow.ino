@@ -11,13 +11,10 @@
 #include "src/Utilities/CommandQueue.h"
 #include "src/OvenController/OvenController.h"
 #include "src/DisplayManager/DisplayManager.h"
-#include "src/ProfileManager/ProfileManager.h"
 #include "src/Utilities/PreferencesManager.h"
 #include <Bounce2.h>
 #include <ESPDateTime.h>
 #include <DateTimeTZ.h>
-
-ProfileManager g_profileManager;
 
 OvenController g_ovenController;
 TaskHandle_t g_ovenControllerHandle = nullptr;
@@ -29,8 +26,8 @@ void IRAM_ATTR OvenControllerThread(void*)
 TaskHandle_t g_webServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
 
-DisplayQueue g_displayQueue;
-CommandQueue g_commandQueue;
+//DisplayQueue g_displayQueue;
+//CommandQueue g_commandQueue;
 
 DisplayManager g_displayManager;
 TaskHandle_t g_displayManagerHandle = nullptr;

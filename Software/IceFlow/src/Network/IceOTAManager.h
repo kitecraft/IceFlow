@@ -6,9 +6,6 @@
 #include "../Utilities/CommandQueue.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 
-extern DisplayQueue g_displayQueue;
-extern CommandQueue g_commandQueue;
-
 static void IRAM_ATTR OTAThread(void*)
 {
     static int OTA_Completion_Percentage = 0;

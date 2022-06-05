@@ -1,12 +1,10 @@
 #pragma once
 #include "ScreenBase.h"
 #include "../../ProfileManager/ProfileManager.h"
-#include "../../ProfileManager/Profile.h"
 #include "Panels/MainScreenSideBar.h"
 #include "Panels/TemperaturePanel.h"
 #include "Panels/MainScreenHeader.h"
 
-extern ProfileManager g_profileManager;
 
 class MainScreen :
     public ScreenBase

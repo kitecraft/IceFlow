@@ -27,3 +27,5 @@ public:
 	void ClearQueue();
 	DISPLAY_QUEUE_ITEM GetNextItem();
 };
+
+extern DisplayQueue g_displayQueue;

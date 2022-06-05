@@ -57,3 +57,5 @@ void ProfileManager::SaveProfileNameToPreferences(String profileFileName)
 {
 	SaveProfileName(profileFileName);
 }
+
+ProfileManager g_profileManager;
