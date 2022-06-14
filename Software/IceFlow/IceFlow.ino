@@ -57,9 +57,16 @@ void setup() {
 
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
-    Serial.println((String)"getPsramSize : " + ESP.getPsramSize());
-    Serial.println((String)"Memory available in PSRAM : " + ESP.getFreePsram());
-    Serial.println((String)"getMaxAllocPsram : " + ESP.getMaxAllocPsram());
+    if (psramFound())
+    {
+        Serial.println("Found PSRAM");
+        Serial.println((String)"getPsramSize : " + ESP.getPsramSize());
+        Serial.println((String)"Memory available in PSRAM : " + ESP.getFreePsram());
+        Serial.println((String)"getMaxAllocPsram : " + ESP.getMaxAllocPsram());
+    }
+    else {
+        Serial.println("No PSRAM found");
+    }
     
     /*
     Serial.println((String)"getHeapSize : " + ESP.getHeapSize());
