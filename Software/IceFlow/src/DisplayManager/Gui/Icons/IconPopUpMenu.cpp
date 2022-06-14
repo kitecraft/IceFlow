@@ -113,7 +113,6 @@ void IconPopUpMenu::Open(String selected)
 	}
 
 	sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 	sprite->createSprite(coordinates.w, coordinates.h);
 	sprite->loadFont(MENU_FONT);
 	sprite->setTextDatum(TL_DATUM);

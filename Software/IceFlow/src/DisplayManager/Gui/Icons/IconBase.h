@@ -20,9 +20,9 @@ public:
 	void Init(TFT_eSPI* inTFT, StarsideCoordinates inCoordinates);
 	bool Touched(int x, int y);
 	void DrawBase(TFT_eSprite* sprite) {
-		sprite->fillSmoothRoundRect(ICON_BASE_SPRITE_X_OFFSET, coordinates.y, coordinates.w, coordinates.h, ICON_BASE_ICON_RADIUS, ICON_BASE_BACKGROUND_COLOR);
+		sprite->fillSmoothRoundRect(coordinates.x + ICON_BASE_SPRITE_X_OFFSET, coordinates.y, coordinates.w, coordinates.h, ICON_BASE_ICON_RADIUS, ICON_BASE_BACKGROUND_COLOR);
 		sprite->fillSmoothRoundRect(
-			ICON_BASE_SPRITE_X_OFFSET + ICON_BASE_BORDER_WIDTH,
+			coordinates.x + ICON_BASE_SPRITE_X_OFFSET + ICON_BASE_BORDER_WIDTH,
 			coordinates.y + ICON_BASE_BORDER_WIDTH,
 			coordinates.w - (ICON_BASE_BORDER_WIDTH * 2),
 			coordinates.h - (ICON_BASE_BORDER_WIDTH * 2),

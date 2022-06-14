@@ -84,8 +84,20 @@ void MainScreen::LoadProfile()
 
 void MainScreen::DrawScreen()
 {
-	TFT->fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
-	_msmHeader.DrawPanel(_currentProfile.name);
-	_sideBar.DrawPanel();
-	_temperaturePanel.DrawPanel();
+	Serial.println("MainScreen::DrawScreen begin");
+	Serial.println(String("1: free: ") + String(ESP.getFreePsram()));
+	TFT_eSprite sprite = TFT_eSprite(TFT);
+	sprite.createSprite(TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT);
+
+	Serial.println(String("2: free: ") + String(ESP.getFreePsram()));
+	sprite.fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
+
+	_msmHeader.DrawPanel(&sprite, _currentProfile.name);
+	_sideBar.DrawPanel(&sprite);
+	_temperaturePanel.DrawPanel(&sprite);
+	sprite.pushSprite(0, 0);
+	sprite.deleteSprite();
+	Serial.println(String("3: free: ") + String(ESP.getFreePsram()));
+
+
 }

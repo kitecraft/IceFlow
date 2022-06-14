@@ -115,7 +115,6 @@ void SplashScreen::DrawPanel(int yOffset, String text)
 void SplashScreen::UpdatePanel(int yOffset, String text, uint16_t circleColor)
 {
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 	sprite->createSprite(SS_PANEL_TEXT_WIDTH, SS_PANEL_TEXT_HEIGHT);
 
 	sprite->setTextDatum(TL_DATUM);

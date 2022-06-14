@@ -30,6 +30,6 @@ private:
 	String _profileName;
 public:
 	~MainScreenHeader() {}
-	void DrawPanel(String newProfileName);
+	void DrawPanel(TFT_eSprite *parentSprite, String newProfileName);
 };
 

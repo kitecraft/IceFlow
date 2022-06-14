@@ -11,34 +11,21 @@ void MainScreenSideBar::Init(TFT_eSPI* newTFT)
 	_popUpMenu.Init(TFT);
 }
 
-void MainScreenSideBar::DrawPanel()
+void MainScreenSideBar::DrawPanel(TFT_eSprite* parentSprite)
 {
-	TFT_eSprite sprite = TFT_eSprite(TFT);
-	sprite.setColorDepth(16);
-	sprite.createSprite(SIDEBAR_WIDTH, SIDEBAR_HEIGHT);
-	sprite.fillSprite(TFT_TRANSPARENT);
+	parentSprite->fillSmoothRoundRect(SIDEBAR_X, SIDEBAR_Y, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 8, g_GlobalTheme.panelHeaderColor);
 
-	DrawSidebarBox(&sprite);
+	parentSprite->fillSmoothRoundRect(SIDEBAR_X, SIDEBAR_Y, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 8, g_GlobalTheme.panelDropShadowColor);
+	parentSprite->fillSmoothRoundRect(SIDEBAR_X + 2, SIDEBAR_Y + 2, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 4, 8, g_GlobalTheme.panelDropShadowColor);
 
-	sprite.pushSprite(SIDEBAR_X, SIDEBAR_Y, TFT_TRANSPARENT);
-	sprite.deleteSprite();
-}
+	parentSprite->fillSmoothRoundRect(SIDEBAR_X, SIDEBAR_Y, SIDEBAR_WIDTH - 1, SIDEBAR_HEIGHT - 1, 8, g_GlobalTheme.panelBorderColor);
+	parentSprite->fillSmoothRoundRect(SIDEBAR_X + 1, SIDEBAR_Y + 1, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 3, 8, g_GlobalTheme.panelBorderColor);
 
-void MainScreenSideBar::DrawSidebarBox(TFT_eSprite* sprite)
-{
-	sprite->fillSmoothRoundRect(0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 8, g_GlobalTheme.panelHeaderColor);
-
-	sprite->fillSmoothRoundRect(0, 0, SIDEBAR_WIDTH, SIDEBAR_HEIGHT, 8, g_GlobalTheme.panelDropShadowColor);
-	sprite->fillSmoothRoundRect(2, 2, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 4, 8, g_GlobalTheme.panelDropShadowColor);
-
-	sprite->fillSmoothRoundRect(0, 0, SIDEBAR_WIDTH - 1, SIDEBAR_HEIGHT - 1, 8, g_GlobalTheme.panelBorderColor);
-	sprite->fillSmoothRoundRect(1, 1, SIDEBAR_WIDTH - 3, SIDEBAR_HEIGHT - 3, 8, g_GlobalTheme.panelBorderColor);
-
-	_startIcon.Draw(sprite, _startIconStatus);
-	_preHeatIcon.Draw(sprite);
-	_profilesIcon.Draw(sprite);
-	_openDoorIcon.Draw(sprite);
-	_settingsIcon.Draw(sprite);
+	_startIcon.Draw(parentSprite, _startIconStatus);
+	_preHeatIcon.Draw(parentSprite);
+	_profilesIcon.Draw(parentSprite);
+	_openDoorIcon.Draw(parentSprite);
+	_settingsIcon.Draw(parentSprite);
 }
 
 //Returns true if touched.

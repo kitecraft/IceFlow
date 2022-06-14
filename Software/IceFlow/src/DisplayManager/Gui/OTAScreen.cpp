@@ -84,7 +84,6 @@ void OTAScreen::HandleTouch(int x, int y)
 void OTAScreen::Draw_Waiting_Animation()
 {
     TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 
 	sprite->createSprite(OTA_PANEL_WIDTH - 25, 30);
 	sprite->fillSprite(g_GlobalTheme.panelBGColor);
@@ -107,7 +106,6 @@ void OTAScreen::Draw_OTA_Information_Panel()
 	StarsideCoordinates localCoords(0, 0, OTA_PANEL_WIDTH, OTA_PANEL_HEIGHT);
 
 	TFT_eSprite* otaBoxSprite = new TFT_eSprite(TFT);
-	otaBoxSprite->setColorDepth(16);
 	otaBoxSprite->createSprite(OTA_PANEL_WIDTH, OTA_PANEL_HEIGHT);
 
 	DrawBoxWithBorderAndDropShadow(otaBoxSprite, localCoords, g_GlobalTheme);
@@ -154,7 +152,6 @@ void OTAScreen::Draw_OTA_Information_Panel()
 void OTAScreen::RedrawNetworkName()
 {
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 	sprite->loadFont(AA_FONT_14PT);
 	sprite->setTextDatum(TL_DATUM);
 	sprite->setTextColor(g_GlobalTheme.textColor, g_GlobalTheme.panelBGColor);
@@ -175,7 +172,6 @@ void OTAScreen::RedrawNetworkName()
 void OTAScreen::RedrawIPAddress(String ipAddr)
 {
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 	sprite->loadFont(AA_FONT_14PT);
 	sprite->setTextDatum(TL_DATUM);
 	sprite->setTextColor(g_GlobalTheme.textColor, g_GlobalTheme.panelBGColor);
@@ -200,7 +196,6 @@ void OTAScreen::Starting_OTA_Update()
 	//exitButton.Erase();
 
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
     sprite->loadFont(AA_FONT_14PT);
 	sprite->setTextDatum(TC_DATUM);
 	sprite->setTextColor(g_GlobalTheme.textColor, g_GlobalTheme.panelBGColor);
@@ -229,7 +224,6 @@ void OTAScreen::Update_In_Progress(int percentage)
 	int doneWidth = (gaugeWidth / (float)100) * percentage;
 
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
 
 	sprite->createSprite(gaugeWidth, 30);
 	sprite->fillSprite(0xEDE2);
@@ -244,7 +238,6 @@ void OTAScreen::Update_In_Progress(int percentage)
 void OTAScreen::Ending_OTA_Update()
 {
 	TFT_eSprite* sprite = new TFT_eSprite(TFT);
-	sprite->setColorDepth(16);
     sprite->loadFont(AA_FONT_14PT);
 	sprite->setTextDatum(TL_DATUM);
 	sprite->setTextColor(g_GlobalTheme.textColor, g_GlobalTheme.panelBGColor);

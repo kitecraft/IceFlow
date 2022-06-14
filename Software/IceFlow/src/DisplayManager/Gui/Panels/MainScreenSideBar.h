@@ -71,11 +71,10 @@ private:
 	
 	IconPopUpMenu _popUpMenu;
 
-	void DrawSidebarBox(TFT_eSprite* sprite);
 public:
 	~MainScreenSideBar() {}
 	void Init(TFT_eSPI* newTFT);
-	void DrawPanel();
+	void DrawPanel(TFT_eSprite* parentSprite);
 	void SetStartIconStatus(bool status) { _startIconStatus = status; }
 	bool IsMenuOpen() { return _popUpMenu.IsMenuOpen(); }
 

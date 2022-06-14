@@ -37,6 +37,11 @@ void PreHeatScreen::HandleTouch(int x, int y)
 
 void PreHeatScreen::DrawScreen()
 {
-	TFT->fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
-	_temperaturePanel.DrawPanel();
+	TFT_eSprite sprite = TFT_eSprite(TFT);
+	sprite.createSprite(TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT);
+	sprite.fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
+
+	_temperaturePanel.DrawPanel(&sprite);
+	sprite.pushSprite(0, 0, TFT_TRANSPARENT);
+	sprite.deleteSprite();
 }
