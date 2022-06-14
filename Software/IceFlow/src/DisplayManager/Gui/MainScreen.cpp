@@ -65,7 +65,8 @@ void MainScreen::HandleTouch(int x, int y)
 
 void MainScreen::LoadProfile()
 {
-	_currentProfileFileName = GetSavedProfile();
+	SaveProfileName(String(PROFILE_DEFAULT_FILE));
+	_currentProfileFileName = String(PROFILE_SPIFFS_FILE_DIRECTORY) + GetSavedProfile();
 
 	if (!_currentProfileFileName.isEmpty()) {
 		if (!g_profileManager.GetProfile(_currentProfileFileName, &_currentProfile)) {

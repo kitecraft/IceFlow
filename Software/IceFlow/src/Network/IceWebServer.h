@@ -34,7 +34,6 @@ void IRAM_ATTR WebSeverThread(void*)
         webPage.replace("%{__DEVICE_NAME__}%", __DEVICE_NAME__);
         webPage.replace("%{ERRORTEXT}%", "");
         webPage.replace("%{NETWORKNAME}%", GetSsid());
-        server.send(200, "text/html", webPage);
         });
 
     server.on("/setupNet", []() {

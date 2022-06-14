@@ -10,8 +10,9 @@ static String IceFS_ReadFile(String filename)
 {
 	SPIFFS.begin(false);
 	String ret = "";
-    filename = String(PROFILE_SPIFFS_FILE_DIRECTORY) + "/" + filename;
-
+    
+    //Serial.print("Opening: ");
+    //Serial.println(filename);
 	File file = SPIFFS.open(filename);
 	if (!file) {
 		Serial.print("Failed to open file: ");
@@ -23,6 +24,8 @@ static String IceFS_ReadFile(String filename)
 		ret += file.readString();
 	}
 	file.close();
+    //Serial.print("Returning: ");
+    //Serial.println(ret);
 	return ret;
 }
 
