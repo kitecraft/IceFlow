@@ -3,7 +3,12 @@
  Created:	5/26/2022 10:26:28 PM
  Author:	Kitecraft
 */
-#include <Adafruit_MAX31855.h>
+
+/*include both of these*/
+#include <esp32/spiram.h>
+#include <esp32-hal-psram.h>
+/**/
+
 #include "src/IceFlow_Config.h"
 #include "src/Network/IceNetwork.h"
 #include "src/Network/IceOTAManager.h"
@@ -45,13 +50,43 @@ Bounce2::Button g_stopOvenBtn;
 
 bool setupComplete = true;
 void setup() {
+    /*
+        This seems to fix a crash in TFT_eSPI sprite ps_calloc()
+        Basically, allocate ALL of the avaialable PSRAM then free it.
+        Any PSRAM not allocated here will cause a crash in TFT_eSPI
+        if it tries to ps_calloc() it.
+    */
+    esp_spiram_init();
+    vTaskDelay(1);
+    psramInit();
+    vTaskDelay(1);
+    /*
+    uint8_t* ptr8 = (uint8_t*)ps_calloc(ESP.getMaxAllocPsram(), sizeof(uint8_t));
+    uint8_t* ptr8b = (uint8_t*)ps_calloc(ESP.getMaxAllocPsram(), sizeof(uint8_t));
+    free(ptr8);
+    free(ptr8b);
+    ptr8 = (uint8_t*)ps_malloc(ESP.getMaxAllocPsram());
+    ptr8b = (uint8_t*)ps_malloc(ESP.getMaxAllocPsram());
+    free(ptr8);
+    free(ptr8b);
+    */
+
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
+    Serial.println((String)"getPsramSize : " + ESP.getPsramSize());
+    Serial.println((String)"Memory available in PSRAM : " + ESP.getFreePsram());
+    Serial.println((String)"getMaxAllocPsram : " + ESP.getMaxAllocPsram());
     
+    /*
+    Serial.println((String)"getHeapSize : " + ESP.getHeapSize());
+    Serial.println((String)"getFreeHeap : " + ESP.getFreeHeap());
+    Serial.println((String)"getMinFreeHeap : " + ESP.getMinFreeHeap());
+    Serial.println((String)"getMaxAllocHeap : " + ESP.getMaxAllocHeap());
+    */
+
     g_stopOvenBtn.attach(EMERGENCY_STOP_BTN_PIN, INPUT_PULLUP);
     g_stopOvenBtn.interval(BUTTON_DEBOUNCE_TIME);
     g_stopOvenBtn.setPressedState(LOW);
-
     g_ovenController.Init();
     xTaskCreatePinnedToCore(
         OvenControllerThread,

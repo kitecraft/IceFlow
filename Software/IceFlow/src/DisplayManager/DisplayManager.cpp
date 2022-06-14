@@ -15,7 +15,7 @@ DisplayManager::~DisplayManager()
 void DisplayManager::Init()
 {
 	tftDisplay.init();
-	tftDisplay.setRotation(3);
+	tftDisplay.setRotation(DISPLAY_MANAGER_ORIENTATION);
 	tftDisplay.fillScreen(TFT_BLACK);
 
 

@@ -3,6 +3,8 @@
 #define __DEVICE_NAME__ "IceFlow"
 #define __DEVICE_VERSION__ "0.1"
 
+#define DISPLAY_MANAGER_ORIENTATION 1
+
 // Task priorites and core assignments
 #define STACK_SIZE (ESP_TASK_MAIN_STACK) // Stack size for each new thread
 
@@ -34,10 +36,10 @@
 #define PROBE_CLK 27
 #define PROBE_MISO 14
 
-#define SSR_OVEN_HEATERS 26
-#define RELAY_CONVECTION_FAN 25
+#define RELAY_CONVECTION_FAN 16
+#define SSR_OVEN_HEATERS 17
 
-#define EMERGENCY_STOP_BTN_PIN 27
+#define EMERGENCY_STOP_BTN_PIN 18
 #define BUTTON_DEBOUNCE_TIME 25
 
 //Hardware definintions
