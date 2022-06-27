@@ -4,6 +4,7 @@
 #include "../../../IceFlow_Config.h"
 #include "../../Utilities/StarsideCoordinates.h"
 #include "../../Utilities/StarsideTheme.h"
+#include "PanelLayout.h"
 
 class PanelBase
 {

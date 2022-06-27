@@ -1,11 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include "PanelBase.h"
+#include "PanelLayout.h"
 
-#define MSH_PANEL_WIDTH (TFT_DISPLAY_WIDTH - 72)
-#define MSH_PANEL_HEIGHT 40
-#define MSH_PANEL_X 1
-#define MSH_PANEL_Y 0
 #define MSH_PANEL_RADIUS 10
 #define MSH_PANEL_BORDER 2
 

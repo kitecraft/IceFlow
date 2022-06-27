@@ -213,9 +213,10 @@ void StartNetworkStuff()
     if (!connectToNetwork())
     {
         startLocalNetwork();
-        Serial.println("NOT starting OTA handler");
+        //Serial.println("NOT starting OTA handler");
     }
     else {
+        /*
         Serial.println("Starting OTA Handler");
         xTaskCreatePinnedToCore(
             OTAThread,
@@ -225,7 +226,7 @@ void StartNetworkStuff()
             OTA_PRIORITY,
             &g_OTAHandle,
             OTA_CORE);
-
+        */
         SetupDateTime();
     }
 

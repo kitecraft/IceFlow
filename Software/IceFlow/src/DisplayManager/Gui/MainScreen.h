@@ -4,6 +4,7 @@
 #include "Panels/MainScreenSideBar.h"
 #include "Panels/TemperaturePanel.h"
 #include "Panels/MainScreenHeader.h"
+#include "Panels/CenterPanel_Normal.h"
 
 
 class MainScreen :
@@ -13,6 +14,7 @@ private:
 	MainScreenHeader _msmHeader;
 	MainScreenSideBar _sideBar;
 	TemperaturePanel _temperaturePanel;
+	CenterPanel_Normal _cpNormal;
 	String _currentProfileFileName = "";
 	Profile _currentProfile;
 

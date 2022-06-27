@@ -129,6 +129,12 @@
     <ClInclude Include="src\DisplayManager\Gui\Panels\PanelBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\DisplayManager\Gui\Panels\CenterPanel_Normal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DisplayManager\Gui\Panels\PanelLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -183,6 +189,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DisplayManager\Gui\Panels\PanelBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DisplayManager\Gui\Panels\CenterPanel_Normal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

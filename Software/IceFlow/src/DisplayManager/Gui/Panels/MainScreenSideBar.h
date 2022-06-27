@@ -13,6 +13,7 @@
 #include "../../Utilities/StarsideTheme.h"
 #include "../../../Utilities/CommandQueue.h"
 #include "../../../ProfileManager/ProfileManager.h"
+#include "PanelLayout.h"
 
 
 using namespace std;
@@ -23,11 +24,6 @@ using namespace std;
 
 #define Y_OFFSET 1
 
-#define SIDEBAR_WIDTH 69
-#define SIDEBAR_X (TFT_DISPLAY_WIDTH - SIDEBAR_WIDTH)
-
-#define SIDEBAR_Y 0
-#define SIDEBAR_HEIGHT TFT_DISPLAY_HEIGHT
 
 #define LEFT_MARGIN 2
 #define RIGHT_MARGIN 3

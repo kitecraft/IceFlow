@@ -15,6 +15,20 @@ public:
 	uint16_t reflow_soak_time = 0;
 	uint16_t cooling_ramp_down_speed = 0;
 
+	Profile() {};
+	Profile(const Profile &origProfile) {
+		name = origProfile.name;
+		pre_heat_target_temperature = origProfile.pre_heat_target_temperature;
+		pre_heat_ramp_time = origProfile.pre_heat_ramp_time;
+		pre_heat_soak_time = origProfile.pre_heat_soak_time;
+		pre_heat_soak_end_temperature = origProfile.pre_heat_soak_end_temperature;
+		reflow_target_temperature = origProfile.reflow_target_temperature;
+		reflow_ramp_time = origProfile.reflow_ramp_time;
+		reflow_max_temperature = origProfile.reflow_max_temperature;
+		reflow_soak_time = origProfile.reflow_soak_time;
+		cooling_ramp_down_speed = origProfile.cooling_ramp_down_speed;
+	}
+
 	String toJsonString()
 	{
 		String ret = "{\"name\":\"" + name + "\",";

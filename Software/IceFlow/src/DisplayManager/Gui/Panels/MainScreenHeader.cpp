@@ -8,8 +8,6 @@ void MainScreenHeader::DrawPanel(TFT_eSprite *parentSprite, String profileName)
 	parentSprite->loadFont(AA_FONT_20PT);
 	parentSprite->setTextDatum(MC_DATUM);
 
-	parentSprite->fillSprite(TFT_TRANSPARENT);
-
 	StarsideTheme theme = g_GlobalTheme;
 	theme.panelHeaderColor = theme.panelBGColor;
 	DrawRoundedBox(
