@@ -19,7 +19,7 @@
 using namespace std;
 #include <vector>
 
-#define NUMBER_OF_ICONS 6
+#define NUMBER_OF_ICONS 5
 //#define SIDEBAR_BACKGROUND_COLOR 0x9578
 
 #define Y_OFFSET 1
@@ -35,14 +35,14 @@ using namespace std;
 #define ICON_HEIGHT (ICON_AREA_HEIGHT - (VERTICAL_MARGIN * 2))
 #define ICON_RADIUS 8
 
-#define ICON_X (SIDEBAR_X + LEFT_MARGIN)
+#define ICON_X LEFT_MARGIN
 
 
 #define START_ICON_Y				(VERTICAL_MARGIN + Y_OFFSET)
 #define PRE_HEAT_ICON_Y				((ICON_AREA_HEIGHT * 1) + VERTICAL_MARGIN + Y_OFFSET)
 #define PROFILE_SELECTION_ICON_Y	((ICON_AREA_HEIGHT * 2) + VERTICAL_MARGIN + Y_OFFSET)
-#define OPEN_DOOR_VIEW_ICON_Y	((ICON_AREA_HEIGHT * 3) + VERTICAL_MARGIN + Y_OFFSET)
 #define SETTINGS_ICON_Y				((ICON_AREA_HEIGHT * 4) + VERTICAL_MARGIN + Y_OFFSET)
+//#define OPEN_DOOR_VIEW_ICON_Y	((ICON_AREA_HEIGHT * 4) + VERTICAL_MARGIN + Y_OFFSET)
 
 //Main Screen Side Bar icon touched 
 enum MSSB_RETURN_VALUES {
@@ -70,7 +70,7 @@ private:
 public:
 	~MainScreenSideBar() {}
 	void Init(TFT_eSPI* newTFT);
-	void DrawPanel(TFT_eSprite* parentSprite);
+	void DrawPanel();
 	void SetStartIconStatus(bool status) { _startIconStatus = status; }
 	bool IsMenuOpen() { return _popUpMenu.IsMenuOpen(); }
 

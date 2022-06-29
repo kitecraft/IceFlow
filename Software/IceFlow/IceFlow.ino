@@ -50,10 +50,12 @@ Bounce2::Button g_stopOvenBtn;
 
 bool setupComplete = true;
 void setup() {
+    /*
     esp_spiram_init();
     vTaskDelay(1);
     psramInit();
     vTaskDelay(1);
+    */
 
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
@@ -67,7 +69,7 @@ void setup() {
     else {
         Serial.println("No PSRAM found");
     }
-    
+        
     /*
     Serial.println((String)"getHeapSize : " + ESP.getHeapSize());
     Serial.println((String)"getFreeHeap : " + ESP.getFreeHeap());

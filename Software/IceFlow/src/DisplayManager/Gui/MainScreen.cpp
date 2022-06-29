@@ -87,14 +87,18 @@ void MainScreen::LoadProfile()
 void MainScreen::DrawScreen()
 {
 	TFT_eSprite sprite = TFT_eSprite(TFT);
-	sprite.createSprite(TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT);
-	sprite.fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
+	//sprite.createSprite(TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT);
+	TFT->fillRectHGradient(0, 0, TFT_DISPLAY_WIDTH, TFT_DISPLAY_HEIGHT, TFT_WHITE, TFT_BLACK);
 
-	_msmHeader.DrawPanel(&sprite, _currentProfile.name);
-	_sideBar.DrawPanel(&sprite);
-	_temperaturePanel.DrawPanel(&sprite);
-	sprite.pushSprite(0, 0);
-	sprite.deleteSprite();
+	TFT->startWrite();
+	//_msmHeader.DrawPanel(_currentProfile.name);
+	_sideBar.DrawPanel();
+	//_temperaturePanel.DrawPanel(&sprite);
+	//sprite.pushSprite(0, 0);
+	//sprite.deleteSprite();
 
-	_cpNormal.Draw();
+	//_cpNormal.Draw();
+
+	TFT->dmaWait();
+	TFT->endWrite();
 }

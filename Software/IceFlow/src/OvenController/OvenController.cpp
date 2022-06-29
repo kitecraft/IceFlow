@@ -228,8 +228,8 @@ void OvenController::Run()
         CheckConvectionFanStatus();
         
         if (_nextTemperatureDisplayUpdate < millis()) {
-            g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_PRIMARY_TEMPERATURE, String(_temperaturePrimary));
-            g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_SECONDARY_TEMPERATURE, String(_temperatureSecondary));
+            //g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_PRIMARY_TEMPERATURE, String(_temperaturePrimary));
+            //g_displayQueue.AddItemToQueue(DISPLAY_COMMAND_UPDATE_VALUE, DISPLAY_UPDATE_KEY_SECONDARY_TEMPERATURE, String(_temperatureSecondary));
             _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
         }
         

@@ -15,6 +15,7 @@ DisplayManager::~DisplayManager()
 void DisplayManager::Init()
 {
 	tftDisplay.init();
+	tftDisplay.initDMA();
 	tftDisplay.setRotation(DISPLAY_MANAGER_ORIENTATION);
 	tftDisplay.fillScreen(TFT_BLACK);
 
@@ -49,7 +50,11 @@ void DisplayManager::HandleTouch()
 {
 	uint16_t x, y;
 	if (tftDisplay.getTouch(&x, &y))	{
-		if (nextTouch < millis() && HandleTouchPoint != NULL)		{
+		if (nextTouch < millis() && HandleTouchPoint != NULL){
+			Serial.print("Handleing touch: ");
+			Serial.print(x);
+			Serial.print("  |  ");
+			Serial.println(y);
 			HandleTouchPoint(x, y);
 			nextTouch = millis() + TOUCH_DEBOUNCE_TIME;
 		}

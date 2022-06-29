@@ -27,6 +27,6 @@ private:
 	String _profileName;
 public:
 	~MainScreenHeader() {}
-	void DrawPanel(TFT_eSprite *parentSprite, String newProfileName);
+	void DrawPanel(String newProfileName);
 };
 
