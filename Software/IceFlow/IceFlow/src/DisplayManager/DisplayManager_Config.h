@@ -1,7 +1,7 @@
 #pragma once
 
 //comment out the following if not using touch
-//#define DM_TOUCH_ENABLED
+#define DM_TOUCH_ENABLED
 
 //The full path for the touch screen calibration data
 #define CALIBRATION_FILENAME "/_calData_"

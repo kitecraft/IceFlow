@@ -1,3 +1,5 @@
 /.vs
 /Software/IceFlow/.vs
 /Software/IceFlow/IceFlow/__vm
+/Software/IceFlow/IceFlow/Debug
+/Software/IceFlow/IceFlow/Release

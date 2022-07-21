@@ -8,11 +8,11 @@
 #define DM_THEME_BOX_DROP_SHADOW		0x63F2		//0x4208
 
 //Small font
-#include "DMFonts/segoeui5pt7b.h"
+#include "../DMFonts/segoeui5pt7b.h"
 //Medium font
-#include "DMFonts/segoeui7pt7b.h"
+#include "../DMFonts/segoeui7pt7b.h"
 //Large Font
-#include "DMFonts/segoeui9pt7b.h"
+#include "../DMFonts/segoeui9pt7b.h"
 
 #define SMALL_FONT &segoeui5pt7b
 #define MEDIUM_FONT &segoeui7pt7b

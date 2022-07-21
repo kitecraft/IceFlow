@@ -4,7 +4,7 @@
 #include <ESPmDNS.h>
 #include "../Utilities/PreferencesManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
-#include "../Screens/ScreenUpdateKeys.h"
+#include "../Screens/Utilities/ScreenUpdateKeys.h"
 
 
 // NETWORK
@@ -25,7 +25,7 @@ static bool connectToNetwork()
     {
         return false;
     }
-    DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
+    //DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
     Serial.print("Connecting Network: ");
 
     int tryCount = 1;
@@ -38,11 +38,11 @@ static bool connectToNetwork()
             if (WiFi.status() == WL_CONNECTED) {
                 Serial.print("Connected to network: " + GetSsid() + " - ");
                 Serial.println(WiFi.localIP());
-                DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
-
                 if (MDNS.begin(__DEVICE_NAME__)) {
                     Serial.println("MDNS responder started");
                 }
+                //DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
+                DisplayQueue.QueueKey(suk_Network_Connected);
                 return true;
             }
             delay(500);
@@ -64,6 +64,7 @@ static void startLocalNetwork()
     if (MDNS.begin(__DEVICE_NAME__)) {
         Serial.println("MDNS responder started");
     }
-    DisplayQueue.QueueKeyAndValue(suk_Network_Name, __DEVICE_NAME__);
-    DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.softAPIP().toString().c_str());
+    //DisplayQueue.QueueKeyAndValue(suk_Network_Name, __DEVICE_NAME__);
+    //DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.softAPIP().toString().c_str());
+    DisplayQueue.QueueKey(suk_Network_Started);
 }

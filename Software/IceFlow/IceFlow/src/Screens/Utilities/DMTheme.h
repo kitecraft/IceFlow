@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include "../Screens_Config.h"
+#include "Screens_Config.h"
 
 enum THEME_SHADE {
 	LIGHT_THEME = 0,

@@ -5,6 +5,8 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Device_Name,
 	suk_Network_Name,
 	suk_Local_IP_Address,
+	suk_Network_Connected,
+	suk_Network_Started,
 	suk_OTA_Progress,
 	suk_OTA_Complete,
 };

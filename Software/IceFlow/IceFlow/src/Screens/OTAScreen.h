@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <TFT_eSPI.h>
-#include "Screens_Config.h"
+#include "Utilities/Screens_Config.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "Utilities/DMCoordinates.h"
 #include "Widgets/Box.h"

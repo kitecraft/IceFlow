@@ -44,8 +44,8 @@ static void Update_OTAScreen_OnInterval()
 {
 	otaScreen->UpdateScreenOnInterval();
 }
-*
-static void Handle_OTAScreen_Touch(int x, int y)
+
+static void HandleTounch_TemplateScreen(int x, int y)
 {
 	otaScreen->HandleTouch(x, y);
 }
