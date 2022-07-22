@@ -2,17 +2,13 @@
 #include <Arduino.h>
 #include "SPIFFS.h"
 #include <WebServer.h>
-//#include <ESPmDNS.h>
 #include "../Utilities/IceFS.h"
+#include "../DisplayManager/DisplayManager.h"
 
 static WebServer server(80);
 
 void IRAM_ATTR WebSeverThread(void*)
 {
-    //if (MDNS.begin(__DEVICE_NAME__)) {
-    //    Serial.println("MDNS responder started");
-    //}
-
     server.on("/", []() {
         String webPage = IceFS_ReadFile(WEBPAGE_NETWORK);
         webPage.replace("%{__DEVICE_NAME__}%", __DEVICE_NAME__);
@@ -51,12 +47,9 @@ void IRAM_ATTR WebSeverThread(void*)
         });
 
     server.on("/DeleteCalibration", []() {
-        //g_commandQueue.AddItemToQueue(STARSIDE_CMD_DELETE_TOUCH_CALIBRATION);
-        String webPage = IceFS_ReadFile(WEBPAGE_NETWORK);
-        webPage.replace("%{__DEVICE_NAME__}%", __DEVICE_NAME__);
-        webPage.replace("%{ERRORTEXT}%", "");
-        webPage.replace("%{NETWORKNAME}%", GetSsid());
-        server.send(200, "text/html", webPage);
+        server.sendHeader("Location", "/");
+        server.send(303);
+        Display.DeleteTouchCalibrationFile();
         });
 
     server.begin();

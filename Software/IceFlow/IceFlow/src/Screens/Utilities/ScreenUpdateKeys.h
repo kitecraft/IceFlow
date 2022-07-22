@@ -9,4 +9,5 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Network_Started,
 	suk_OTA_Progress,
 	suk_OTA_Complete,
+	suk_DateTime
 };

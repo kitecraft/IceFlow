@@ -156,11 +156,12 @@ void DisplayManager::HandleDisplayQueue()
 	DisplayQueueItem queueItem;
 	DISPLAY_COMMANDS command;
 	while (DisplayQueue.GetNextItem(command, queueItem)) {
+		/*
 		Serial.print("Got queue item: ");
 		Serial.print(command);
 		Serial.print(" | ");
 		Serial.println(queueItem.displayUpdateKey);
-
+		*/
 		switch (command) {
 		case DISPLAY_COMMAND_CHANGE_SCREEN:
 			LoadNewScreen(queueItem.displayUpdateKey);

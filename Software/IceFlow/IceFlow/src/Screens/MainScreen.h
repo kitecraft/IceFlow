@@ -1,15 +1,31 @@
 #pragma once
 #include <Arduino.h>
 #include <TFT_eSPI.h>
+#include "Utilities/Screens_Config.h"
+#include "Panels/SideBar.h"
 
-#define WIFI_Y 0
+#define WIFI_Y 6
+#define WIFI_SPOT_R 4
+#define TIME_Y 0
+#define TIME_W 38
+#define TIME_H 10
+
+
+#define SIDEBAR_Y (TIME_H + 4)
 
 class MainScreen
 {
 private:
 	TFT_eSPI* _tft;
 	int _wifiX;
+	int _timeX;
+
+	SideBar* _sideBar = nullptr;
+	int _sidebarX;
+
 	void DrawScreen();
+	void DisplayTime();
+	void IRAM_ATTR OnTimer();
 public:
 	MainScreen(TFT_eSPI* tft);
 	~MainScreen();

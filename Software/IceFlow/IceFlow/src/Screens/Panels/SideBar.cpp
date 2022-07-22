@@ -1,0 +1,45 @@
+#include "SideBar.h"
+
+
+SideBar::SideBar()
+{
+}
+
+SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
+{
+	_tft = tft;
+	_coordinates = coordinates;
+	_settingsIcon = new SettingsIcon(
+		IconBaseDto(
+			DMCoordinates(ICON_X, SETTINGS_ICON_Y, ICON_WIDTH, ICON_HEIGHT, _coordinates.p_x + ICON_X, _coordinates.p_y + SETTINGS_ICON_Y),
+			GlobalTheme), 
+		_tft);
+}
+
+SideBar::~SideBar()
+{
+	delete(_settingsIcon);
+}
+
+void SideBar::Draw()
+{
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(_coordinates.w, _coordinates.h);
+
+	sprite.fillSprite(TFT_BLACK);
+	_settingsIcon->Draw(&sprite);
+
+	_tft->pushImageDMA(_coordinates.x, _coordinates.y, _coordinates.w, _coordinates.h, sprPtr);
+	_tft->dmaWait();
+	sprite.deleteSprite();
+}
+
+bool SideBar::Touched(int x, int y)
+{
+	if (_settingsIcon->Touched(x, y)) {
+		Serial.println("Settings icon was touched");
+		return true;
+	}
+
+	return false;
+}

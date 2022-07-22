@@ -24,3 +24,5 @@
 
 //This is a negative offset
 #define TEXT_Y_OFFSET 2
+
+#define ICON_BASE_ICON_RADIUS 6
