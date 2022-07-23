@@ -9,6 +9,10 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	_wifiX = _tft->width() - 4;
 	_timeX = _wifiX - TIME_W - 7;
 	_sidebarX = _tft->width() - SIDEBAR_W;
+
+	_timeSprite = new TFT_eSprite(_tft);
+	_timeSprPtr = (uint16_t*)_timeSprite->createSprite(TIME_W, TIME_H);
+
 	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
 
 	DrawScreen();
@@ -17,6 +21,11 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 MainScreen::~MainScreen()
 {
 	delete(_sideBar);
+	if (_timeSprite != nullptr) {
+		_timeSprite->deleteSprite();
+		delete(_timeSprite);
+		_timeSprite = nullptr;
+	}
 }
 
 
@@ -74,16 +83,12 @@ void IRAM_ATTR MainScreen::OnTimer()
 
 void MainScreen::DisplayTime()
 {
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(TIME_W, TIME_H);
-	sprite.fillSprite(TFT_BLACK);
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextColor(GlobalTheme.textColor, TFT_BLACK);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.drawString(DateTime.format(DateFormatter::TIME_ONLY), TIME_W, 2);
+	_timeSprite->fillSprite(TFT_BLACK);
+	_timeSprite->setFreeFont(SMALL_FONT);
+	_timeSprite->setTextColor(GlobalTheme.textColor, TFT_BLACK);
+	_timeSprite->setTextDatum(TR_DATUM);
+	_timeSprite->drawString(DateTime.format(DateFormatter::TIME_ONLY), TIME_W, 2);
 
 
-	_tft->pushImageDMA(_timeX, TIME_Y, TIME_W, TIME_H, sprPtr);
-	_tft->dmaWait();
-	sprite.deleteSprite();
+	_tft->pushImageDMA(_timeX, TIME_Y, TIME_W, TIME_H, _timeSprPtr);
 }

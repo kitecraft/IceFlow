@@ -87,7 +87,6 @@ void TextBox::Update(const char* text)
 	}
 	_sprite->fillSprite(_textBG);
 	_sprite->drawString(text, _updateTextX, _updateTextY);
-	_tft->dmaWait();
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 }
 

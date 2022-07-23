@@ -26,17 +26,4 @@ void SettingsIcon::Draw(TFT_eSprite* sprite)
 	sprite->fillSmoothRoundRect(longX, mid - offsetY, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
 	sprite->fillSmoothRoundRect(longX, mid, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
 	sprite->fillSmoothRoundRect(longX, mid + offsetY, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
-
-
-
-
-	/*
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET, 10 + coordinates.y, SETTINGS_ICON_SHORTWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET, 20 + coordinates.y, SETTINGS_ICON_SHORTWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET, 30 + coordinates.y, SETTINGS_ICON_SHORTWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET + SETTINGS_ICON_SHORTWIDTH + SETTINGS_ICON_GAP, 10 + coordinates.y, SETTINGS_ICON_LONGWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET + SETTINGS_ICON_SHORTWIDTH + SETTINGS_ICON_GAP, 20 + coordinates.y, SETTINGS_ICON_LONGWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-	sprite->fillSmoothRoundRect(SETTINGS_ICON_X_OFFSET + SETTINGS_ICON_SHORTWIDTH + SETTINGS_ICON_GAP, 30 + coordinates.y, SETTINGS_ICON_LONGWIDTH, SETTINGS_ICON_HEIGHT, SETTINGS_ICON_RADIUS, SETTINGS_ICON_COLOR);
-	*/
 }

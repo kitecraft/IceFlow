@@ -75,7 +75,6 @@ void ProgressBar::Update(int progress)
 	_sprite->fillRect(0, 0, w, _updateH, _config.barFillColor);
 	String msg = String(progress) + " %";
 	_sprite->drawString(msg, _updateW / 2, _updateH / 2 - TEXT_Y_OFFSET);
-
-	_tft->dmaWait();
+	
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 }
