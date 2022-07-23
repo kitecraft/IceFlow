@@ -18,5 +18,7 @@ public:
     IconBase(IconBaseDto config, TFT_eSPI* tft);
     bool Touched(int x, int y);
     void Draw(TFT_eSprite* sprite);
+    int GetPX() { return _config.coordinates.p_x; }
+    int GetPY() { return _config.coordinates.p_y; }
 };
 

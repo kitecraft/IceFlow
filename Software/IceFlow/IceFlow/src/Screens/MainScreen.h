@@ -17,7 +17,6 @@ class MainScreen
 {
 private:
 	TFT_eSPI* _tft;
-
 	TFT_eSprite* _timeSprite = nullptr;
 	uint16_t* _timeSprPtr;
 	int _wifiX;

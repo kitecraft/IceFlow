@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 #include "../Utilities/Screens_Config.h"
+#include "../Widgets/PopUpMenu.h"
 #include "Icons/SettingsIcon.h"
 
 #define SIDEBAR_NUMBER_ICONS 5
@@ -23,6 +24,8 @@ private:
 	TFT_eSPI* _tft;
 	DMCoordinates _coordinates;
 	SettingsIcon* _settingsIcon = nullptr;
+	PopUpMenu _popUpMenu;
+
 public:
 	SideBar();
 	SideBar(TFT_eSPI* tft, DMCoordinates coordinates);

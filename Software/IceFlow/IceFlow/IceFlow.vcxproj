@@ -148,6 +148,8 @@
     <ClInclude Include="src\Screens\Utilities\Screens_Config.h" />
     <ClInclude Include="src\Screens\Utilities\ScreenUpdateKeys.h" />
     <ClInclude Include="src\Screens\Widgets\Box.h" />
+    <ClInclude Include="src\Screens\Widgets\PopUpMenu.h" />
+    <ClInclude Include="src\Screens\Widgets\PopUpMenuDto.h" />
     <ClInclude Include="src\Screens\Widgets\ProgressBar.h" />
     <ClInclude Include="src\Screens\Widgets\ProgressBarDto.h" />
     <ClInclude Include="src\Screens\Widgets\Spinner.h" />
@@ -168,6 +170,7 @@
     <ClCompile Include="src\Screens\Panels\Icons\IconBase.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\SettingsIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\SideBar.cpp" />
+    <ClCompile Include="src\Screens\Widgets\PopUpMenu.cpp" />
     <ClCompile Include="src\Screens\Widgets\ProgressBar.cpp" />
     <ClCompile Include="src\Screens\Widgets\Spinner.cpp" />
     <ClCompile Include="src\Screens\Widgets\TextBox.cpp" />
