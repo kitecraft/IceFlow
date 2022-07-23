@@ -18,9 +18,15 @@
 #define MEDIUM_FONT &segoeui7pt7b
 #define LARGE_FONT &segoeui9pt7b
 
+#define SMALL_FONT_TEXT_H 11
+#define MEDIUM_FONT_TEXT_H 16
+#define LARGE_FONT_TEXT_H 20
+
 #define SMALL_FONT_TEXT_BOX_H 19
 #define MEDIUM_FONT_TEXT_BOX_H 23
 #define LARGE_FONT_TEXT_BOX_H 27
+
+
 
 //This is a negative offset
 #define TEXT_Y_OFFSET 2

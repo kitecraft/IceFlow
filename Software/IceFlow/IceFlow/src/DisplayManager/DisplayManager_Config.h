@@ -7,7 +7,7 @@
 #define CALIBRATION_FILENAME "/_calData_"
 
 //The touch screens touch debounce time
-#define TOUCH_DEBOUNCE_TIME 100
+#define TOUCH_DEBOUNCE_TIME 150
 
 //Comment out the followling line if not useing DMA
 #define DM_USE_DMA

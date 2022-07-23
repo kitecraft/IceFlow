@@ -37,22 +37,40 @@ void SideBar::Draw()
 bool SideBar::Touched(int x, int y)
 {
 	if (_popUpMenu.isOpen()) {
-		_popUpMenu.Close();
+		String option;
+		if (_popUpMenu.Touched(x, y, option)) {
+			Serial.print("Option touched: ");
+			Serial.println(option);
+			_popUpMenu.Close();
+			return true;
+		}
+
+		switch (_activeIcon) {
+		case SettingsIconID:
+			if (_settingsIcon->Touched(x, y)) {
+				_popUpMenu.Close();
+				return true;
+			}
+			break;
+		default:
+			return false;
+		}
+		return false;
 	}
+
 	if (_settingsIcon->Touched(x, y)) {
-		Serial.println("Settings icon was touched");
-		String options[2] = { "Settings","Info" };
-		
+		String options[2] = { "Settings","Info" };		
 		_popUpMenu.Open(
 			PopUpMenuDto(
-				DMCoordinates(_settingsIcon->GetPX(), _settingsIcon->GetPY(), 0, 0),
+				DMCoordinates(_settingsIcon->GetPX() - 3, _settingsIcon->GetPY(), 0, 0),
 				TR_DATUM,
 				GlobalTheme,
-				MEDIUM_FONT),
+				MEDIUM_FONT,
+				MEDIUM_FONT_TEXT_H),
 			options,
 			2,
 			_tft);
-
+		_activeIcon = SettingsIconID;
 		return true;
 	}
 

@@ -16,7 +16,16 @@
 #define ICON_HEIGHT (SIDEBAR_H / SIDEBAR_NUMBER_ICONS) //43
 #define ICON_V_PADDING ((SIDEBAR_H - (ICON_HEIGHT*SIDEBAR_NUMBER_ICONS)) / (SIDEBAR_NUMBER_ICONS-1))  //u figure it out
 
-#define SETTINGS_ICON_Y 0 //((ICON_HEIGHT + ICON_V_PADDING)*4)
+//1st
+#define SETTINGS_ICON_Y 0 
+
+//5th
+//#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
+
+enum ICONID {
+	NO_ICONID = -1,
+	SettingsIconID = 0,
+};
 
 class SideBar
 {
@@ -25,7 +34,7 @@ private:
 	DMCoordinates _coordinates;
 	SettingsIcon* _settingsIcon = nullptr;
 	PopUpMenu _popUpMenu;
-
+	ICONID _activeIcon = NO_ICONID;
 public:
 	SideBar();
 	SideBar(TFT_eSPI* tft, DMCoordinates coordinates);

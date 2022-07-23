@@ -11,7 +11,10 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	_sidebarX = _tft->width() - SIDEBAR_W;
 
 	_timeSprite = new TFT_eSprite(_tft);
-	_timeSprPtr = (uint16_t*)_timeSprite->createSprite(TIME_W, TIME_H);
+	_timeSprite->createSprite(TIME_W, TIME_H);
+	_timeSprite->setFreeFont(SMALL_FONT);
+	_timeSprite->setTextColor(GlobalTheme.textColor, TFT_BLACK);
+	_timeSprite->setTextDatum(TR_DATUM);
 
 	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
 
@@ -35,10 +38,10 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	SCREEN_UPDATE_KEYS key = static_cast<SCREEN_UPDATE_KEYS>(inKey);
 	switch (key) {
 	case suk_Network_Connected:
-		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_BLACK);
+		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_TRANSPARENT);
 		break;
 	case suk_Network_Started:
-		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_YELLOW, TFT_BLACK);
+		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_YELLOW, TFT_TRANSPARENT);
 		break;
 	case suk_DateTime:
 		DisplayTime();
@@ -57,7 +60,6 @@ void MainScreen::UpdateScreenOnInterval()
 
 void MainScreen::HandleTouch(int x, int y)
 {
-	//Serial.println("MainScreen Handling Touch");
 	if(_sideBar->Touched(x, y)){
 		Serial.println("Sidebar was touched");
 	}
@@ -66,29 +68,38 @@ void MainScreen::HandleTouch(int x, int y)
 void MainScreen::DrawScreen()
 {
 	_tft->fillScreen(TFT_BLACK);
-	_tft->startWrite();
 
-	//WiFiSymbol::Draw(_wifiX, WIFI_Y, WiFiStatus_Off, TFT_BLACK, _tft);
-	_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_WHITE, TFT_BLACK);
+	/*
+	_tft->fillRect(0, 0, 20, 240, TFT_YELLOW);
+	_tft->fillRect(20, 0, 20, 240, TFT_GREEN);
+	_tft->fillRect(40, 0, 20, 240, TFT_WHITE);
+	_tft->fillRect(60, 0, 20, 240, TFT_CYAN);
+	_tft->fillRect(80, 0, 20, 240, 0x5AEB);
+	_tft->fillRect(100, 0, 20, 240, 0x9CD3);
+	_tft->fillRect(120, 0, 20, 240, 0x4208);
+	_tft->fillRect(140, 0, 20, 240, 0xCE59);
+	_tft->fillRect(160, 0, 20, 240, 0x738E);
+	_tft->fillRect(180, 0, 20, 240, TFT_PURPLE);
+	_tft->fillRect(200, 0, 20, 240, TFT_DARKGREY);
+	_tft->fillRect(220, 0, 20, 240, TFT_SKYBLUE);
+	_tft->fillRect(240, 0, 20, 240, TFT_BROWN);
+	_tft->fillRect(260, 0, 20, 240, TFT_CASET);
+	_tft->fillRect(280, 0, 20, 240, TFT_DARKGREEN);
+	_tft->fillRect(300, 0, 20, 240, TFT_GREENYELLOW);
+	*/
+
+	_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_WHITE, TFT_TRANSPARENT);
+
+	_tft->startWrite();
 	_sideBar->Draw();
 
 	_tft->dmaWait();
 	_tft->endWrite();
 }
 
-void IRAM_ATTR MainScreen::OnTimer()
-{
-
-}
-
 void MainScreen::DisplayTime()
 {
 	_timeSprite->fillSprite(TFT_BLACK);
-	_timeSprite->setFreeFont(SMALL_FONT);
-	_timeSprite->setTextColor(GlobalTheme.textColor, TFT_BLACK);
-	_timeSprite->setTextDatum(TR_DATUM);
 	_timeSprite->drawString(DateTime.format(DateFormatter::TIME_ONLY), TIME_W, 2);
-
-
-	_tft->pushImageDMA(_timeX, TIME_Y, TIME_W, TIME_H, _timeSprPtr);
+	_timeSprite->pushSprite(_timeX, TIME_Y);
 }

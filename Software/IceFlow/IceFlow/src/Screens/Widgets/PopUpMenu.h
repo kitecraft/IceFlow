@@ -2,33 +2,25 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 #include "PopUpMenuDto.h"
+#include "MenuOption.h"
 
-struct MenuOption {
-	String name = "";
-	PopUpMenuDto config;
-	MenuOption() {}
-	MenuOption(String name_, PopUpMenuDto config_) {
-		name = name_;
-		config = config_;
-	}
-	MenuOption(const MenuOption& orig) {
-		name = orig.name;
-		config = orig.config;
-	}
-};
+#define OPTION_BORDER_PADDING 5
+#define OPTION_SPACING 3
+#define OPTION_BORDER_SIZE 3
+#define OPTION_TEXT_V_PADDING 2
 
 class PopUpMenu
 {
 private:
 	TFT_eSPI* _tft = nullptr;;
+	TFT_eSprite* _sprite = nullptr;
+
 	PopUpMenuDto _config;
 	MenuOption* _menuOptions = nullptr;
 	uint16_t* _screenReadBuffer = nullptr;
 
-	void* (*pop_malloc)(size_t size) = nullptr;
-
 	int _numOptions = 0;
-	int _lengthOfLongestOptionName = 0;
+	int _lengthOfLongestOptionText = 0;
 	bool _open = false;
 	bool _opening = false;
 	bool _closing = false;
@@ -48,7 +40,7 @@ public:
 	void Close();
 	
 	// Check if touched
-	String Touched(int x, int y);
+	bool Touched(int x, int y, String& menuString);
 	
 	//Returns true if the menu is open
 	bool isOpen() { return _open; }

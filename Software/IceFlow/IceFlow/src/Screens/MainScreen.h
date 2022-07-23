@@ -18,7 +18,6 @@ class MainScreen
 private:
 	TFT_eSPI* _tft;
 	TFT_eSprite* _timeSprite = nullptr;
-	uint16_t* _timeSprPtr;
 	int _wifiX;
 	int _timeX;
 
@@ -27,7 +26,6 @@ private:
 
 	void DrawScreen();
 	void DisplayTime();
-	void IRAM_ATTR OnTimer();
 public:
 	MainScreen(TFT_eSPI* tft);
 	~MainScreen();

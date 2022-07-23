@@ -13,8 +13,7 @@ static void DrawSquaredBox(TFT_eSprite* sprite, DMCoordinates coordinates, DMThe
 	}
 	else {
 		sprite->fillRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, theme.panelLightColor);
-	}
-	
+	}	
 	sprite->drawRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, theme.panelDropShadowColor);
 	sprite->drawRect(coordinates.x + 2, coordinates.y + 2, coordinates.w - 3, coordinates.h - 4, theme.panelDropShadowColor);
 
@@ -27,8 +26,12 @@ static void DrawSquaredBox(TFT_eSprite* sprite, DMCoordinates coordinates, DMThe
 //Creates a 3 pixel wide border including an drop-shadaw
 static void DrawRoundedBox(TFT_eSprite* sprite, DMCoordinates coordinates, int radius, DMTheme theme, bool useDark = false)
 {
-	sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelLightColor);
-
+	if (useDark) {
+		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDarkColor, TFT_TRANSPARENT);
+	}
+	else {
+		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelLightColor, TFT_TRANSPARENT);
+	}
 	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDropShadowColor);
 	sprite->drawRoundRect(coordinates.x + 2, coordinates.y + 2, coordinates.w - 3, coordinates.h - 4, radius, theme.panelDropShadowColor);
 
