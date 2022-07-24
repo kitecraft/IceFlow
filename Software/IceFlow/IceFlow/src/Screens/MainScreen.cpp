@@ -3,6 +3,7 @@
 #include "Utilities/ScreenUpdateKeys.h"
 #include "Utilities/DMTheme.h"
 #include "Widgets/Box.h"
+#include "../Utilities/PreferencesManager.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
@@ -19,12 +20,6 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
 
-	_profileName = new TextBox(TextBoxDto(
-		DMCoordinates(_headerW - (HEADER_H/2), DEVICE_NAME_TB_Y, -1, LARGE_FONT_TEXT_BOX_H, _headerW - (HEADER_H / 2) + HEADER_X, HEADER_Y),
-		GlobalTheme,
-		MEDIUM_FONT,
-		MC_DATUM),
-		_tft);
 	DrawScreen();
 }
 
@@ -34,10 +29,6 @@ MainScreen::~MainScreen()
 	if (_timeSprite != nullptr) {
 		_timeSprite->deleteSprite();
 		delete(_timeSprite);
-	}
-
-	if (_profileName != nullptr) {
-		delete _profileName;
 	}
 }
 
@@ -56,6 +47,10 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_DateTime:
 		DisplayTime();
 		break;
+	case suk_Profile_Changed:
+		LoadProfile();
+		DrawHeader();
+		break;
 	default:
 		break;
 	}
@@ -72,6 +67,13 @@ void MainScreen::HandleTouch(int x, int y)
 {
 	if(_sideBar->Touched(x, y)){
 		Serial.println("Sidebar was touched");
+	}
+}
+
+void MainScreen::LoadProfile()
+{
+	if (!ProfileManager.GetProfile(GetSavedProfileFileName(), &_currentProfile)) {
+		Serial.println("Failed to load Profile");
 	}
 }
 
@@ -116,15 +118,15 @@ void MainScreen::DrawHeader()
 	sprite.fillSprite(TFT_BLACK);
 	DrawRoundedBox(&sprite, DMCoordinates(0, 0, _headerW, HEADER_H, 0, 0), HEADER_H / 2, GlobalTheme);
 
-	TextBox::DrawTextBox(&sprite,
+	int deviceNameTBWidth = TextBox::DrawTextBox(&sprite,
 		TextBoxDto(
 			DMCoordinates(
 				DEVICE_NAME_TB_X,
-				DEVICE_NAME_TB_Y,
+				HEADER_TB_Y,
 				-1,
 				MEDIUM_FONT_TEXT_BOX_H,
 				DEVICE_NAME_TB_X + HEADER_X,
-				DEVICE_NAME_TB_Y + HEADER_Y),
+				HEADER_TB_Y + HEADER_Y),
 			GlobalTheme,
 			MEDIUM_FONT,
 			MC_DATUM,
@@ -132,6 +134,30 @@ void MainScreen::DrawHeader()
 			true,
 			GlobalTheme.panelLightColor),
 		__DEVICE_NAME__);
+
+	sprite.setFreeFont(MEDIUM_FONT);
+	sprite.setTextColor(TFT_GREEN, GlobalTheme.panelLightColor);
+	sprite.setTextDatum(ML_DATUM);
+	int profileLableX = DEVICE_NAME_TB_X + deviceNameTBWidth + PROFILE_LABEL_X_OFFSET;
+	sprite.drawString(PROFILE_LABEL, profileLableX, (HEADER_H /2) - 1);
+
+	int profileX = profileLableX + sprite.textWidth(PROFILE_LABEL);
+	TextBox::DrawTextBox(&sprite,
+		TextBoxDto(
+			DMCoordinates(
+				profileX,
+				HEADER_TB_Y,
+				-1,
+				MEDIUM_FONT_TEXT_BOX_H,
+				DEVICE_NAME_TB_X + HEADER_X,
+				HEADER_TB_Y + HEADER_Y),
+			GlobalTheme,
+			MEDIUM_FONT,
+			MC_DATUM,
+			false,
+			true,
+			GlobalTheme.panelLightColor),
+		_currentProfile.name.c_str());
 
 	_tft->pushImageDMA(HEADER_X, HEADER_Y, _headerW, HEADER_H, sprPtr);
 	_tft->dmaWait();

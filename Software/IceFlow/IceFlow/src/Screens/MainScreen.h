@@ -5,6 +5,7 @@
 #include "Utilities/Screens_Config.h"
 #include "Panels/SideBar.h"
 #include "Widgets/TextBox.h"
+#include "../ProfileManager/ProfileManager.h"
 
 #define WIFI_Y 6
 #define WIFI_SPOT_R 4
@@ -19,8 +20,11 @@
 #define HEADER_W_OFFSET 3
 #define HEADER_H (MEDIUM_FONT_TEXT_BOX_H + 10)
 
-#define DEVICE_NAME_TB_X (HEADER_H/2)
-#define DEVICE_NAME_TB_Y 5
+#define DEVICE_NAME_TB_X ((HEADER_H/2) - 3)
+#define HEADER_TB_Y 5
+
+#define PROFILE_LABEL_X_OFFSET 15
+#define PROFILE_LABEL "Profile "
 
 class MainScreen
 {
@@ -33,11 +37,14 @@ private:
 
 	SideBar* _sideBar = nullptr;
 	int _sidebarX;
-	TextBox* _profileName = nullptr;
+
+	Profile _currentProfile;
 
 	void DrawScreen();
 	void DrawHeader();
 	void DisplayTime();
+
+	void LoadProfile();
 public:
 	MainScreen(TFT_eSPI* tft);
 	~MainScreen();

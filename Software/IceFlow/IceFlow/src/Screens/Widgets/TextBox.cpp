@@ -118,7 +118,7 @@ void TextBox::Update(const char* text)
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 }
 
-void TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)
+int TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)
 {
 	sprite->setFreeFont(configDto.font);
 	sprite->setTextDatum(configDto.textAlignment);
@@ -164,4 +164,5 @@ void TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char*
 		sprite->drawString(text, configDto.coordinates.x + textX, configDto.coordinates.y + 5);
 		break;
 	}
+	return configDto.coordinates.w;
 }

@@ -132,6 +132,8 @@
     <ClInclude Include="src\Network\IceNetwork.h" />
     <ClInclude Include="src\Network\IceOTAManager.h" />
     <ClInclude Include="src\Network\IceWebServer.h" />
+    <ClInclude Include="src\ProfileManager\Profile.h" />
+    <ClInclude Include="src\ProfileManager\ProfileManager.h" />
     <ClInclude Include="src\Screens\DMFonts\segoeui5pt7b.h" />
     <ClInclude Include="src\Screens\DMFonts\segoeui7pt7b.h" />
     <ClInclude Include="src\Screens\DMFonts\segoeui9pt7b.h" />
@@ -166,6 +168,7 @@
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp" />
     <ClCompile Include="src\DisplayManager\src\CommandQueue\CommandManagerQueue.cpp" />
     <ClCompile Include="src\DisplayManager\src\DisplayQueue\DisplayManagerQueue.cpp" />
+    <ClCompile Include="src\ProfileManager\ProfileManager.cpp" />
     <ClCompile Include="src\Screens\MainScreen.cpp" />
     <ClCompile Include="src\Screens\OTAScreen.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\IconBase.cpp" />

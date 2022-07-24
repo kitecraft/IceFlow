@@ -31,5 +31,5 @@ public:
     void Draw(TFT_eSprite* sprite, const char* text);
     void Update(const char* text);
 
-    static void DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
+    static int DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
 };

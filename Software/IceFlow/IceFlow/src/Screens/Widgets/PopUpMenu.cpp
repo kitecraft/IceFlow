@@ -100,9 +100,9 @@ void PopUpMenu::Open(PopUpMenuDto configDto, String* menuOptions, int numMenuOpt
 	_tft->readRect(_config.coordinates.x, _config.coordinates.y, _config.coordinates.w, _config.coordinates.h, _screenReadBuffer);
 	
 	_sprite->createSprite(_config.coordinates.w, _config.coordinates.h);
-	_sprite->pushImage(0, 0, _config.coordinates.w, _config.coordinates.h, _screenReadBuffer);
+	//_sprite->pushImage(0, 0, _config.coordinates.w, _config.coordinates.h, _screenReadBuffer);
 	
-	//_sprite->fillSprite(TFT_TRANSPARENT);
+	_sprite->fillSprite(TFT_TRANSPARENT);
 	DrawRoundedBox(_sprite, DMCoordinates(0, 0, _config.coordinates.w, _config.coordinates.h), 5, _config.theme, TFT_TRANSPARENT);
 	
 	for (int i = 0; i < _numOptions; i++) {

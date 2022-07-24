@@ -156,6 +156,12 @@
     <ClInclude Include="src\Screens\Widgets\MenuOption.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ProfileManager\ProfileManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProfileManager\Profile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -198,6 +204,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\Widgets\MenuOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProfileManager\ProfileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
