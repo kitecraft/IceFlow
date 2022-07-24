@@ -25,7 +25,7 @@ static bool connectToNetwork()
     {
         return false;
     }
-    //DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
+    DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
     Serial.print("Connecting Network: ");
 
     int tryCount = 1;
@@ -41,7 +41,7 @@ static bool connectToNetwork()
                 if (MDNS.begin(__DEVICE_NAME__)) {
                     Serial.println("MDNS responder started");
                 }
-                //DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
+                DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
                 DisplayQueue.QueueKey(suk_Network_Connected);
                 return true;
             }

@@ -10,15 +10,19 @@ public:
     const GFXfont* font = nullptr;
     int textAlignment = MC_DATUM;
     bool useDark = false;
+    bool useRounded = false;
+    uint16_t roundedBlendColor = TFT_BLACK;
 
     TextBoxDto() {}
 
-    TextBoxDto(DMCoordinates coordinates_, DMTheme theme_, const GFXfont* font_, int textAlignment_ = MC_DATUM, bool useDark_ = false) {
+    TextBoxDto(DMCoordinates coordinates_, DMTheme theme_, const GFXfont* font_, int textAlignment_ = MC_DATUM, bool useDark_ = false, bool useRounded_ = false, uint16_t roundedBlendColor_ = TFT_BLACK) {
         coordinates = coordinates_;
         theme = theme_;
         font = font_;
         textAlignment = textAlignment_;
         useDark = useDark_;
+        useRounded = useRounded_;
+        roundedBlendColor = roundedBlendColor_;
     }
 
     TextBoxDto(const TextBoxDto& orig) {
@@ -27,5 +31,7 @@ public:
         font = orig.font;
         textAlignment = orig.textAlignment;
         useDark = orig.useDark;
+        useRounded = orig.useRounded;
+        roundedBlendColor = orig.roundedBlendColor;
     }
 };

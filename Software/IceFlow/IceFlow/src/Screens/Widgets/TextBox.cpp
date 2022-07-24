@@ -27,22 +27,43 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 	_config = configDto;
 	DeleteSprite();
 
-	_updateX = _config.coordinates.p_x + 3;
-	_updateY = _config.coordinates.p_y + 3;
-	_updateW = _config.coordinates.w - 6;
-	_updateH = _config.coordinates.h - 6;
+	if (_config.useRounded) {
+		_updateX = _config.coordinates.p_x + _config.coordinates.h/2;
+		_updateY = _config.coordinates.p_y + 3;
+		_updateW = _config.coordinates.w - _config.coordinates.h;
+		_updateH = _config.coordinates.h - 6;
+	}
+	else {
+		_updateX = _config.coordinates.p_x + 3;
+		_updateY = _config.coordinates.p_y + 3;
+		_updateW = _config.coordinates.w - 6;
+		_updateH = _config.coordinates.h - 6;
+	}
+
 
 	switch (_config.textAlignment) {
 	case ML_DATUM:
-		_textX = _config.coordinates.x + 5;
+		if (_config.useRounded) {
+			_textX = _config.coordinates.x + _config.coordinates.h/2;
+			_updateTextX = 0;
+		}
+		else {
+			_textX = _config.coordinates.x + 5;
+			_updateTextX = 2;
+		}
 		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
-		_updateTextX = 2;
 		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
 		break;
 	case MR_DATUM:
-		_textX = _config.coordinates.x + _config.coordinates.w - 5;
+		if (_config.useRounded) {
+			_textX = _config.coordinates.x + _config.coordinates.w - (_config.coordinates.h/2);
+			_updateTextX = _updateW;
+		}
+		else {
+			_textX = _config.coordinates.x + _config.coordinates.w - 5;
+			_updateTextX = _updateW - 2;
+		}
 		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
-		_updateTextX = _updateW - 2;
 		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
 		break;
 	case MC_DATUM:  //Default sets to MC_DATUM anyways
@@ -52,6 +73,7 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
 		_updateTextX = _updateW / 2;
 		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
+		break;
 		break;
 	}
 
@@ -73,7 +95,13 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 
 void TextBox::Draw(TFT_eSprite* sprite, const char* text)
 {
-	DrawSquaredBox(sprite, _config.coordinates, _config.theme, _config.useDark);
+	if (_config.useRounded) {
+		DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, _config.roundedBlendColor, _config.useDark);
+	}
+	else {
+		DrawSquaredBox(sprite, _config.coordinates, _config.theme, _config.useDark);
+	}
+	
 	sprite->setFreeFont(_config.font);
 	sprite->setTextColor(_config.theme.textColor, _textBG);
 	sprite->setTextDatum(_config.textAlignment);
@@ -92,10 +120,27 @@ void TextBox::Update(const char* text)
 
 void TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)
 {
-	DrawSquaredBox(sprite, configDto.coordinates, configDto.theme, configDto.useDark);
-
 	sprite->setFreeFont(configDto.font);
 	sprite->setTextDatum(configDto.textAlignment);
+	
+	if (configDto.coordinates.w == -1) {
+		if (configDto.useRounded) {
+			configDto.coordinates.w = sprite->textWidth(text) + configDto.coordinates.h;
+		}
+		else {
+			configDto.coordinates.w = sprite->textWidth(text) + 10;
+		}
+	}
+
+	int textX = 5;
+	if (configDto.useRounded) {
+		textX = configDto.coordinates.h / 2;
+		DrawRoundedBox(sprite, configDto.coordinates, configDto.coordinates.h / 2, configDto.theme, configDto.roundedBlendColor, configDto.useDark);
+	}
+	else {
+		DrawSquaredBox(sprite, configDto.coordinates, configDto.theme, configDto.useDark);
+	}
+
 
 	if (configDto.useDark) {
 		sprite->setTextColor(configDto.theme.textColor, configDto.theme.panelDarkColor);
@@ -104,18 +149,19 @@ void TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char*
 		sprite->setTextColor(configDto.theme.textColor, configDto.theme.panelLightColor);
 	}
 
+
 	switch (configDto.textAlignment) {
 	case ML_DATUM:
-		sprite->drawString(text, 5, round(configDto.coordinates.h/2));
+		sprite->drawString(text, configDto.coordinates.x + textX, configDto.coordinates.y + round(configDto.coordinates.h/2));
 		break;
 	case MR_DATUM:
-		sprite->drawString(text, configDto.coordinates.w - 5, round(configDto.coordinates.h / 2));
+		sprite->drawString(text, configDto.coordinates.w - textX, configDto.coordinates.y + round(configDto.coordinates.h / 2));
 		break;
 	case MC_DATUM:
-		sprite->drawString(text, round(configDto.coordinates.w / 2), round(configDto.coordinates.h / 2));
+		sprite->drawString(text, configDto.coordinates.x + round(configDto.coordinates.w / 2), configDto.coordinates.y + round(configDto.coordinates.h / 2));
 		break;
 	default:
-		sprite->drawString(text, 5, 5);
+		sprite->drawString(text, configDto.coordinates.x + textX, configDto.coordinates.y + 5);
 		break;
 	}
 }

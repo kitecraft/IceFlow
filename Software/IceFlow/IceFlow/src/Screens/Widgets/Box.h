@@ -24,13 +24,13 @@ static void DrawSquaredBox(TFT_eSprite* sprite, DMCoordinates coordinates, DMThe
 
 //Draw a Rounded Box using the specified theme
 //Creates a 3 pixel wide border including an drop-shadaw
-static void DrawRoundedBox(TFT_eSprite* sprite, DMCoordinates coordinates, int radius, DMTheme theme, bool useDark = false)
+static void DrawRoundedBox(TFT_eSprite* sprite, DMCoordinates coordinates, int radius, DMTheme theme, uint16_t blendBGColor = TFT_BLACK, bool useDark = false)
 {
 	if (useDark) {
-		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDarkColor, TFT_TRANSPARENT);
+		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDarkColor, blendBGColor);
 	}
 	else {
-		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelLightColor, TFT_TRANSPARENT);
+		sprite->fillSmoothRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelLightColor, blendBGColor);
 	}
 	sprite->drawRoundRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h, radius, theme.panelDropShadowColor);
 	sprite->drawRoundRect(coordinates.x + 2, coordinates.y + 2, coordinates.w - 3, coordinates.h - 4, radius, theme.panelDropShadowColor);

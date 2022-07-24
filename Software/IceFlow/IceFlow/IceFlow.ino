@@ -36,6 +36,7 @@ void setup() {
     LoadScreensIntoDM();
     
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+    //DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
     StartNetworkStuff();
 
 }
@@ -43,7 +44,7 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
     HandleCommandQueue();
-  
+ 
 }
 
 

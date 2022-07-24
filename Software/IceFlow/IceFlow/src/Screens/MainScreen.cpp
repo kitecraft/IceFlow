@@ -2,6 +2,7 @@
 #include <ESPDateTime.h>
 #include "Utilities/ScreenUpdateKeys.h"
 #include "Utilities/DMTheme.h"
+#include "Widgets/Box.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
@@ -9,7 +10,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	_wifiX = _tft->width() - 4;
 	_timeX = _wifiX - TIME_W - 7;
 	_sidebarX = _tft->width() - SIDEBAR_W;
-
+	_headerW = _sidebarX - HEADER_W_OFFSET;
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(TIME_W, TIME_H);
 	_timeSprite->setFreeFont(SMALL_FONT);
@@ -18,6 +19,12 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
 
+	_profileName = new TextBox(TextBoxDto(
+		DMCoordinates(_headerW - (HEADER_H/2), DEVICE_NAME_TB_Y, -1, LARGE_FONT_TEXT_BOX_H, _headerW - (HEADER_H / 2) + HEADER_X, HEADER_Y),
+		GlobalTheme,
+		MEDIUM_FONT,
+		MC_DATUM),
+		_tft);
 	DrawScreen();
 }
 
@@ -27,7 +34,10 @@ MainScreen::~MainScreen()
 	if (_timeSprite != nullptr) {
 		_timeSprite->deleteSprite();
 		delete(_timeSprite);
-		_timeSprite = nullptr;
+	}
+
+	if (_profileName != nullptr) {
+		delete _profileName;
 	}
 }
 
@@ -92,9 +102,40 @@ void MainScreen::DrawScreen()
 
 	_tft->startWrite();
 	_sideBar->Draw();
+	DrawHeader();
 
 	_tft->dmaWait();
 	_tft->endWrite();
+}
+
+void MainScreen::DrawHeader()
+{
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(_headerW, HEADER_H);
+
+	sprite.fillSprite(TFT_BLACK);
+	DrawRoundedBox(&sprite, DMCoordinates(0, 0, _headerW, HEADER_H, 0, 0), HEADER_H / 2, GlobalTheme);
+
+	TextBox::DrawTextBox(&sprite,
+		TextBoxDto(
+			DMCoordinates(
+				DEVICE_NAME_TB_X,
+				DEVICE_NAME_TB_Y,
+				-1,
+				MEDIUM_FONT_TEXT_BOX_H,
+				DEVICE_NAME_TB_X + HEADER_X,
+				DEVICE_NAME_TB_Y + HEADER_Y),
+			GlobalTheme,
+			MEDIUM_FONT,
+			MC_DATUM,
+			false,
+			true,
+			GlobalTheme.panelLightColor),
+		__DEVICE_NAME__);
+
+	_tft->pushImageDMA(HEADER_X, HEADER_Y, _headerW, HEADER_H, sprPtr);
+	_tft->dmaWait();
+	sprite.deleteSprite();
 }
 
 void MainScreen::DisplayTime()

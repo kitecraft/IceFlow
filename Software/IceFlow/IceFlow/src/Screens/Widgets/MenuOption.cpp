@@ -33,7 +33,7 @@ void MenuOption::DrawPillBoxWithDropShadow(TFT_eSprite* sprite)
 void MenuOption::Draw(TFT_eSprite* sprite)
 {
 	//DrawPillBoxWithDropShadow(sprite);
-	DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, true);
+	DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, _config.theme.panelLightColor, true);
 	sprite->setTextDatum(MC_DATUM);
 	sprite->setTextColor(_config.theme.textColor, _config.theme.panelDarkColor);
 	sprite->drawString(_name, _config.coordinates.x + (_config.coordinates.w / 2), (_config.coordinates.y + (_config.coordinates.h / 2)) - 1);

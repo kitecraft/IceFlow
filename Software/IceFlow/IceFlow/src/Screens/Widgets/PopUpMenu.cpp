@@ -90,21 +90,26 @@ void PopUpMenu::Configure(PopUpMenuDto configDto, String* menuOptions, int numMe
 		optionDto.coordinates.p_y = _config.coordinates.y + optionDto.coordinates.y;
 		_menuOptions[i] = MenuOption(menuOptions[i], optionDto);
 	}
-
-	_sprite->createSprite(_config.coordinates.w, _config.coordinates.h);
-	_sprite->fillSprite(TFT_TRANSPARENT);
-	DrawRoundedBox(_sprite, DMCoordinates(0, 0, _config.coordinates.w, _config.coordinates.h), 5, _config.theme);
+	
+	_screenReadBuffer = (uint16_t*)calloc(_config.coordinates.w * _config.coordinates.h, sizeof(uint16_t));
 }
 
 void PopUpMenu::Open(PopUpMenuDto configDto, String* menuOptions, int numMenuOptions, TFT_eSPI* tft)
 {
 	Configure(configDto, menuOptions, numMenuOptions, tft);
-	_screenReadBuffer = (uint16_t*)calloc(_config.coordinates.w * _config.coordinates.h, sizeof(uint16_t));
 	_tft->readRect(_config.coordinates.x, _config.coordinates.y, _config.coordinates.w, _config.coordinates.h, _screenReadBuffer);
+	
+	_sprite->createSprite(_config.coordinates.w, _config.coordinates.h);
+	_sprite->pushImage(0, 0, _config.coordinates.w, _config.coordinates.h, _screenReadBuffer);
+	
+	//_sprite->fillSprite(TFT_TRANSPARENT);
+	DrawRoundedBox(_sprite, DMCoordinates(0, 0, _config.coordinates.w, _config.coordinates.h), 5, _config.theme, TFT_TRANSPARENT);
+	
 	for (int i = 0; i < _numOptions; i++) {
 		_menuOptions[i].Draw(_sprite);
 	}
-	_sprite->pushSprite(_config.coordinates.x, _config.coordinates.y, TFT_TRANSPARENT);
+	
+	_sprite->pushSprite(_config.coordinates.x, _config.coordinates.y);
 	_open = true;
 }
 
