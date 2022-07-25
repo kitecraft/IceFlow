@@ -4,6 +4,7 @@
 #include "../Utilities/Screens_Config.h"
 #include "../Widgets/PopUpMenu.h"
 #include "Icons/SettingsIcon.h"
+#include "Icons/ProfileIcon.h"
 
 #define SIDEBAR_NUMBER_ICONS 5
 
@@ -18,6 +19,8 @@
 
 //1st
 #define SETTINGS_ICON_Y 0 
+//2nd
+#define PROFILE_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*1)
 
 //5th
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
@@ -33,6 +36,7 @@ private:
 	TFT_eSPI* _tft;
 	DMCoordinates _coordinates;
 	SettingsIcon* _settingsIcon = nullptr;
+	ProfileIcon* _profileIcon = nullptr;
 	PopUpMenu _popUpMenu;
 	ICONID _activeIcon = NO_ICONID;
 public:

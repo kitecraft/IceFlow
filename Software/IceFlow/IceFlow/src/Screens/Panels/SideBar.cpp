@@ -14,11 +14,18 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 			DMCoordinates(ICON_X, SETTINGS_ICON_Y, ICON_WIDTH, ICON_HEIGHT, _coordinates.p_x + ICON_X, _coordinates.p_y + SETTINGS_ICON_Y),
 			GlobalTheme), 
 		_tft);
+
+	_profileIcon = new ProfileIcon(
+		IconBaseDto(
+			DMCoordinates(ICON_X, PROFILE_ICON_Y, ICON_WIDTH, ICON_HEIGHT, _coordinates.p_x + ICON_X, _coordinates.p_y + PROFILE_ICON_Y),
+			GlobalTheme),
+		_tft);
 }
 
 SideBar::~SideBar()
 {
 	delete(_settingsIcon);
+	delete(_profileIcon);
 }
 
 void SideBar::Draw()
@@ -28,6 +35,7 @@ void SideBar::Draw()
 
 	sprite.fillSprite(TFT_BLACK);
 	_settingsIcon->Draw(&sprite);
+	_profileIcon->Draw(&sprite);
 
 	_tft->pushImageDMA(_coordinates.x, _coordinates.y, _coordinates.w, _coordinates.h, sprPtr);
 	_tft->dmaWait();

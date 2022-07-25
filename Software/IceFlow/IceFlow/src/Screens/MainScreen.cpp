@@ -47,10 +47,6 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_DateTime:
 		DisplayTime();
 		break;
-	case suk_Profile_Changed:
-		LoadProfile();
-		DrawHeader();
-		break;
 	default:
 		break;
 	}
