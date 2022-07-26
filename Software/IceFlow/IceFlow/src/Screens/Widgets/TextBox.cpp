@@ -125,7 +125,7 @@ int TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* 
 	
 	if (configDto.coordinates.w == -1) {
 		if (configDto.useRounded) {
-			configDto.coordinates.w = sprite->textWidth(text) + configDto.coordinates.h;
+			configDto.coordinates.w = sprite->textWidth(text) + configDto.coordinates.h + 2;
 		}
 		else {
 			configDto.coordinates.w = sprite->textWidth(text) + 10;

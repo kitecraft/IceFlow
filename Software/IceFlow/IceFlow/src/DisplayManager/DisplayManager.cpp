@@ -1,6 +1,7 @@
 #include "DisplayManager.h"
 #include "Utilities/DisplayQueue.h"
 #include "Utilities/CommandQueue.h"
+#include "../Utilities/MemUseage.h"
 
 DisplayManager::DisplayManager()
 {
@@ -128,9 +129,9 @@ void DisplayManager::CalibrateTouch()
 
 void DisplayManager::LoadNewScreen(int screenID)
 {
-	Serial.print("Loading new screen: ");
+	Serial.print("\nLoading new screen: ");
 	Serial.println(screenID);
-
+	PrintMemUseage();
 	ScreenContainer newScreen;
 	for (int i = 0; i < _dmScreenContainers.size(); i++) {
 		if (_dmScreenContainers.at(i).key == screenID) {
@@ -146,9 +147,13 @@ void DisplayManager::LoadNewScreen(int screenID)
 	}
 	if (_currentScreen.DestroyScreen != nullptr) {
 		_currentScreen.DestroyScreen();
+		Serial.println("\nScreen destroyed");
+		PrintMemUseage();
 	}
 	_currentScreen = newScreen;
 	_currentScreen.CreateScreen(&_tft);
+	Serial.println("\nScreen created");
+	PrintMemUseage();
 }
 
 void DisplayManager::HandleDisplayQueue()

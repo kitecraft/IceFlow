@@ -15,13 +15,15 @@ bool IceFlowProfileManager::SaveProfileToDisk(Profile profile)
 
 bool IceFlowProfileManager::GetProfile(String profileFileName, Profile* profile)
 {
+	Serial.print("Profile filename: ");
+	Serial.println(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName);
 	if (profileFileName.isEmpty()) {
 		return false;
 	}
 
-	String jsonString = IceFS_ReadFile(profileFileName);
-	//Serial.println("String: ");
-	//Serial.println(jsonString);
+	String jsonString = IceFS_ReadFile(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName);
+	Serial.println("String: ");
+	Serial.println(jsonString);
 
 	DynamicJsonDocument doc(512);
 	DeserializationError error = deserializeJson(doc, jsonString);
@@ -46,6 +48,11 @@ bool IceFlowProfileManager::GetProfile(String profileFileName, Profile* profile)
 	//Serial.print("Profile: ");
 	//Serial.println(profile.toJsonString());
 	return true;
+}
+
+bool IceFlowProfileManager::GetSavedProfile(Profile* profile)
+{
+	return GetProfile(GetNameOfLastLoadedProfile(), profile);
 }
 
 String IceFlowProfileManager::GetNameOfLastLoadedProfile()

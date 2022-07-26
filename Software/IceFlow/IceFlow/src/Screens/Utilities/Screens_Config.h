@@ -26,7 +26,7 @@
 #define MEDIUM_FONT_TEXT_BOX_H 23
 #define LARGE_FONT_TEXT_BOX_H 27
 
-
+#define BUTTON_COLOR 0x1A95
 
 //This is a negative offset
 #define TEXT_Y_OFFSET 2

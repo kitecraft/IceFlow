@@ -3,7 +3,9 @@
 #include "Utilities/ScreenUpdateKeys.h"
 #include "Utilities/DMTheme.h"
 #include "Widgets/Box.h"
-#include "../Utilities/PreferencesManager.h"
+#include "../ProfileManager/ProfileManager.h"
+#include "../DisplayManager/Utilities/CommandQueue.h"
+#include "../Utilities/ControlCommands.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
@@ -18,8 +20,11 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	_timeSprite->setTextColor(GlobalTheme.textColor, TFT_BLACK);
 	_timeSprite->setTextDatum(TR_DATUM);
 
+	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
+		Serial.println("Failed to load Profile");
+	}
 	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
-
+	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	DrawScreen();
 }
 
@@ -63,13 +68,6 @@ void MainScreen::HandleTouch(int x, int y)
 {
 	if(_sideBar->Touched(x, y)){
 		Serial.println("Sidebar was touched");
-	}
-}
-
-void MainScreen::LoadProfile()
-{
-	if (!ProfileManager.GetProfile(GetSavedProfileFileName(), &_currentProfile)) {
-		Serial.println("Failed to load Profile");
 	}
 }
 

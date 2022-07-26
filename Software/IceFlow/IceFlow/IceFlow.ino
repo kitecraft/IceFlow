@@ -17,6 +17,7 @@
 #include "src/Network/IceNetwork.h"
 #include "src/Network/IceWebServer.h"
 #include "src/Network/IceOTAManager.h"
+bool g_NetworkConnected = false;
 
 TaskHandle_t g_WebServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
@@ -27,10 +28,13 @@ static void IRAM_ATTR onTimer() {
     DisplayQueue.QueueKey(suk_DateTime);
 }
 
+
+#include "src/Utilities/PreferencesManager.h"
+
 void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
-
+    SaveProfileFilename("def_prof.json");
     //Initialize the DisplayManager
     Display.Init();
     LoadScreensIntoDM();
@@ -67,6 +71,14 @@ void HandleCommandQueue()
             DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
             DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
             break;
+        case CC_REQUEST_NET_STATUS:
+            if (g_NetworkConnected) {
+                DisplayQueue.QueueKey(suk_Network_Connected);
+            }
+            else {
+                DisplayQueue.QueueKey(suk_Network_Started);
+            }
+            break;
         default:
             Serial.print("Value: ");
             Serial.println(data);
@@ -81,10 +93,12 @@ void StartNetworkStuff()
 {
     if (!connectToNetwork())
     {
+        g_NetworkConnected = false;
         startLocalNetwork();
         Serial.println("NOT starting OTA handler");
     }
     else {
+        g_NetworkConnected = true;
         Serial.println("Starting OTA Handler");
         xTaskCreatePinnedToCore(
             OTAThread,

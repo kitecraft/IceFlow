@@ -1,4 +1,6 @@
 #include "SideBar.h"
+#include "../../DisplayManager/Utilities/DisplayQueue.h"
+#include "../Utilities/ScreenNames.h"
 
 
 SideBar::SideBar()
@@ -11,13 +13,13 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 	_coordinates = coordinates;
 	_settingsIcon = new SettingsIcon(
 		IconBaseDto(
-			DMCoordinates(ICON_X, SETTINGS_ICON_Y, ICON_WIDTH, ICON_HEIGHT, _coordinates.p_x + ICON_X, _coordinates.p_y + SETTINGS_ICON_Y),
+			DMCoordinates(ICON_X, SETTINGS_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + SETTINGS_ICON_Y),
 			GlobalTheme), 
 		_tft);
 
 	_profileIcon = new ProfileIcon(
 		IconBaseDto(
-			DMCoordinates(ICON_X, PROFILE_ICON_Y, ICON_WIDTH, ICON_HEIGHT, _coordinates.p_x + ICON_X, _coordinates.p_y + PROFILE_ICON_Y),
+			DMCoordinates(ICON_X, PROFILE_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + PROFILE_ICON_Y),
 			GlobalTheme),
 		_tft);
 }
@@ -80,6 +82,10 @@ bool SideBar::Touched(int x, int y)
 			_tft);
 		_activeIcon = SettingsIconID;
 		return true;
+	}
+
+	if (_profileIcon->Touched(x, y)) {
+		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
 
 	return false;

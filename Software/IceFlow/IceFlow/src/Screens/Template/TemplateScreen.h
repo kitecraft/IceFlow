@@ -40,14 +40,14 @@ static void Update_TemplateScreen(int inKey, char* value)
 	templateScreen->UpdateScreen(inKey, value);
 }
 
-static void Update_OTAScreen_OnInterval()
+static void Update_TemplateScreen_OnInterval()
 {
-	otaScreen->UpdateScreenOnInterval();
+	templateScreen->UpdateScreenOnInterval();
 }
 
-static void HandleTounch_TemplateScreen(int x, int y)
+static void HandleTouch_TemplateScreen(int x, int y)
 {
-	otaScreen->HandleTouch(x, y);
+	templateScreen->HandleTouch(x, y);
 }
 
 

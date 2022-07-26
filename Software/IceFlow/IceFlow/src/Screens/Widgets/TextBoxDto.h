@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include "TFT_eSPI.h"
 #include "../Utilities/DMCoordinates.h"
 #include "../Utilities/DMTheme.h"
 

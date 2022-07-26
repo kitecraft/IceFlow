@@ -44,7 +44,6 @@ private:
 	void DrawHeader();
 	void DisplayTime();
 
-	void LoadProfile();
 public:
 	MainScreen(TFT_eSPI* tft);
 	~MainScreen();

@@ -1,10 +1,12 @@
 #pragma once
 #include <Arduino.h>
 
+#define NO_PROFILE_FOUND "No Profile"
+
 class Profile
 {
 public:
-	String name = "Not Loaded";
+	String name = NO_PROFILE_FOUND;
 	uint16_t pre_heat_target_temperature = 0;
 	uint16_t pre_heat_ramp_time = 0;
 	uint16_t pre_heat_soak_time = 60;
