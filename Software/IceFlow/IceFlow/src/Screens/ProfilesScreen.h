@@ -47,7 +47,6 @@ public:
 	void UpdateScreenOnInterval();
 
 	void HandleTouch(int x, int y);
-
 };
 
 

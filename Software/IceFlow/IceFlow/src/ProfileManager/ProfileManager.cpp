@@ -3,9 +3,9 @@
 #include "../Utilities/IceFS.h"
 #include <ArduinoJson.h>
 
-vector<String> IceFlowProfileManager::GetListOfProfileFileNames()
+int IceFlowProfileManager::GetListOfProfileFileNames(String* strArray)
 {
-	return GetDirectoryListing(PROFILE_SPIFFS_FILE_DIRECTORY);
+	return GetDirectoryListing(PROFILE_SPIFFS_FILE_DIRECTORY, strArray);
 }
 
 bool IceFlowProfileManager::SaveProfileToDisk(Profile profile)
@@ -44,7 +44,7 @@ bool IceFlowProfileManager::GetProfile(String profileFileName, Profile* profile)
 	profile->reflow_max_temperature = doc["reflow"]["max_reflow_temperature"].as<uint16_t>();
 	profile->reflow_soak_time = doc["reflow"]["reflow_soak_time"].as<uint16_t>();
 	profile->cooling_ramp_down_speed = doc["cooling"]["ramp_down_speed_degrees_per_second"].as<uint16_t>();
-
+	profile->filename = profileFileName;
 	//Serial.print("Profile: ");
 	//Serial.println(profile.toJsonString());
 	return true;

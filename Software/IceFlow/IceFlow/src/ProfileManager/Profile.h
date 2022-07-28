@@ -16,6 +16,7 @@ public:
 	uint16_t reflow_max_temperature = 0;
 	uint16_t reflow_soak_time = 0;
 	uint16_t cooling_ramp_down_speed = 0;
+	String filename = "";
 
 	String toJsonString()
 	{

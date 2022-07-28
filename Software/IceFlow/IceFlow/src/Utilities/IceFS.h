@@ -3,9 +3,6 @@
 #include <FS.h>
 #include <SPIFFS.h>
 
-using namespace std;
-#include <vector>
-
 static String IceFS_ReadFile(String filename)
 {
 	SPIFFS.begin(false);
@@ -13,7 +10,7 @@ static String IceFS_ReadFile(String filename)
     
     //Serial.print("Opening: ");
     //Serial.println(filename);
-	File file = SPIFFS.open(filename);
+	fs::File file = SPIFFS.open(filename);
 	if (!file) {
 		Serial.print("Failed to open file: ");
 		Serial.println(filename);
@@ -29,26 +26,40 @@ static String IceFS_ReadFile(String filename)
 	return ret;
 }
 
-static vector<String> GetDirectoryListing(String directory)
+static int GetDirectoryListing(String directory, String *strArray)
 {
-	vector<String> ret;
-
-    File dir = SPIFFS.open(directory);
+    if (directory.endsWith("/")) {
+        directory.remove(directory.length() - 1);
+    }
+	
+    fs::File dir = SPIFFS.open(directory);
     if (!dir) {
         Serial.println("- failed to open directory");
-        return ret;
+        return 0;
     }
     if (!dir.isDirectory()) {
         Serial.println(" - not a directory");
-        return ret;
+        return 0;
     }
 
-    File file = dir.openNextFile();
+    fs::File file = dir.openNextFile();
+    int filecount = 0;
     while (file) {
         if (!file.isDirectory()) {
-            ret.push_back(file.name());
+            filecount++;
         }
         file = dir.openNextFile();
     }
-	return ret;
+
+    strArray = new String[filecount];
+
+    file = dir.openNextFile();
+    int curr = 0;
+    while (file) {
+        if (!file.isDirectory()) {
+            strArray[curr] = (file.name());
+        }
+        file = dir.openNextFile();
+    }
+	return filecount;
 }
