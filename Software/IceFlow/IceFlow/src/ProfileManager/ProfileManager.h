@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include "../Utilities/IceFS.h"
 #include "Profile.h"
 
 
@@ -16,6 +17,8 @@ public:
 	bool GetSavedProfile(Profile* profile);
 	String GetNameOfLastLoadedProfile();
 	void SaveProfileNameToPreferences(String profileFileName);
+	String GetNameOfProfileByFileName(String profileFileName);
+	double GetFreeSpaceKB() { return (GetFreespaceBytes() / 1024.0); }
 };
 
 extern IceFlowProfileManager ProfileManager;

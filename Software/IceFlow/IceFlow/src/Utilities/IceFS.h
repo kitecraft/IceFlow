@@ -63,3 +63,8 @@ static int GetDirectoryListing(String directory, String *strArray)
     }
 	return filecount;
 }
+
+static double GetFreespaceBytes()
+{
+    return (SPIFFS.totalBytes() - SPIFFS.usedBytes());
+}

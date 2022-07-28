@@ -1,6 +1,5 @@
 #include "ProfileManager.h"
 #include "../Utilities/PreferencesManager.h"
-#include "../Utilities/IceFS.h"
 #include <ArduinoJson.h>
 
 int IceFlowProfileManager::GetListOfProfileFileNames(String* strArray)
@@ -63,6 +62,15 @@ String IceFlowProfileManager::GetNameOfLastLoadedProfile()
 void IceFlowProfileManager::SaveProfileNameToPreferences(String profileFileName)
 {
 	SaveProfileFilename(profileFileName);
+}
+
+String IceFlowProfileManager::GetNameOfProfileByFileName(String profileFileName)
+{
+	Profile profile;
+	if (GetProfile(profileFileName, &profile)) {
+		return profile.name;
+	}
+	return "";
 }
 
 IceFlowProfileManager ProfileManager;

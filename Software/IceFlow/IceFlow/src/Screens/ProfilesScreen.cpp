@@ -9,8 +9,6 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 {
 	_tft = tft;
 	_headerW = _tft->width();
-	_profileListBoxX = _tft->width() - PROFILE_FILE_LISTBOX_W;
-	_fileList = ProfileManager.GetListOfProfileFileNames();
 
 	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
 		Serial.println("Failed to load Profile");
@@ -57,17 +55,21 @@ void ProfilesScreen::HandleTouch(int x, int y)
 
 void ProfilesScreen::Draw()
 {
+	Serial.println("Draw 1");
 	_tft->fillScreen(TFT_BLACK);
 
 	_tft->startWrite();
+	Serial.println("Draw 2");
 	DrawHeader();
-	DrawProfileList();
+	Serial.println("Draw 3");
+	_profileListPanel.Draw(_tft, _currentProfile.filename);
+	Serial.println("Draw 4");
 
 	_exitButton->Draw(_tft);
+	Serial.println("Draw 5");
 	_tft->dmaWait();
 	_tft->endWrite();
-
-	
+	Serial.println("Draw 6");
 }
 
 void ProfilesScreen::DrawHeader()
@@ -120,27 +122,6 @@ void ProfilesScreen::DrawHeader()
 		_currentProfile.name.c_str());
 
 	_tft->pushImageDMA(HEADER_X, HEADER_Y, _headerW, HEADER_H, sprPtr);
-	_tft->dmaWait();
-	sprite.deleteSprite();
-}
-
-void ProfilesScreen::DrawProfileList()
-{
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H);
-
-	sprite.fillSprite(TFT_BLACK);
-	DrawRoundedBox(&sprite, DMCoordinates(0, 0, PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H, 0, 0), 5, GlobalTheme);
-
-
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextColor(TFT_GREEN, GlobalTheme.panelLightColor);
-	sprite.setTextDatum(TL_DATUM);
-	String msg = "Found " + String(_fileList.size()) + " files.";
-	sprite.drawString(msg, 10, 10);
-	sprite.drawString("Default Profile", 10, 60);
-
-	_tft->pushImageDMA(_profileListBoxX, PROFILE_FILE_LISTBOX_Y, PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H, sprPtr);
 	_tft->dmaWait();
 	sprite.deleteSprite();
 }

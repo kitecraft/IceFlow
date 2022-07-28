@@ -4,6 +4,7 @@
 #include "Utilities/Screens_Config.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "Widgets/Button.h"
+#include "Panels/ProfileListPanel.h"
 
 #define HEADER_X 0
 #define HEADER_Y 0
@@ -16,12 +17,8 @@
 #define PROFILE_LABEL_X_OFFSET 15
 #define PROFILE_LABEL "Profile "
 
-#define PROFILE_FILE_LISTBOX_Y (HEADER_H + 2)
-#define PROFILE_FILE_LISTBOX_W 80
-#define PROFILE_FILE_LISTBOX_H 182
-
-#define EXIT_BUTTON_W PROFILE_FILE_LISTBOX_W //((PROFILE_FILE_LISTBOX_W/2) - 4)
-#define EXIT_BUTTON_X (320 - EXIT_BUTTON_W)
+#define EXIT_BUTTON_W PROFILE_FILE_LISTBOX_W
+#define EXIT_BUTTON_X PROFILE_FILE_LISTBOX_X
 #define EXIT_BUTTON_H 21
 #define EXIT_BUTTON_Y (240 - EXIT_BUTTON_H)
 
@@ -31,14 +28,11 @@ private:
 	TFT_eSPI* _tft;
 	Profile _currentProfile;
 	int _headerW;
-	int _profileListBoxX;
-	vector<String> _fileList;
-
+	ProfileListPanel _profileListPanel;
 	Button* _exitButton = nullptr;
 
 	void Draw();
 	void DrawHeader();
-	void DrawProfileList();
 public:
 	ProfilesScreen(TFT_eSPI* tft);
 	~ProfilesScreen();

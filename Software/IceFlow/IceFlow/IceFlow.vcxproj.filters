@@ -162,6 +162,27 @@
     <ClInclude Include="src\ProfileManager\Profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\ProfilesScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Widgets\Button.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Widgets\ButtonDto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Panels\Icons\ProfileIcon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Panels\ProfileListPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Panels\ProfileListItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -207,6 +228,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\ProfilesScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Widgets\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\Icons\ProfileIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\ProfileListPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
