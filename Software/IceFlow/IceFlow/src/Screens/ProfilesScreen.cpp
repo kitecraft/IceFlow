@@ -10,24 +10,42 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 	_tft = tft;
 	_headerW = _tft->width();
 
-	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
+	if (!ProfileManager.GetSavedProfile(&_currentlySavedProfile)) {
 		Serial.println("Failed to load Profile");
-	}/*
-	else {
-		Serial.println("Profile: ");
-		Serial.println(_currentProfile.toJsonString());
 	}
-	*/
+
+	_currentlyLoadedProfile = _currentlySavedProfile;
+
 	_exitButton = new Button(
 		ButtonDto(
-			DMCoordinates(0, 0, EXIT_BUTTON_W, EXIT_BUTTON_H, EXIT_BUTTON_X, EXIT_BUTTON_Y),
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_BUTTON_X, BUTTON_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),
 		"Exit",
 		_tft);
 
+	_cancelButton = new Button(
+		ButtonDto(
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_BUTTON_X, BUTTON_Y),
+			GlobalTheme,
+			SMALL_FONT,
+			BUTTON_COLOR),
+		"Cancel",
+		_tft);
+
+	_saveButton = new Button(
+		ButtonDto(
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, SAVE_BUTTON_X, BUTTON_Y),
+			GlobalTheme,
+			SMALL_FONT,
+			BUTTON_COLOR),
+		"Save",
+		_tft);
+
+
 	_profileListPanel = new ProfileListPanel(_tft);
+	_saveRequired = false;
 	Draw();
 	
 }
@@ -37,8 +55,14 @@ ProfilesScreen::~ProfilesScreen()
 	if (_exitButton != nullptr) {
 		delete(_exitButton);
 	}
+	if (_saveButton != nullptr) {
+		delete(_saveButton);
+	}
+	if (_cancelButton != nullptr) {
+		delete(_cancelButton);
+	}
 	if (_profileListPanel != nullptr) {
-		delete _profileListPanel;
+		delete(_profileListPanel);
 	}
 }
 
@@ -56,13 +80,47 @@ void ProfilesScreen::UpdateScreenOnInterval()
 
 void ProfilesScreen::HandleTouch(int x, int y)
 {
-	if (_exitButton->Touched(x, y)) {
-		DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
-	}
-
 	String option;
 	if (_profileListPanel->Touched(x, y, option)) {
+		if (_currentlyLoadedProfile.filename == option) {
+			return;
+		}
 
+		
+		if (!ProfileManager.GetProfile(option, &_currentlyLoadedProfile)) {
+			Serial.println("Failed to load Profile");
+		}
+		
+		if (_currentlyLoadedProfile.filename != _currentlySavedProfile.filename) {
+			_saveRequired = true;
+		}
+		else {
+			_saveRequired = false;
+		}
+		
+		Draw();
+		return;
+	}
+
+	if (_saveRequired) {
+		if (_saveButton->Touched(x, y)) {
+			ProfileManager.SaveProfileNameToPreferences(_currentlyLoadedProfile.filename);
+			_currentlySavedProfile = _currentlyLoadedProfile;
+			_saveRequired = false;
+			Draw();
+			return;
+		}
+		if (_cancelButton->Touched(x, y)) {
+			_currentlyLoadedProfile = _currentlySavedProfile;
+			_saveRequired = false;
+			Draw();
+			return;
+		}
+	}
+	else {
+		if (_exitButton->Touched(x, y)) {
+			DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		}
 	}
 }
 
@@ -72,9 +130,16 @@ void ProfilesScreen::Draw()
 
 	_tft->startWrite();
 	DrawHeader();
-	_exitButton->Draw();
+	
+	if (_saveRequired) {
+		_saveButton->Draw();
+		_cancelButton->Draw();
+	}
+	else {
+		_exitButton->Draw();
+	}
 
-	_profileListPanel->Draw(_currentProfile.filename);
+	_profileListPanel->Draw(_currentlyLoadedProfile.filename);
 	_tft->dmaWait();
 	_tft->endWrite();
 }
@@ -126,7 +191,7 @@ void ProfilesScreen::DrawHeader()
 			false,
 			true,
 			GlobalTheme.panelLightColor),
-		_currentProfile.name.c_str());
+		_currentlyLoadedProfile.name.c_str());
 
 	_tft->pushImageDMA(HEADER_X, HEADER_Y, _headerW, HEADER_H, sprPtr);
 	_tft->dmaWait();

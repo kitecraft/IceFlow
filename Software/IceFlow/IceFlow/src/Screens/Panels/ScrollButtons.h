@@ -13,8 +13,8 @@ enum Scrolldirection {
 class ScrollButtons
 {
 private:
-	bool _scrollUpEnabled = false;
 	bool _scrollDownEnabled = false;
+	bool _scrollUpEnabled = false;
 	DMCoordinates _downButtonCoordinates;
 	DMCoordinates _upButtonCoordinates;
 

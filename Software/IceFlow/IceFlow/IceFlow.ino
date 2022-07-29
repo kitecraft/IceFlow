@@ -61,8 +61,8 @@ void HandleCommandQueue()
     while (CommandQueue.GetNextItem(key, data))
     {
         ControlCommands command = static_cast<ControlCommands>(key);
-        Serial.print("Got command queue item: ");
-        Serial.println(command);
+        //Serial.print("Got command queue item: ");
+        //Serial.println(command);
 
         switch (command) {
         case CC_START_OTA:
@@ -80,7 +80,7 @@ void HandleCommandQueue()
             }
             break;
         default:
-            Serial.print("Value: ");
+            Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
             Serial.println(data);
             break;
         }

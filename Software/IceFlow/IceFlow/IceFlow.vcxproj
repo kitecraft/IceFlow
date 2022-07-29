@@ -146,6 +146,7 @@
     <ClInclude Include="src\Screens\Panels\ProfileListItem.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListPanel.h" />
+    <ClInclude Include="src\Screens\Panels\ScrollButtons.h" />
     <ClInclude Include="src\Screens\Panels\SideBar.h" />
     <ClInclude Include="src\Screens\ProfilesScreen.h" />
     <ClInclude Include="src\Screens\Utilities\DMCoordinates.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="src\Screens\Panels\Icons\SettingsIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListPanel.cpp" />
+    <ClCompile Include="src\Screens\Panels\ScrollButtons.cpp" />
     <ClCompile Include="src\Screens\Panels\SideBar.cpp" />
     <ClCompile Include="src\Screens\ProfilesScreen.cpp" />
     <ClCompile Include="src\Screens\Widgets\Button.cpp" />

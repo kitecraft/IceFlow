@@ -28,6 +28,9 @@ ScrollButtons::~ScrollButtons()
 
 void ScrollButtons::Draw(TFT_eSprite *sprite, bool downEnabled, bool upEnabled)
 {
+	_scrollDownEnabled = downEnabled;
+	_scrollUpEnabled = upEnabled;
+
 	sprite->drawRect(_downButtonCoordinates.x, _downButtonCoordinates.y, _downButtonCoordinates.w, _downButtonCoordinates.h, GlobalTheme.panelBorderColor);
 	sprite->drawRect(_upButtonCoordinates.x, _upButtonCoordinates.y, _upButtonCoordinates.w, _upButtonCoordinates.h, GlobalTheme.panelBorderColor);
 
@@ -37,7 +40,7 @@ void ScrollButtons::Draw(TFT_eSprite *sprite, bool downEnabled, bool upEnabled)
 
 
 	uint16_t color = GlobalTheme.panelBorderColor;
-	if (downEnabled) {
+	if (_scrollDownEnabled) {
 		color = GlobalTheme.panelDarkColor;
 	}
 	sprite->fillTriangle(
@@ -48,7 +51,7 @@ void ScrollButtons::Draw(TFT_eSprite *sprite, bool downEnabled, bool upEnabled)
 	);
 
 	color = GlobalTheme.panelBorderColor;
-	if (upEnabled) {
+	if (_scrollUpEnabled) {
 		color = GlobalTheme.panelDarkColor;
 	}
 	sprite->fillTriangle(
@@ -61,6 +64,25 @@ void ScrollButtons::Draw(TFT_eSprite *sprite, bool downEnabled, bool upEnabled)
 
 Scrolldirection ScrollButtons::Touched(int x, int y)
 {
+	if (_scrollDownEnabled) {
+		if (x >= _downButtonCoordinates.p_x &&
+			x <= _downButtonCoordinates.p_x + _downButtonCoordinates.w &&
+			y >= _downButtonCoordinates.p_y &&
+			y <= _downButtonCoordinates.p_y + _downButtonCoordinates.h)
+		{
+			return SCROLL_DOWN;
+		}
+	}
 
+	if (_scrollUpEnabled) {
+		if (x >= _upButtonCoordinates.p_x &&
+			x <= _upButtonCoordinates.p_x + _upButtonCoordinates.w &&
+			y >= _upButtonCoordinates.p_y &&
+			y <= _upButtonCoordinates.p_y + _upButtonCoordinates.h)
+		{
+			return SCROLL_UP;
+		}
+	}
+	
 	return SCROLL_NONE;
 }

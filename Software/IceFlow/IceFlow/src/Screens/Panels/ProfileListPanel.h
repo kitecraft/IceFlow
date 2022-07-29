@@ -38,12 +38,12 @@ private:
 	int _currentPage = 0;
 	int _numPages = 0;
 
+	void Update();
 public:
 	ProfileListPanel();
 	~ProfileListPanel();
 	ProfileListPanel(TFT_eSPI* tft);
 	void Draw(String selectedProfileFileName);
-	void Update(Scrolldirection scrollDir, String selectedProfileFileName);
 	bool Touched(int x, int y, String& option);
 };
 

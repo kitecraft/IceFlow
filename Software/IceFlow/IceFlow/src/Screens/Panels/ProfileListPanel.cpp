@@ -16,22 +16,25 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 	if (_numberProfiles <= 0) {
 		return;
 	}
-
+	/*
 	Serial.print("\nNumber of profiles: ");
 	Serial.println(_numberProfiles);
 	Serial.print("Item 1: '");
 	Serial.print(_profileList[0]);
 	Serial.println("'");
-
+	*/
 	_itemList = new ProfileListItem[_numberProfiles];
 
 	int slotOnPage = 0;
+	_numPages = 1;
 	for (int i = 0; i < _numberProfiles; i++) {
 		String name = ProfileManager.GetNameOfProfileByFileName(_profileList[i]);
+		/*
 		Serial.print("Name: ");
 		Serial.println(name);
 		Serial.print("Filename: ");
 		Serial.println(_profileList[i]);
+		*/
 		ProfileListItem x = ProfileListItem(
 			ProfileListItemDto(
 				DMCoordinates(
@@ -47,7 +50,7 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 				_profileList[i]
 			)
 		);
-		Serial.println("");
+		//Serial.println("");
 		_itemList[i] = x;
 
 		slotOnPage++;
@@ -57,6 +60,16 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 		}
 	}
 
+	//means we happened to increment our  page counter,
+	//but then didn't have any new list items to add to the new page
+	//so decrement the page count, unless there is only one page
+	// it'll be empty
+	if (slotOnPage == 0 && _numPages != 1) {
+		_numPages--; 
+	}
+
+	//Serial.print("Created pages: ");
+	//Serial.println(_numPages);
 	_scrollButtons = new ScrollButtons(
 		DMCoordinates(
 			SCROLL_BUTTONS_X,
@@ -88,7 +101,11 @@ void ProfileListPanel::Draw(String selectedProfileFileName)
 {
 	_currentProfileFileName = selectedProfileFileName;
 	_currentPage = 0;
+	Update();
+}
 
+void ProfileListPanel::Update()
+{
 	_sprite->fillSprite(TFT_BLACK);
 	DrawRoundedBox(_sprite, DMCoordinates(0, 0, PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H, 0, 0), 5, GlobalTheme);
 
@@ -103,36 +120,45 @@ void ProfileListPanel::Draw(String selectedProfileFileName)
 	//_sprite->drawString("Free Space:", 6, PROFILE_FILE_LISTBOX_H - 24);
 	msg = "Free: " + String(ProfileManager.GetFreeSpaceKB()) + " KB";
 	_sprite->drawString(msg, 6, PROFILE_FILE_LISTBOX_H - 14);
-	
+
 	//_sprite->drawString(msg, 6, PROFILE_FILE_LISTBOX_H - 14);
 
-
-	for (int i = (_currentPage * ITEMS_PER_PAGE); i < ITEMS_PER_PAGE && i < _numberProfiles; i++) {
+	//Serial.print("Drawing the list on page: ");
+	//Serial.println(_currentPage);
+	for (int i = (_currentPage * ITEMS_PER_PAGE); (i - (_currentPage * ITEMS_PER_PAGE)) < ITEMS_PER_PAGE && i < _numberProfiles; i++) {
+		//Serial.print("i is: ");
+		//Serial.println(i);
 		bool status = false;
-		if (_itemList[i].GetFileName() == selectedProfileFileName) {
-			Serial.println("Selected is true");
+		if (_itemList[i].GetFileName() == _currentProfileFileName) {
+			//Serial.println("Selected is true");
 			status = true;
 		}
 		else {
-			Serial.print("Status is false");
+			//Serial.println("Status is false");
 
 		}
 		_itemList[i].Draw(_sprite, status);
 	}
+	//Serial.println("Ended the loop");
 
-	_scrollButtons->Draw(_sprite, true, false);
+	bool scrollDownEnabled = false; //go up in page number
+	bool scrollUpEnabled = false; // go down in page number
+	if (_currentPage < _numPages - 1) {
+		scrollDownEnabled = true;
+	}
+	if (_currentPage > 0) {
+		scrollUpEnabled = true;
+	}
+
+
+	_scrollButtons->Draw(_sprite, scrollDownEnabled, scrollUpEnabled);
 	_tft->pushImageDMA(PROFILE_FILE_LISTBOX_X, PROFILE_FILE_LISTBOX_Y, PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H, _sprPtr);
 	_tft->dmaWait();
 }
 
-void ProfileListPanel::Update(Scrolldirection scrollDir, String selectedProfileFileName)
-{
-
-}
-
 bool ProfileListPanel::Touched(int x, int y, String& option)
 {
-	for (int i = (_currentPage * ITEMS_PER_PAGE); i < ITEMS_PER_PAGE && i < _numberProfiles; i++) {
+	for (int i = (_currentPage * ITEMS_PER_PAGE); (i - (_currentPage * ITEMS_PER_PAGE)) < ITEMS_PER_PAGE && i < _numberProfiles; i++) {
 		if (_itemList[i].Touched(x, y)) {
 			option = _itemList[i].GetFileName();
 			return true;
@@ -141,11 +167,28 @@ bool ProfileListPanel::Touched(int x, int y, String& option)
 
 	Scrolldirection scrollDirection = _scrollButtons->Touched(x, y);
 	if (scrollDirection != SCROLL_NONE) {
+		//Serial.println("Scroll was touched: ");
+		bool updateRequired = false;
 		if (scrollDirection == SCROLL_DOWN) {
-
+			//Serial.println("Scroll DOWN: ");
+			if (_currentPage < _numPages ) {
+				_currentPage++;
+				updateRequired = true;
+			}
 		}
 		else {
-
+			//Serial.println("Scroll UP: ");
+			if (_currentPage > 0) {
+				_currentPage--;
+				updateRequired = true;
+			}
+		}
+		if (updateRequired) {
+			//Serial.println("Running the update");
+			_tft->startWrite();
+			Update();
+			_tft->dmaWait();
+			_tft->endWrite();
 		}
 	}
 	return false;

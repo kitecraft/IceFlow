@@ -183,6 +183,9 @@
     <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\Panels\ScrollButtons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -243,6 +246,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\ScrollButtons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

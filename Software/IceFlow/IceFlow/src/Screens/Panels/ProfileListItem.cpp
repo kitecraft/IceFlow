@@ -12,8 +12,8 @@ ProfileListItem::ProfileListItem(ProfileListItemDto config)
 
 void ProfileListItem::Draw(TFT_eSprite* sprite, bool selected)
 {
-	Serial.print("ProfileListItem draw coordinates: ");
-	_config.coordinates.Print();
+	//Serial.print("ProfileListItem draw coordinates: ");
+	//_config.coordinates.Print();
 	uint16_t bgColor = _config.theme.panelLightColor;
 	if (selected) {
 		bgColor = _config.theme.panelDarkColor;
