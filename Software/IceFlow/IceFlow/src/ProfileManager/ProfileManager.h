@@ -11,7 +11,7 @@ class IceFlowProfileManager
 private:
 
 public:
-	int GetListOfProfileFileNames(String* strArray);
+	int GetListOfProfileFileNames(String*& strArray);
 	bool SaveProfileToDisk(Profile profile); //saved as Profile <name>.json with spaces to _
 	bool GetProfile(String profileName, Profile* profile); // 
 	bool GetSavedProfile(Profile* profile);

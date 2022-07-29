@@ -2,7 +2,7 @@
 #include "../Utilities/PreferencesManager.h"
 #include <ArduinoJson.h>
 
-int IceFlowProfileManager::GetListOfProfileFileNames(String* strArray)
+int IceFlowProfileManager::GetListOfProfileFileNames(String*& strArray)
 {
 	return GetDirectoryListing(PROFILE_SPIFFS_FILE_DIRECTORY, strArray);
 }
@@ -14,15 +14,13 @@ bool IceFlowProfileManager::SaveProfileToDisk(Profile profile)
 
 bool IceFlowProfileManager::GetProfile(String profileFileName, Profile* profile)
 {
-	Serial.print("Profile filename: ");
-	Serial.println(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName);
 	if (profileFileName.isEmpty()) {
 		return false;
 	}
 
 	String jsonString = IceFS_ReadFile(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName);
-	Serial.println("String: ");
-	Serial.println(jsonString);
+	//Serial.println("String: ");
+	//Serial.println(jsonString);
 
 	DynamicJsonDocument doc(512);
 	DeserializationError error = deserializeJson(doc, jsonString);

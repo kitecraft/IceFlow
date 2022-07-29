@@ -26,7 +26,7 @@ static String IceFS_ReadFile(String filename)
 	return ret;
 }
 
-static int GetDirectoryListing(String directory, String *strArray)
+static int GetDirectoryListing(String directory, String *&strArray)
 {
     if (directory.endsWith("/")) {
         directory.remove(directory.length() - 1);
@@ -53,14 +53,17 @@ static int GetDirectoryListing(String directory, String *strArray)
 
     strArray = new String[filecount];
 
+    dir = SPIFFS.open(directory);
     file = dir.openNextFile();
     int curr = 0;
     while (file) {
         if (!file.isDirectory()) {
             strArray[curr] = (file.name());
+            curr++;
         }
         file = dir.openNextFile();
     }
+
 	return filecount;
 }
 

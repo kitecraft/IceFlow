@@ -1,0 +1,1 @@
+{"name":"Third Profile","preheat":{"target_temperature":150,"ramp_time":90},"soak":{"soak_time":60,"soak_end_temperature":150},"ramp_to_reflow":{"target_reflow_temperature":220,"ramp_time":120},"reflow":{"max_reflow_temperature":230,"reflow_soak_time":40},"cooling":{"ramp_down_speed_degrees_per_second":3}}

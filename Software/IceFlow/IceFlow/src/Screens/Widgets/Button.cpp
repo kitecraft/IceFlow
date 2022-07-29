@@ -7,24 +7,24 @@ Button::Button()
 
 Button::~Button()
 {
-
+	if (_sprite != nullptr) {
+		delete _sprite;
+	}
 }
 
-Button::Button(ButtonDto config, String label)
+Button::Button(ButtonDto config, String label, TFT_eSPI* tft)
 {
 	_config = config;
 	_label = label;
+	_tft = tft;
+	_sprite = new TFT_eSprite(_tft);
+	_sprPtr = (uint16_t*)_sprite->createSprite(_config.coordinates.w, _config.coordinates.h);
 }
 
-void Button::Draw(TFT_eSPI *tft)
+void Button::Draw()
 {
-	Serial.println("Button Draw 1");
-	_config.coordinates.Print();
 	int radius = 4;
-	TFT_eSprite sprite(tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(_config.coordinates.w, _config.coordinates.h);
-
-	sprite.fillSmoothRoundRect(
+	_sprite->fillSmoothRoundRect(
 		_config.coordinates.x,
 		_config.coordinates.y,
 		_config.coordinates.w,
@@ -34,7 +34,7 @@ void Button::Draw(TFT_eSPI *tft)
 		_config.theme.panelLightColor
 	);
 
-	sprite.fillSmoothRoundRect(
+	_sprite->fillSmoothRoundRect(
 		_config.coordinates.x + 1,
 		_config.coordinates.y + 1,
 		_config.coordinates.w - 2,
@@ -44,7 +44,7 @@ void Button::Draw(TFT_eSPI *tft)
 		_config.theme.panelBorderColor
 	);
 
-	sprite.fillSmoothRoundRect(
+	_sprite->fillSmoothRoundRect(
 		_config.coordinates.x + 2,
 		_config.coordinates.y + 3,
 		_config.coordinates.w - 4,
@@ -54,14 +54,13 @@ void Button::Draw(TFT_eSPI *tft)
 		_config.theme.panelBorderColor
 	);
 
-	sprite.setFreeFont(_config.font);
-	sprite.setTextColor(_config.theme.textColor, _config.buttonColor);
-	sprite.setTextDatum(MC_DATUM);
-	sprite.drawString(_label, _config.coordinates.w/2, _config.coordinates.h/2);
+	_sprite->setFreeFont(_config.font);
+	_sprite->setTextColor(_config.theme.textColor, _config.buttonColor);
+	_sprite->setTextDatum(MC_DATUM);
+	_sprite->drawString(_label, _config.coordinates.w/2, _config.coordinates.h/2);
 
-	tft->pushImageDMA(_config.coordinates.p_x, _config.coordinates.p_y, _config.coordinates.w, _config.coordinates.h, sprPtr);
-	tft->dmaWait();
-	sprite.deleteSprite();
+	_tft->pushImageDMA(_config.coordinates.p_x, _config.coordinates.p_y, _config.coordinates.w, _config.coordinates.h, _sprPtr);
+	_tft->dmaWait();
 }
 
 bool Button::Touched(int x, int y)

@@ -17,18 +17,18 @@
 #define PROFILE_LABEL_X_OFFSET 15
 #define PROFILE_LABEL "Profile "
 
-#define EXIT_BUTTON_W PROFILE_FILE_LISTBOX_W
-#define EXIT_BUTTON_X PROFILE_FILE_LISTBOX_X
+#define EXIT_BUTTON_W (PROFILE_FILE_LISTBOX_W/2)
+#define EXIT_BUTTON_X (PROFILE_FILE_LISTBOX_X + EXIT_BUTTON_W)
 #define EXIT_BUTTON_H 21
 #define EXIT_BUTTON_Y (240 - EXIT_BUTTON_H)
 
 class ProfilesScreen
 {
 private:
-	TFT_eSPI* _tft;
+	TFT_eSPI* _tft = nullptr;
 	Profile _currentProfile;
 	int _headerW;
-	ProfileListPanel _profileListPanel;
+	ProfileListPanel* _profileListPanel = nullptr;
 	Button* _exitButton = nullptr;
 
 	void Draw();

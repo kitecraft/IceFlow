@@ -12,26 +12,34 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 
 	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
 		Serial.println("Failed to load Profile");
-	}
+	}/*
 	else {
 		Serial.println("Profile: ");
 		Serial.println(_currentProfile.toJsonString());
 	}
-
+	*/
 	_exitButton = new Button(
 		ButtonDto(
 			DMCoordinates(0, 0, EXIT_BUTTON_W, EXIT_BUTTON_H, EXIT_BUTTON_X, EXIT_BUTTON_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),
-		"Exit");
+		"Exit",
+		_tft);
+
+	_profileListPanel = new ProfileListPanel(_tft);
 	Draw();
 	
 }
 
 ProfilesScreen::~ProfilesScreen()
 {
-	delete(_exitButton);
+	if (_exitButton != nullptr) {
+		delete(_exitButton);
+	}
+	if (_profileListPanel != nullptr) {
+		delete _profileListPanel;
+	}
 }
 
 
@@ -51,25 +59,24 @@ void ProfilesScreen::HandleTouch(int x, int y)
 	if (_exitButton->Touched(x, y)) {
 		DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
 	}
+
+	String option;
+	if (_profileListPanel->Touched(x, y, option)) {
+
+	}
 }
 
 void ProfilesScreen::Draw()
 {
-	Serial.println("Draw 1");
 	_tft->fillScreen(TFT_BLACK);
 
 	_tft->startWrite();
-	Serial.println("Draw 2");
 	DrawHeader();
-	Serial.println("Draw 3");
-	_profileListPanel.Draw(_tft, _currentProfile.filename);
-	Serial.println("Draw 4");
+	_exitButton->Draw();
 
-	_exitButton->Draw(_tft);
-	Serial.println("Draw 5");
+	_profileListPanel->Draw(_currentProfile.filename);
 	_tft->dmaWait();
 	_tft->endWrite();
-	Serial.println("Draw 6");
 }
 
 void ProfilesScreen::DrawHeader()

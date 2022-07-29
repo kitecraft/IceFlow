@@ -116,7 +116,7 @@ void DisplayManager::CalibrateTouch()
 		_tft.println("Calibration complete!");
 	}
 	else {
-		Serial.print("Failed to write file:  '");
+		Serial.print("Failed to write touch calibration file:  '");
 		Serial.print(f.getWriteError());
 		Serial.println("'");
 
@@ -129,9 +129,9 @@ void DisplayManager::CalibrateTouch()
 
 void DisplayManager::LoadNewScreen(int screenID)
 {
-	Serial.print("\nLoading new screen: ");
-	Serial.println(screenID);
-	PrintMemUseage();
+	//Serial.print("\nLoading new screen: ");
+	//Serial.println(screenID);
+	//PrintMemUseage();
 	ScreenContainer newScreen;
 	for (int i = 0; i < _dmScreenContainers.size(); i++) {
 		if (_dmScreenContainers.at(i).key == screenID) {
@@ -147,13 +147,13 @@ void DisplayManager::LoadNewScreen(int screenID)
 	}
 	if (_currentScreen.DestroyScreen != nullptr) {
 		_currentScreen.DestroyScreen();
-		Serial.println("\nScreen destroyed");
-		PrintMemUseage();
+		//Serial.println("\nScreen destroyed");
+		//PrintMemUseage();
 	}
 	_currentScreen = newScreen;
 	_currentScreen.CreateScreen(&_tft);
-	Serial.println("\nScreen created");
-	PrintMemUseage();
+	//Serial.println("\nScreen created");
+	//PrintMemUseage();
 }
 
 void DisplayManager::HandleDisplayQueue()
