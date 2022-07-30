@@ -16,6 +16,7 @@ Button::~Button()
 Button::Button(ButtonDto config, String label, TFT_eSPI* tft)
 {
 	_config = config;
+	_buttonColor = _config.buttonColor;
 	_label = label;
 	_tft = tft;
 	_sprite = new TFT_eSprite(_tft);
@@ -24,11 +25,9 @@ Button::Button(ButtonDto config, String label, TFT_eSPI* tft)
 
 void Button::Draw()
 {
-	int radius = 4;
-	if (!_visible) {
-		_sprite->fillSprite(TFT_BLACK);
-	}
-	else {
+	_sprite->fillSprite(_config.backgroundColor);
+	if (_visible) {
+		int radius = 4;
 		_sprite->fillSmoothRoundRect(
 			_config.coordinates.x,
 			_config.coordinates.y,
@@ -36,7 +35,7 @@ void Button::Draw()
 			_config.coordinates.h,
 			radius,
 			_config.theme.panelBorderColor,
-			_config.theme.panelLightColor
+			_config.backgroundColor
 		);
 
 		_sprite->fillSmoothRoundRect(
@@ -55,12 +54,12 @@ void Button::Draw()
 			_config.coordinates.w - 4,
 			_config.coordinates.h - 4,
 			radius,
-			_config.buttonColor,
+			_buttonColor,
 			_config.theme.panelBorderColor
 		);
 
 		_sprite->setFreeFont(_config.font);
-		_sprite->setTextColor(_config.theme.textColor, _config.buttonColor);
+		_sprite->setTextColor(_config.theme.textColor, _buttonColor);
 		_sprite->setTextDatum(MC_DATUM);
 		_sprite->drawString(_label, _config.coordinates.w / 2, _config.coordinates.h / 2);
 	}

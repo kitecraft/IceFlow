@@ -112,27 +112,15 @@ void MainScreen::DrawHeader()
 	sprite.fillSprite(TFT_BLACK);
 	DrawRoundedBox(&sprite, DMCoordinates(0, 0, _headerW, HEADER_H, 0, 0), HEADER_H / 2, GlobalTheme);
 
-	int deviceNameTBWidth = TextBox::DrawTextBox(&sprite,
-		TextBoxDto(
-			DMCoordinates(
-				DEVICE_NAME_TB_X,
-				HEADER_TB_Y,
-				-1,
-				MEDIUM_FONT_TEXT_BOX_H,
-				DEVICE_NAME_TB_X + HEADER_X,
-				HEADER_TB_Y + HEADER_Y),
-			GlobalTheme,
-			MEDIUM_FONT,
-			MC_DATUM,
-			false,
-			true,
-			GlobalTheme.panelLightColor),
-		__DEVICE_NAME__);
+	sprite.setFreeFont(LARGE_FONT);
+	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
+	sprite.drawString(__DEVICE_NAME__, DEVICE_NAME_X, DEVICE_NAME_Y);
+
+	int profileLableX = DEVICE_NAME_X + sprite.textWidth(__DEVICE_NAME__) + PROFILE_LABEL_X_OFFSET;
 
 	sprite.setFreeFont(MEDIUM_FONT);
 	sprite.setTextColor(TFT_GREEN, GlobalTheme.panelLightColor);
 	sprite.setTextDatum(ML_DATUM);
-	int profileLableX = DEVICE_NAME_TB_X + deviceNameTBWidth + PROFILE_LABEL_X_OFFSET;
 	sprite.drawString(PROFILE_LABEL, profileLableX, (HEADER_H /2) - 1);
 
 	int profileX = profileLableX + sprite.textWidth(PROFILE_LABEL);
@@ -143,7 +131,7 @@ void MainScreen::DrawHeader()
 				HEADER_TB_Y,
 				-1,
 				MEDIUM_FONT_TEXT_BOX_H,
-				DEVICE_NAME_TB_X + HEADER_X,
+				DEVICE_NAME_X + HEADER_X,
 				HEADER_TB_Y + HEADER_Y),
 			GlobalTheme,
 			MEDIUM_FONT,

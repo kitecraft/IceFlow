@@ -11,6 +11,7 @@ private:
 	TFT_eSprite* _sprite = nullptr;
 	uint16_t* _sprPtr = nullptr;
 	bool _visible = true;
+	uint16_t _buttonColor = TFT_BLACK;
 public:
 	Button();
 	~Button();
@@ -18,5 +19,6 @@ public:
 	void Draw();
 	bool Touched(int x, int y);
 	void Visible(bool visible) { _visible = visible; }
+	void SetButtonColor(uint16_t buttonColor) { _buttonColor = buttonColor; }
 };
 

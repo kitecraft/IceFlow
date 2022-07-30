@@ -9,10 +9,13 @@
 
 #define HEADER_X 0
 #define HEADER_Y 0
+#define HEADER_W 320
 #define HEADER_W_OFFSET 3
+
 #define HEADER_H (MEDIUM_FONT_TEXT_BOX_H + 10)
 
-#define DEVICE_NAME_TB_X ((HEADER_H/2) - 3)
+#define DEVICE_NAME_X ((HEADER_H/2) - 3)
+#define DEVICE_NAME_Y 7
 #define HEADER_TB_Y 5
 
 #define PROFILE_LABEL_X_OFFSET 15
@@ -24,6 +27,9 @@
 #define EXIT_BUTTON_X (PROFILE_FILE_LISTBOX_X + BUTTON_W)
 #define SAVE_BUTTON_X PROFILE_FILE_LISTBOX_X
 
+#define SHOW_GRID_BTN_W 30
+#define SHOW_GRID_BTN_X (HEADER_W - SHOW_GRID_BTN_W - 11)
+#define SHOW_GRID_BTN_Y ((HEADER_H/2) - (BUTTON_H/2))
 
 class ProfilesScreen
 {
@@ -31,12 +37,12 @@ private:
 	TFT_eSPI* _tft = nullptr;
 	Profile _currentlyLoadedProfile;
 	Profile _currentlySavedProfile;
-	int _headerW;
 	ProfileListPanel* _profileListPanel = nullptr;
 	Button* _exitButton = nullptr;
 	Button* _saveButton = nullptr;
 	Button* _cancelButton = nullptr;
 	bool _saveRequired = false;
+	Button* _showGridButton = nullptr;
 
 	PS_ProfileGraphPanel* _graphPanel = nullptr;
 

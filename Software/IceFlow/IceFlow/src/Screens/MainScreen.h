@@ -20,7 +20,8 @@
 #define HEADER_W_OFFSET 3
 #define HEADER_H (MEDIUM_FONT_TEXT_BOX_H + 10)
 
-#define DEVICE_NAME_TB_X ((HEADER_H/2) - 3)
+#define DEVICE_NAME_X ((HEADER_H/2) - 3)
+#define DEVICE_NAME_Y 7
 #define HEADER_TB_Y 5
 
 #define PROFILE_LABEL_X_OFFSET 15
