@@ -5,6 +5,7 @@
 #include "../ProfileManager/ProfileManager.h"
 #include "Widgets/Button.h"
 #include "Panels/ProfileListPanel.h"
+#include "Panels/PS_ProfileGraphPanel.h"
 
 #define HEADER_X 0
 #define HEADER_Y 0
@@ -36,6 +37,8 @@ private:
 	Button* _saveButton = nullptr;
 	Button* _cancelButton = nullptr;
 	bool _saveRequired = false;
+
+	PS_ProfileGraphPanel* _graphPanel = nullptr;
 
 	void Draw();
 	void DrawHeader();

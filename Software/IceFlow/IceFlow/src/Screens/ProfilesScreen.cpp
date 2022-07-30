@@ -46,6 +46,10 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 
 	_profileListPanel = new ProfileListPanel(_tft);
 	_saveRequired = false;
+
+	_graphPanel = new PS_ProfileGraphPanel(_tft);
+
+	_tft->fillScreen(TFT_BLACK);
 	Draw();
 	
 }
@@ -63,6 +67,9 @@ ProfilesScreen::~ProfilesScreen()
 	}
 	if (_profileListPanel != nullptr) {
 		delete(_profileListPanel);
+	}
+	if (_graphPanel != nullptr) {
+		delete(_graphPanel);
 	}
 }
 
@@ -86,9 +93,9 @@ void ProfilesScreen::HandleTouch(int x, int y)
 			return;
 		}
 
-		
 		if (!ProfileManager.GetProfile(option, &_currentlyLoadedProfile)) {
 			Serial.println("Failed to load Profile");
+			return;
 		}
 		
 		if (_currentlyLoadedProfile.filename != _currentlySavedProfile.filename) {
@@ -126,22 +133,25 @@ void ProfilesScreen::HandleTouch(int x, int y)
 
 void ProfilesScreen::Draw()
 {
-	_tft->fillScreen(TFT_BLACK);
-
 	_tft->startWrite();
 	DrawHeader();
 	
 	if (_saveRequired) {
-		_saveButton->Draw();
+		_saveButton->Visible(true);
 		_cancelButton->Draw();
 	}
 	else {
+		_saveButton->Visible(false);
 		_exitButton->Draw();
 	}
 
+	_saveButton->Draw();
 	_profileListPanel->Draw(_currentlyLoadedProfile.filename);
+	_graphPanel->Draw(_currentlyLoadedProfile.filename);
+
 	_tft->dmaWait();
 	_tft->endWrite();
+
 }
 
 void ProfilesScreen::DrawHeader()

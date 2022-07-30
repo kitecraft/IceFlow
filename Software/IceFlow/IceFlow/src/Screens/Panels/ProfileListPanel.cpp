@@ -35,7 +35,7 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 		Serial.print("Filename: ");
 		Serial.println(_profileList[i]);
 		*/
-		ProfileListItem x = ProfileListItem(
+		_itemList[i] = ProfileListItem(
 			ProfileListItemDto(
 				DMCoordinates(
 					LIST_ITEM_X,
@@ -50,8 +50,6 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 				_profileList[i]
 			)
 		);
-		//Serial.println("");
-		_itemList[i] = x;
 
 		slotOnPage++;
 		if (slotOnPage == ITEMS_PER_PAGE) {
@@ -93,6 +91,7 @@ ProfileListPanel::~ProfileListPanel()
 		delete _scrollButtons;
 	}
 	if (_sprite != nullptr) {
+		_sprite->deleteSprite();
 		delete _sprite;
 	}
 }
@@ -101,6 +100,18 @@ void ProfileListPanel::Draw(String selectedProfileFileName)
 {
 	_currentProfileFileName = selectedProfileFileName;
 	_currentPage = 0;
+
+	//Find the page with the selected profile on it
+	for (int i = 0; i < _numberProfiles; i++) {
+		if (i > 0 && i % ITEMS_PER_PAGE == 0) {
+			_currentPage++;
+		}
+
+		if (_itemList[i].GetFileName() == _currentProfileFileName) {
+			break;
+		}
+
+	}
 	Update();
 }
 
@@ -114,32 +125,17 @@ void ProfileListPanel::Update()
 	_sprite->setTextDatum(TL_DATUM);
 	String msg = "Found " + String(_numberProfiles) + " files.";
 	_sprite->drawString(msg, 10, 5);
-	//_sprite->drawFastHLine(5, 15, PROFILE_FILE_LISTBOX_W - 10, GlobalTheme.panelBorderColor);
 
-	//_sprite->drawFastHLine(5, PROFILE_FILE_LISTBOX_H - 23, PROFILE_FILE_LISTBOX_W - 10, GlobalTheme.panelBorderColor);
-	//_sprite->drawString("Free Space:", 6, PROFILE_FILE_LISTBOX_H - 24);
 	msg = "Free: " + String(ProfileManager.GetFreeSpaceKB()) + " KB";
 	_sprite->drawString(msg, 6, PROFILE_FILE_LISTBOX_H - 14);
 
-	//_sprite->drawString(msg, 6, PROFILE_FILE_LISTBOX_H - 14);
-
-	//Serial.print("Drawing the list on page: ");
-	//Serial.println(_currentPage);
 	for (int i = (_currentPage * ITEMS_PER_PAGE); (i - (_currentPage * ITEMS_PER_PAGE)) < ITEMS_PER_PAGE && i < _numberProfiles; i++) {
-		//Serial.print("i is: ");
-		//Serial.println(i);
 		bool status = false;
 		if (_itemList[i].GetFileName() == _currentProfileFileName) {
-			//Serial.println("Selected is true");
 			status = true;
-		}
-		else {
-			//Serial.println("Status is false");
-
 		}
 		_itemList[i].Draw(_sprite, status);
 	}
-	//Serial.println("Ended the loop");
 
 	bool scrollDownEnabled = false; //go up in page number
 	bool scrollUpEnabled = false; // go down in page number
@@ -149,7 +145,6 @@ void ProfileListPanel::Update()
 	if (_currentPage > 0) {
 		scrollUpEnabled = true;
 	}
-
 
 	_scrollButtons->Draw(_sprite, scrollDownEnabled, scrollUpEnabled);
 	_tft->pushImageDMA(PROFILE_FILE_LISTBOX_X, PROFILE_FILE_LISTBOX_Y, PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H, _sprPtr);

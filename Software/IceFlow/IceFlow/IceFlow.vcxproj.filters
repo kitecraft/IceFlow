@@ -186,6 +186,9 @@
     <ClInclude Include="src\Screens\Panels\ScrollButtons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\Panels\PS_ProfileGraphPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -249,6 +252,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\Panels\ScrollButtons.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\PS_ProfileGraphPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
