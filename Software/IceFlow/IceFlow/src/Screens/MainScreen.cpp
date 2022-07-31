@@ -10,10 +10,6 @@
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
 	_tft = tft;
-	_wifiX = _tft->width() - 4;
-	_timeX = _wifiX - TIME_W - 7;
-	_sidebarX = _tft->width() - SIDEBAR_W;
-	_headerW = _sidebarX - HEADER_W_OFFSET;
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(TIME_W, TIME_H);
 	_timeSprite->setFreeFont(SMALL_FONT);
@@ -23,13 +19,55 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
 		Serial.println("Failed to load Profile");
 	}
-	_sideBar = new SideBar(_tft,DMCoordinates(_sidebarX, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, _sidebarX, SIDEBAR_Y));
+	_sideBar = new SideBar(_tft,DMCoordinates(SIDEBAR_X, SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, SIDEBAR_X, SIDEBAR_Y));
+
+
+	DMTheme temperatureTheme = GlobalTheme;
+	temperatureTheme.textColor = MS_PRIMARY_TEMPERATURE_COLOR;
+	_primaryTemperature = new TextBox(TextBoxDto(
+		DMCoordinates(
+			MS_PRIMARY_TEMPERATURE_TB_X,
+			MS_HEADER_TB_Y,
+			MS_TEMPERATURE_TB_W,
+			MEDIUM_FONT_TEXT_BOX_H,
+			MS_FOOTER_X + MS_PRIMARY_TEMPERATURE_TB_X,
+			MS_FOOTER_Y + MS_HEADER_TB_Y
+		),
+		temperatureTheme,
+		MEDIUM_FONT,
+		MR_DATUM,
+		false,
+		true,
+		GlobalTheme.panelLightColor),
+		_tft);
+
+	temperatureTheme.textColor = MS_SEC_TEMPERATURE_COLOR;
+	_secondaryTemperature = new TextBox(TextBoxDto(
+		DMCoordinates(
+			MS_SEC_TEMPERATURE_TB_X,
+			MS_HEADER_TB_Y,
+			MS_TEMPERATURE_TB_W,
+			MEDIUM_FONT_TEXT_BOX_H,
+			MS_FOOTER_X + MS_SEC_TEMPERATURE_TB_X,
+			MS_FOOTER_Y + MS_HEADER_TB_Y
+		),
+		temperatureTheme,
+		MEDIUM_FONT,
+		MR_DATUM,
+		false,
+		true,
+		GlobalTheme.panelLightColor),
+		_tft);
+
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
+	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	DrawScreen();
 }
 
 MainScreen::~MainScreen()
 {
+	CommandQueue.QueueCommand(CC_STOP_TEMPERATURE_STREAM);
+	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
 	delete(_sideBar);
 	if (_timeSprite != nullptr) {
 		_timeSprite->deleteSprite();
@@ -44,13 +82,20 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	SCREEN_UPDATE_KEYS key = static_cast<SCREEN_UPDATE_KEYS>(inKey);
 	switch (key) {
 	case suk_Network_Connected:
-		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_TRANSPARENT);
+		CommandQueue.QueueCommand(CC_START_TIME_UPATES);
+		_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_TRANSPARENT);
 		break;
 	case suk_Network_Started:
-		_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_YELLOW, TFT_TRANSPARENT);
+		_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_YELLOW, TFT_TRANSPARENT);
 		break;
 	case suk_DateTime:
 		DisplayTime();
+		break;
+	case suk_PrimaryTemperature:
+		UpdatePrimaryTemp(value);
+		break;
+	case suk_SecondaryTemperature:
+		UpdateSecondaryTemp(value);
 		break;
 	default:
 		break;
@@ -94,11 +139,12 @@ void MainScreen::DrawScreen()
 	_tft->fillRect(300, 0, 20, 240, TFT_GREENYELLOW);
 	*/
 
-	_tft->drawSpot(_wifiX, WIFI_Y, WIFI_SPOT_R, TFT_WHITE, TFT_TRANSPARENT);
+	_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_WHITE, TFT_TRANSPARENT);
 
 	_tft->startWrite();
 	_sideBar->Draw();
 	DrawHeader();
+	DrawFooter();
 
 	_tft->dmaWait();
 	_tft->endWrite();
@@ -107,32 +153,32 @@ void MainScreen::DrawScreen()
 void MainScreen::DrawHeader()
 {
 	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(_headerW, HEADER_H);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(MS_HEADER_W, MS_HEADER_H);
 
 	sprite.fillSprite(TFT_BLACK);
-	DrawRoundedBox(&sprite, DMCoordinates(0, 0, _headerW, HEADER_H, 0, 0), HEADER_H / 2, GlobalTheme);
+	DrawRoundedBox(&sprite, DMCoordinates(0, 0, MS_HEADER_W, MS_HEADER_H, 0, 0), MS_HEADER_H / 2, GlobalTheme);
 
 	sprite.setFreeFont(LARGE_FONT);
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
-	sprite.drawString(__DEVICE_NAME__, DEVICE_NAME_X, DEVICE_NAME_Y);
+	sprite.drawString(__DEVICE_NAME__, MS_DEVICE_NAME_X, MS_DEVICE_NAME_Y);
 
-	int profileLableX = DEVICE_NAME_X + sprite.textWidth(__DEVICE_NAME__) + PROFILE_LABEL_X_OFFSET;
+	int profileLableX = MS_DEVICE_NAME_X + sprite.textWidth(__DEVICE_NAME__) + MS_PROFILE_LABEL_X_OFFSET;
 
 	sprite.setFreeFont(MEDIUM_FONT);
 	sprite.setTextColor(TFT_GREEN, GlobalTheme.panelLightColor);
 	sprite.setTextDatum(ML_DATUM);
-	sprite.drawString(PROFILE_LABEL, profileLableX, (HEADER_H /2) - 1);
+	sprite.drawString(MS_PROFILE_LABEL, profileLableX, (MS_HEADER_H /2) - 1);
 
-	int profileX = profileLableX + sprite.textWidth(PROFILE_LABEL);
+	int profileX = profileLableX + sprite.textWidth(MS_PROFILE_LABEL);
 	TextBox::DrawTextBox(&sprite,
 		TextBoxDto(
 			DMCoordinates(
 				profileX,
-				HEADER_TB_Y,
+				MS_HEADER_TB_Y,
 				-1,
 				MEDIUM_FONT_TEXT_BOX_H,
-				DEVICE_NAME_X + HEADER_X,
-				HEADER_TB_Y + HEADER_Y),
+				MS_DEVICE_NAME_X + MS_HEADER_X,
+				MS_HEADER_TB_Y + MS_HEADER_Y),
 			GlobalTheme,
 			MEDIUM_FONT,
 			MC_DATUM,
@@ -141,7 +187,31 @@ void MainScreen::DrawHeader()
 			GlobalTheme.panelLightColor),
 		_currentProfile.name.c_str());
 
-	_tft->pushImageDMA(HEADER_X, HEADER_Y, _headerW, HEADER_H, sprPtr);
+	_tft->pushImageDMA(MS_HEADER_X, MS_HEADER_Y, MS_HEADER_W, MS_HEADER_H, sprPtr);
+	_tft->dmaWait();
+	sprite.deleteSprite();
+}
+void MainScreen::DrawFooter()
+{
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(MS_FOOTER_W, MS_FOOTER_H);
+
+	sprite.fillSprite(TFT_BLACK);
+	DrawRoundedBox(&sprite, DMCoordinates(0, 0, MS_FOOTER_W, MS_FOOTER_H, 0, 0), MS_FOOTER_H / 2, GlobalTheme);
+
+	sprite.setFreeFont(MEDIUM_FONT);
+	sprite.setTextDatum(ML_DATUM);
+
+	sprite.setTextColor(MS_PRIMARY_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
+	sprite.drawString("Prim: ", MS_PRIMARY_TEMPERATURE_LABEL_X, MS_TEMPERATURE_LABEL_Y);
+
+	sprite.setTextColor(MS_SEC_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
+	sprite.drawString("Sec: ", MS_SEC_TEMPERATURE_LABEL_X, MS_TEMPERATURE_LABEL_Y);
+	
+	_primaryTemperature->Draw(&sprite, "888.88 C");
+	_secondaryTemperature->Draw(&sprite, "888.88 C");
+
+	_tft->pushImageDMA(MS_FOOTER_X, MS_FOOTER_Y, MS_FOOTER_W, MS_FOOTER_H, sprPtr);
 	_tft->dmaWait();
 	sprite.deleteSprite();
 }
@@ -150,5 +220,19 @@ void MainScreen::DisplayTime()
 {
 	_timeSprite->fillSprite(TFT_BLACK);
 	_timeSprite->drawString(DateTime.format(DateFormatter::TIME_ONLY), TIME_W, 2);
-	_timeSprite->pushSprite(_timeX, TIME_Y);
+	_timeSprite->pushSprite(TIME_X, TIME_Y);
+}
+
+void MainScreen::UpdatePrimaryTemp(char* val)
+{
+	char value[9];
+	snprintf(value, 9, "%s C", val);
+	_primaryTemperature->Update(value);
+}
+
+void MainScreen::UpdateSecondaryTemp(char* val)
+{
+	char value[9];
+	snprintf(value, 9, "%s C", val);
+	_secondaryTemperature->Update(value);
 }

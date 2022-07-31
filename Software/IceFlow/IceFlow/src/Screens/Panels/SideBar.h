@@ -6,10 +6,10 @@
 #include "Icons/SettingsIcon.h"
 #include "Icons/ProfileIcon.h"
 
-#define SIDEBAR_NUMBER_ICONS 5
+#define SIDEBAR_NUMBER_ICONS 4
 
 #define SIDEBAR_W 48
-#define SIDEBAR_H (240 - 12) //228
+#define SIDEBAR_H (240 - 12 - 34) //228
 
 #define ICON_H_PADDING 2
 #define ICON_WIDTH (SIDEBAR_W - ICON_H_PADDING)
@@ -19,9 +19,13 @@
 #define ICON_V_PADDING ((SIDEBAR_H - (ICON_HEIGHT*SIDEBAR_NUMBER_ICONS)) / (SIDEBAR_NUMBER_ICONS-1))  //u figure it out
 
 //1st
-#define SETTINGS_ICON_Y 0 
+//#define SETTINGS_ICON_Y 0 
+
 //2nd
 #define PROFILE_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*1)
+
+//4th
+#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*3)
 
 //5th
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)

@@ -51,8 +51,8 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 			_textX = _config.coordinates.x + 5;
 			_updateTextX = 2;
 		}
-		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
-		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
+		_textY = round((double)_config.coordinates.y + (double)_config.coordinates.h / 2.0 - (double)TEXT_Y_OFFSET);
+		_updateTextY = round((double)_updateH / 2.0 - (double)TEXT_Y_OFFSET);
 		break;
 	case MR_DATUM:
 		if (_config.useRounded) {
@@ -63,17 +63,16 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 			_textX = _config.coordinates.x + _config.coordinates.w - 5;
 			_updateTextX = _updateW - 2;
 		}
-		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
-		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
+		_textY = round((double)_config.coordinates.y + (double)_config.coordinates.h / 2.0 - (double)TEXT_Y_OFFSET);
+		_updateTextY = round((double)_updateH / 2.0 - (double)TEXT_Y_OFFSET);
 		break;
 	case MC_DATUM:  //Default sets to MC_DATUM anyways
 	default:
 		_config.textAlignment = MC_DATUM;
 		_textX = _config.coordinates.x + _config.coordinates.w / 2;
-		_textY = _config.coordinates.y + _config.coordinates.h / 2 - TEXT_Y_OFFSET;
+		_textY = round((double)_config.coordinates.y + (double)_config.coordinates.h / 2.0 - (double)TEXT_Y_OFFSET);
 		_updateTextX = _updateW / 2;
-		_updateTextY = _updateH / 2 - TEXT_Y_OFFSET;
-		break;
+		_updateTextY = round((double)_updateH / 2.0 - (double)TEXT_Y_OFFSET);
 		break;
 	}
 

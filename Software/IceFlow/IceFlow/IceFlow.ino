@@ -11,7 +11,8 @@
 #include "src/DisplayManager/Utilities/CommandQueue.h"
 #include "src/Utilities/ControlCommands.h"
 #include "src/Screens/Utilities/InitializeScreens.h"
-#include "src/Utilities/ControlCommands.h"
+#include "src/OvenController/OvenController.h"
+
 
 
 #include "src/Network/IceNetwork.h"
@@ -34,21 +35,28 @@ static void IRAM_ATTR onTimer() {
 void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
-    SaveProfileFilename("def_prof.json");
+
+    g_ClockTimer = timerBegin(0, 80, true);
+    timerAttachInterrupt(g_ClockTimer, &onTimer, true);
+    timerAlarmWrite(g_ClockTimer, 1000000, true);
+    
+    //Init the oven
+    OvenManager.Init();
+
+    //SaveProfileFilename("def_prof.json");
+    
     //Initialize the DisplayManager
     Display.Init();
     LoadScreensIntoDM();
-    
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
     //DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
-    StartNetworkStuff();
 
+    StartNetworkStuff();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-    HandleCommandQueue();
- 
+    HandleCommandQueue(); 
 }
 
 
@@ -78,6 +86,18 @@ void HandleCommandQueue()
             else {
                 DisplayQueue.QueueKey(suk_Network_Started);
             }
+            break;
+        case CC_START_TIME_UPATES:
+            timerAlarmEnable(g_ClockTimer);
+            break;
+        case CC_STOP_TIME_UPDATES:
+            timerAlarmDisable(g_ClockTimer);
+            break;
+        case CC_START_TEMPERATURE_STREAM:
+            OvenManager.StartTemperatureStream();
+            break;
+        case CC_STOP_TEMPERATURE_STREAM:
+            OvenManager.StopTemperatureStream();
             break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
@@ -142,11 +162,6 @@ void SetupDateTime()
         //Serial.printf("Timestamp is %ld\n", DateTime.now());
     }
 
-
-    g_ClockTimer = timerBegin(0, 80, true);
-    timerAttachInterrupt(g_ClockTimer, &onTimer, true);
-    timerAlarmWrite(g_ClockTimer, 1000000, true);
-    timerAlarmEnable(g_ClockTimer);
 
     //showTime();
 }

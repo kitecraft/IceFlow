@@ -10,4 +10,6 @@ enum SCREEN_UPDATE_KEYS {
 	suk_OTA_Progress,
 	suk_OTA_Complete,
 	suk_DateTime,
+	suk_PrimaryTemperature,
+	suk_SecondaryTemperature
 };

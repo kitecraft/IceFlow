@@ -88,7 +88,7 @@ ProfilesScreen::~ProfilesScreen()
 
 void ProfilesScreen::UpdateScreen(int inKey, char* value)
 {
-
+	Serial.printf("ProfilesScreen::UpdateScreen Shouldn't be here %i\n", inKey);
 }
 
 void ProfilesScreen::UpdateScreenOnInterval()

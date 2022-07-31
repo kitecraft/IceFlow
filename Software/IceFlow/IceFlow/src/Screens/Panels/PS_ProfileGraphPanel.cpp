@@ -24,8 +24,6 @@ void PS_ProfileGraphPanel::CalculateMaxTimeAndTemp()
 		//(_profile.reflow_max_temperature - 20) / _profile.cooling_ramp_down_speed;  // time to 20 degrees
 
 	_maxTemp = _profile.reflow_max_temperature;
-
-	//Serial.printf("maxTime: %i\nmaxTemp: %i\n", _maxTime, _maxTemp);
 }
 
 void PS_ProfileGraphPanel::Draw(String profileFileName)
