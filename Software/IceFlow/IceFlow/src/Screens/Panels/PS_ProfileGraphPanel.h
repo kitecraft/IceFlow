@@ -28,24 +28,25 @@
 #define GRID_H_SPACING 20
 #define GRID_V_SPACING 24
 #define GRID_LINE_COLOR 0xe73c
-
+#define GRID_TIME_VALUE_X 2
 
 #define TOP_SIDE 0
 #define BOTTOM_SIDE 1
-#define BASE_TEMPERATURE 10
+#define BASE_TEMPERATURE 18
 
 class PS_ProfileGraphPanel
 {
 private:
 	TFT_eSPI* _tft;
 	Profile _profile;
-	bool _showGrid = true;
+	bool _showGrid = false;
 
 	int _maxTime = 0;
 	int _maxTemp = 0;
 
 	void CalculateMaxTimeAndTemp();
 	void DrawSprite(TFT_eSprite *sprite);
+	void DrawProfileGraph(TFT_eSprite* sprite);
 public:
 	PS_ProfileGraphPanel();
 	PS_ProfileGraphPanel(TFT_eSPI* tft);
