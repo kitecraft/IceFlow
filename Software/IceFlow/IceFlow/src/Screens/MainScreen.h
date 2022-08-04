@@ -6,6 +6,7 @@
 #include "Panels/SideBar.h"
 #include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
+#include "Panels/MS_GraphPanel.h"
 
 #define WIFI_X (320 - 4)
 #define WIFI_Y 6
@@ -29,7 +30,7 @@
 #define MS_FOOTER_X 0
 #define MS_FOOTER_H (MEDIUM_FONT_TEXT_BOX_H + 10)
 #define MS_FOOTER_Y (240 - MS_FOOTER_H)
-#define MS_FOOTER_W 320 //(SIDEBAR_X - MS_FOOTER_W_OFFSET)
+#define MS_FOOTER_W (SIDEBAR_X - MS_FOOTER_W_OFFSET)
 
 #define MS_PRIMARY_TEMPERATURE_COLOR TFT_RED
 #define MS_SEC_TEMPERATURE_COLOR TFT_ORANGE
@@ -39,7 +40,7 @@
 #define MS_TEMPERATURE_LABEL_Y ((MS_FOOTER_H / 2) - 1)
 #define MS_PRIMARY_TEMPERATURE_TB_X ( MS_PRIMARY_TEMPERATURE_LABEL_X + 33)
 
-#define MS_SEC_TEMPERATURE_LABEL_X (MS_PRIMARY_TEMPERATURE_TB_X + MS_TEMPERATURE_TB_W + 5)
+#define MS_SEC_TEMPERATURE_LABEL_X (MS_PRIMARY_TEMPERATURE_TB_X + MS_TEMPERATURE_TB_W + 20)
 #define MS_SEC_TEMPERATURE_TB_X (MS_SEC_TEMPERATURE_LABEL_X + 25)
 
 #define MS_DEVICE_NAME_X ((MS_HEADER_H/2) - 3)
@@ -49,6 +50,12 @@
 #define MS_PROFILE_LABEL_X_OFFSET 15
 #define MS_PROFILE_LABEL "Profile "
 
+#define UPDATE_GRAPH_RATE 250
+#define MS_GRAPHPANEL_X 0
+#define MS_GRAPHPANEL_Y 34
+#define MS_GRAPHPANEL_W 269
+#define MS_GRAPHPANEL_H (240 - MS_GRAPHPANEL_Y*2)
+
 class MainScreen
 {
 private:
@@ -57,8 +64,16 @@ private:
 	SideBar* _sideBar = nullptr;
 	Profile _currentProfile;
 
-	TextBox* _primaryTemperature;
-	TextBox* _secondaryTemperature;
+	MS_GraphPanel* _graphPanel = nullptr;
+
+	bool _temperatureStreamStarted = false;
+	float _primaryTemperature = 20;
+	float _secondaryTemperature = 20;
+
+	TextBox* _primaryTemperatureTB;
+	TextBox* _secondaryTemperatureTB;
+
+	uint16_t _nextGraphUpdate = 0;
 
 	void DrawScreen();
 	void DrawHeader();

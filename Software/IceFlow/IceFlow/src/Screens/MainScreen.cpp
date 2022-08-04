@@ -10,6 +10,19 @@
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
 	_tft = tft;
+
+	_graphPanel = new MS_GraphPanel(_tft,
+		DMCoordinates(
+			0,
+			0,
+			MS_GRAPHPANEL_W,
+			MS_GRAPHPANEL_H,
+			MS_GRAPHPANEL_X,
+			MS_GRAPHPANEL_Y)
+	);
+	//_graphPanel->IgnoreSecondary(true);
+	_graphPanel->IgnoreProfile(true);
+
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(TIME_W, TIME_H);
 	_timeSprite->setFreeFont(SMALL_FONT);
@@ -24,7 +37,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	DMTheme temperatureTheme = GlobalTheme;
 	temperatureTheme.textColor = MS_PRIMARY_TEMPERATURE_COLOR;
-	_primaryTemperature = new TextBox(TextBoxDto(
+	_primaryTemperatureTB = new TextBox(TextBoxDto(
 		DMCoordinates(
 			MS_PRIMARY_TEMPERATURE_TB_X,
 			MS_HEADER_TB_Y,
@@ -42,7 +55,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 		_tft);
 
 	temperatureTheme.textColor = MS_SEC_TEMPERATURE_COLOR;
-	_secondaryTemperature = new TextBox(TextBoxDto(
+	_secondaryTemperatureTB = new TextBox(TextBoxDto(
 		DMCoordinates(
 			MS_SEC_TEMPERATURE_TB_X,
 			MS_HEADER_TB_Y,
@@ -59,8 +72,10 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 		GlobalTheme.panelLightColor),
 		_tft);
 
+
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
+	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	DrawScreen();
 }
 
@@ -73,6 +88,9 @@ MainScreen::~MainScreen()
 		_timeSprite->deleteSprite();
 		delete(_timeSprite);
 	}
+	if (_graphPanel != nullptr) {
+		delete(_graphPanel);
+	}
 }
 
 
@@ -82,7 +100,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	SCREEN_UPDATE_KEYS key = static_cast<SCREEN_UPDATE_KEYS>(inKey);
 	switch (key) {
 	case suk_Network_Connected:
-		CommandQueue.QueueCommand(CC_START_TIME_UPATES);
+		//CommandQueue.QueueCommand(CC_START_TIME_UPATES);
 		_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_TRANSPARENT);
 		break;
 	case suk_Network_Started:
@@ -97,6 +115,8 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_SecondaryTemperature:
 		UpdateSecondaryTemp(value);
 		break;
+	case suk_TemperatureStreamStarted:
+		_temperatureStreamStarted = true;
 	default:
 		break;
 	}
@@ -105,7 +125,14 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 }
 
 void MainScreen::UpdateScreenOnInterval()
-{		
+{
+	if (_temperatureStreamStarted && _nextGraphUpdate < millis()) {
+		_tft->startWrite();
+		_graphPanel->Update(_primaryTemperature, _secondaryTemperature);
+		_tft->dmaWait();
+		_tft->endWrite();
+		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+	}
 }
 
 
@@ -146,8 +173,12 @@ void MainScreen::DrawScreen()
 	DrawHeader();
 	DrawFooter();
 
+	_graphPanel->Draw();
+	
 	_tft->dmaWait();
 	_tft->endWrite();
+
+	//_graphPanel->Draw(&_currentProfile);
 }
 
 void MainScreen::DrawHeader()
@@ -208,8 +239,8 @@ void MainScreen::DrawFooter()
 	sprite.setTextColor(MS_SEC_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
 	sprite.drawString("Sec: ", MS_SEC_TEMPERATURE_LABEL_X, MS_TEMPERATURE_LABEL_Y);
 	
-	_primaryTemperature->Draw(&sprite, "888.88 C");
-	_secondaryTemperature->Draw(&sprite, "888.88 C");
+	_primaryTemperatureTB->Draw(&sprite, "888.88 C");
+	_secondaryTemperatureTB->Draw(&sprite, "888.88 C");
 
 	_tft->pushImageDMA(MS_FOOTER_X, MS_FOOTER_Y, MS_FOOTER_W, MS_FOOTER_H, sprPtr);
 	_tft->dmaWait();
@@ -227,12 +258,14 @@ void MainScreen::UpdatePrimaryTemp(char* val)
 {
 	char value[9];
 	snprintf(value, 9, "%s C", val);
-	_primaryTemperature->Update(value);
+	_primaryTemperatureTB->Update(value);
+	_primaryTemperature = atof(val);
 }
 
 void MainScreen::UpdateSecondaryTemp(char* val)
 {
 	char value[9];
 	snprintf(value, 9, "%s C", val);
-	_secondaryTemperature->Update(value);
+	_secondaryTemperatureTB->Update(value);
+	_secondaryTemperature = atof(val);
 }

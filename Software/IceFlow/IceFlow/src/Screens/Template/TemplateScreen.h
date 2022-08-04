@@ -23,7 +23,7 @@ public:
 static TemplateScreen* templateScreen = nullptr;
 static void Create_TemplateScreen(TFT_eSPI* TFT) 
 {
-	templateScreen = new OTAScreen(TFT);
+	templateScreen = new TemplateScreen(TFT);
 }
 
 static void Destroy_TemplateScreen()

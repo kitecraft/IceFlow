@@ -11,5 +11,6 @@ enum SCREEN_UPDATE_KEYS {
 	suk_OTA_Complete,
 	suk_DateTime,
 	suk_PrimaryTemperature,
-	suk_SecondaryTemperature
+	suk_SecondaryTemperature,
+	suk_TemperatureStreamStarted,
 };

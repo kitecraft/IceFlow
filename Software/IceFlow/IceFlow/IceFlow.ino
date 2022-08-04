@@ -24,9 +24,10 @@ TaskHandle_t g_WebServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
 
 hw_timer_t* g_ClockTimer = NULL;
+volatile bool SendDatetimeUpdate = false;
 
 static void IRAM_ATTR onTimer() {
-    DisplayQueue.QueueKey(suk_DateTime);
+    SendDatetimeUpdate = true;
 }
 
 
@@ -50,13 +51,17 @@ void setup() {
     LoadScreensIntoDM();
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
     //DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
-
     StartNetworkStuff();
 }
 
-// the loop function runs over and over again until power down or reset
 void loop() {
     HandleCommandQueue(); 
+    /*
+    if (SendDatetimeUpdate) {
+        DisplayQueue.QueueKey(suk_DateTime);
+        SendDatetimeUpdate = false;
+    }
+    */
 }
 
 
@@ -88,7 +93,7 @@ void HandleCommandQueue()
             }
             break;
         case CC_START_TIME_UPATES:
-            timerAlarmEnable(g_ClockTimer);
+            //timerAlarmEnable(g_ClockTimer);
             break;
         case CC_STOP_TIME_UPDATES:
             timerAlarmDisable(g_ClockTimer);
@@ -128,7 +133,9 @@ void StartNetworkStuff()
             OTA_PRIORITY,
             &g_OTAHandle,
             OTA_CORE);
-        SetupDateTime();
+
+        //HandleCommandQueue();
+        //SetupDateTime();
     }
 
     Serial.println("Starting Webserver");
@@ -158,7 +165,7 @@ void SetupDateTime()
     }
     else {
         Serial.printf("UTC    Time:   %s\n", DateTime.formatUTC(DateFormatter::SIMPLE).c_str());
-        DisplayQueue.QueueKey(suk_DateTime);
+        //DisplayQueue.QueueKey(suk_DateTime);
         //Serial.printf("Timestamp is %ld\n", DateTime.now());
     }
 

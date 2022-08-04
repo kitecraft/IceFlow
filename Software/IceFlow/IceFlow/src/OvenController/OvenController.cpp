@@ -1,7 +1,5 @@
 #include "OvenController.h"
 #include "../Utilities/PreferencesManager.h"
-#include "../DisplayManager/Utilities/DisplayQueue.h"
-#include "../Screens/Utilities/ScreenUpdateKeys.h"
 
 bool OvenController::Init()
 {
@@ -245,7 +243,7 @@ void OvenController::Run()
 
         // DOOM 
         // DONT FORGET TO RENABLE THIS OR ELSE DOOM WILL OCCUR
-        CheckConvectionFanStatus();
+        //CheckConvectionFanStatus();
         // UNCOMMENT THE ABOVE TO AVERT THE DOOM
         // DOOM
 

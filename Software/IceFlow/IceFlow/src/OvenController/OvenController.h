@@ -4,7 +4,8 @@
 #include "../IceFlow_Config.h"
 #include "OvenEnums.h"
 #include "../ProfileManager/ProfileManager.h"
-
+#include "../DisplayManager/Utilities/DisplayQueue.h"
+#include "../Screens/Utilities/ScreenUpdateKeys.h"
 
 
 class OvenController
@@ -57,7 +58,7 @@ public:
 
 	void StartReflowSession(String profileFileName);
 	void StartManualPreHeat(uint16_t targetTemperature);
-	void StartTemperatureStream() { _streamTemperatures = true; }
+	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
 	//void DisableOven() { EnableDisableOven(false); }
 	//void EnableOven() { EnableDisableOven(true); }
