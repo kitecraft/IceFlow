@@ -23,8 +23,8 @@ void GraphAutoScaler::AddItem(float temperature)
 {
 	GraphItem* currentItem = (GraphItem*)ps_malloc(sizeof(GraphItem));
 	currentItem->temperature = temperature;
-	currentItem->nextItem = NULL;
-	currentItem->prevItem = NULL;
+	currentItem->nextItem = nullptr;
+	currentItem->prevItem = nullptr;
 	//Serial.print("ADDING ITEM: ");
 	//Serial.println(currentItem->ToString());
 
@@ -37,7 +37,7 @@ void GraphAutoScaler::AddItem(float temperature)
 		_itemListRoot = currentItem;
 		_itemListEnd = currentItem;
 		_numberOfItemsInList++;
-		_itemListRoot->prevItem = NULL;
+		_itemListRoot->prevItem = nullptr;
 		return;
 	}
 	else {
@@ -65,7 +65,7 @@ void GraphAutoScaler::AddItem(float temperature)
 	if (_numberOfItemsInList >= _numberOfValuesToTrack) {
 		GraphItem* tmpItem = _itemListRoot;
 		_itemListRoot = tmpItem->nextItem;
-		_itemListRoot->prevItem = NULL;
+		_itemListRoot->prevItem = nullptr;
 		free(tmpItem);
 		_numberOfItemsInList--;
 	}
@@ -94,7 +94,7 @@ void GraphAutoScaler::RecalculateMaxMins()
 
 	currItem = currItem->prevItem;
 	int counter = 0;
-	while (currItem != NULL) {
+	while (currItem != nullptr) {
 		if (currItem->temperature > _maximum) {
 			_maximum = currItem->temperature;
 			_currentSlotOfMaximum = counter;
@@ -118,4 +118,24 @@ void GraphAutoScaler::RecalculateMaxMins()
 	Serial.println(_minimum);
 	Serial.printf("Total count is: %i  and counter is %i\n",_numberOfValuesToTrack, counter);
 	*/
+}
+
+float GraphAutoScaler::GetOldest()
+{
+	_userAccessPointer = _itemListRoot;
+	return GetUserAccessValue();
+}
+
+float GraphAutoScaler::GetNext()
+{
+	_userAccessPointer = _userAccessPointer->nextItem;
+	return GetUserAccessValue();
+}
+
+float GraphAutoScaler::GetUserAccessValue()
+{
+	if (_userAccessPointer == nullptr) {
+		return GAS_NO_VALUE;
+	}
+	return _userAccessPointer->temperature;
 }

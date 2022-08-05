@@ -2,6 +2,8 @@
 #include <Arduino.h>
 #include "GraphItem.h"
 
+#define GAS_NO_VALUE -9999.9
+
 class GraphAutoScaler
 {
 private:
@@ -15,8 +17,10 @@ private:
 	float _minimum = 0;
 	int _currentSlotOfMinimum = 0;
 
+	GraphItem* _userAccessPointer = nullptr;
 
 	void RecalculateMaxMins();
+	float GetUserAccessValue();
 
 public:
 	GraphAutoScaler();
@@ -26,5 +30,8 @@ public:
 	void AddItem(float temperature);
 	float GetMax() { return _maximum; }
 	float GetMin() { return _minimum; }
+
+	float GetOldest();
+	float GetNext();
 };
 

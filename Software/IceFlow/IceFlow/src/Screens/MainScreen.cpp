@@ -36,7 +36,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 
 	DMTheme temperatureTheme = GlobalTheme;
-	temperatureTheme.textColor = MS_PRIMARY_TEMPERATURE_COLOR;
+	temperatureTheme.textColor = PRIMARY_TEMPERATURE_COLOR;
 	_primaryTemperatureTB = new TextBox(TextBoxDto(
 		DMCoordinates(
 			MS_PRIMARY_TEMPERATURE_TB_X,
@@ -54,7 +54,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 		GlobalTheme.panelLightColor),
 		_tft);
 
-	temperatureTheme.textColor = MS_SEC_TEMPERATURE_COLOR;
+	temperatureTheme.textColor = SEC_TEMPERATURE_COLOR;
 	_secondaryTemperatureTB = new TextBox(TextBoxDto(
 		DMCoordinates(
 			MS_SEC_TEMPERATURE_TB_X,
@@ -233,10 +233,10 @@ void MainScreen::DrawFooter()
 	sprite.setFreeFont(MEDIUM_FONT);
 	sprite.setTextDatum(ML_DATUM);
 
-	sprite.setTextColor(MS_PRIMARY_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
+	sprite.setTextColor(PRIMARY_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
 	sprite.drawString("Prim: ", MS_PRIMARY_TEMPERATURE_LABEL_X, MS_TEMPERATURE_LABEL_Y);
 
-	sprite.setTextColor(MS_SEC_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
+	sprite.setTextColor(SEC_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
 	sprite.drawString("Sec: ", MS_SEC_TEMPERATURE_LABEL_X, MS_TEMPERATURE_LABEL_Y);
 	
 	_primaryTemperatureTB->Draw(&sprite, "888.88 C");

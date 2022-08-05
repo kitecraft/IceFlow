@@ -30,8 +30,6 @@
 #define GRID_LINE_COLOR 0xe73c
 #define GRID_TIME_VALUE_X 2
 
-#define TOP_SIDE 0
-#define BOTTOM_SIDE 1
 #define BASE_TEMPERATURE 18
 
 class PS_ProfileGraphPanel

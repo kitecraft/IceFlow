@@ -32,3 +32,7 @@
 #define TEXT_Y_OFFSET 2
 
 #define ICON_BASE_ICON_RADIUS 6
+
+//Used when 2 sprites are needed to fill the screen
+#define TOP_SIDE 0
+#define BOTTOM_SIDE 1

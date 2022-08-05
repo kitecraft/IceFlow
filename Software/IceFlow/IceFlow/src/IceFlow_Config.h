@@ -22,3 +22,6 @@
 //Hardware definintions
 #define RELAY_OFF LOW
 #define RELAY_ON HIGH
+
+#define PRIMARY_TEMPERATURE_COLOR TFT_RED
+#define SEC_TEMPERATURE_COLOR TFT_ORANGE
