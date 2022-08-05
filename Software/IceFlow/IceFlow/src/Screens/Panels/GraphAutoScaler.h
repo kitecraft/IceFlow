@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include "GraphItem.h"
 
-#define GAS_NO_VALUE -9999.9
+#define GAS_NO_VALUE -9999
 
 class GraphAutoScaler
 {
@@ -31,7 +31,7 @@ public:
 	float GetMax() { return _maximum; }
 	float GetMin() { return _minimum; }
 
-	float GetOldest();
+	float GetNewest();
 	float GetNext();
 };
 

@@ -70,7 +70,7 @@ private:
 	TextBox* _primaryTemperatureTB;
 	TextBox* _secondaryTemperatureTB;
 
-	uint16_t _nextGraphUpdate = 0;
+	unsigned long _nextGraphUpdate = 0;
 
 	void DrawScreen();
 	void DrawHeader();

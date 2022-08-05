@@ -120,15 +120,18 @@ void GraphAutoScaler::RecalculateMaxMins()
 	*/
 }
 
-float GraphAutoScaler::GetOldest()
+float GraphAutoScaler::GetNewest()
 {
-	_userAccessPointer = _itemListRoot;
+	_userAccessPointer = _itemListEnd;
 	return GetUserAccessValue();
 }
 
 float GraphAutoScaler::GetNext()
 {
-	_userAccessPointer = _userAccessPointer->nextItem;
+	if (_userAccessPointer == nullptr) {
+		return GAS_NO_VALUE;
+	}
+	_userAccessPointer = _userAccessPointer->prevItem;
 	return GetUserAccessValue();
 }
 

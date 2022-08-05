@@ -75,7 +75,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
-	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+	//_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	DrawScreen();
 }
 
@@ -117,6 +117,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		break;
 	case suk_TemperatureStreamStarted:
 		_temperatureStreamStarted = true;
+		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	default:
 		break;
 	}
@@ -126,12 +127,12 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 
 void MainScreen::UpdateScreenOnInterval()
 {
-	if (_temperatureStreamStarted && _nextGraphUpdate < millis()) {
+	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
+		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 		_tft->startWrite();
 		_graphPanel->Update(_primaryTemperature, _secondaryTemperature);
 		_tft->dmaWait();
 		_tft->endWrite();
-		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	}
 }
 
