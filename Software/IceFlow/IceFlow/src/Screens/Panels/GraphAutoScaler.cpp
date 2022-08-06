@@ -12,6 +12,11 @@ GraphAutoScaler::GraphAutoScaler(int numberOfValuesToTrack)
 
 GraphAutoScaler::~GraphAutoScaler()
 {
+	Clear();
+}
+
+void GraphAutoScaler::Clear()
+{
 	while (_itemListRoot != nullptr) {
 		GraphItem* currItem = _itemListRoot;
 		_itemListRoot = currItem->nextItem;

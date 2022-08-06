@@ -32,8 +32,6 @@ void PopUpMenu::Clear()
 	_numOptions = 0;
 	_lengthOfLongestOptionText = 0;
 	_open = false;
-	_opening = false;
-	_closing = false;
 }
 
 void PopUpMenu::Configure(PopUpMenuDto configDto, String* menuOptions, int numMenuOptions, TFT_eSPI* tft)
@@ -128,4 +126,9 @@ bool PopUpMenu::Touched(int x, int y, String& menuString)
 		}
 	}
 	return false;
+}
+
+void PopUpMenu::Redraw()
+{
+	_sprite->pushSprite(_config.coordinates.x, _config.coordinates.y);
 }

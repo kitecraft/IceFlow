@@ -5,18 +5,19 @@ MS_GraphPanel::MS_GraphPanel()
 {
 }
 
-MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates)
+MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary)
 {
 	Serial.println("Constuctor start: ");
 	PrintMemUseage();
 	_tft = tft;
 	_coordinates = coordinates;
+	_ignoreSecondary = ignoreSecondary;
+
 	_temperatureLegendHeight = _coordinates.h;
 	_timeLegend_W = _coordinates.w - (TEMPERATURE_LEGEND_WIDTH * 2);
 	_timeLegend_X = TEMPERATURE_LEGEND_WIDTH + _coordinates.p_x;
 	_timeLegend_Y = _coordinates.p_y + _coordinates.h - TIME_LEGEND_HEIGHT;
 
-	_primaryTemperatureAutoScaler = new GraphAutoScaler(_timeLegend_W - 2);
 
 	//Background sprite
 	_bgSprite_X = _coordinates.p_x + TEMPERATURE_LEGEND_WIDTH;
@@ -55,6 +56,11 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates)
 	_temperatureSprite[TOP_SIDE]->fillSprite(TFT_TRANSPARENT);
 	_temperatureSprite[BOTTOM_SIDE]->fillSprite(TFT_TRANSPARENT);
 
+
+	_primaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
+	_secondaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
+
+
 	Serial.println("Constuctor end: ");
 	PrintMemUseage();
 }
@@ -83,17 +89,33 @@ void MS_GraphPanel::Draw()
 	DrawGraph();
 }
 
+void MS_GraphPanel::ReDraw()
+{
+	ReDrawTemperatureSprites();
+	DrawTemperatureLegends();
+	DrawTimeLegend();
+}
+
 void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float profileTemperate)
 {
-	//Serial.printf("Received:  prim: %f  sec: %f  prof: %f\n", primaryTemperature, secondaryTemperature, profileTemperate);
 	_primaryTemperatureAutoScaler->AddItem(primaryTemperature);
 
 	float maxTemp = _primaryTemperatureAutoScaler->GetMax();
 	float minTemp = _primaryTemperatureAutoScaler->GetMin();
 
-	//Serial.printf("Actuals:  Max: %f  Min: %f\n", _maximumTemperature, _minimumTemperature);
-	//Serial.printf("New:  Max: %f  Min: %f\n", maxTemp, minTemp);
-	//Serial.println();
+
+	if (!_ignoreSecondary) {
+		_secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+
+		float sMaxTemp = _secondaryTemperatureAutoScaler->GetMax();
+		float sMinTemp = _secondaryTemperatureAutoScaler->GetMin();
+		if (sMaxTemp > maxTemp){
+			maxTemp = sMaxTemp;
+		}
+		if (sMinTemp < minTemp) {
+			minTemp = sMinTemp;
+		}
+	}
 
 	_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 
@@ -110,6 +132,20 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 		_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
 		_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
 
+		if (!_ignoreSecondary) {
+			_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
+				_temperatureSprite_H - round((secondaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				SEC_TEMPERATURE_COLOR
+			);
+
+			_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
+				_temperatureSprite_H - round((secondaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				SEC_TEMPERATURE_COLOR
+			);
+		}
+
 		_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
 			_temperatureSprite_H - round((primaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
 			2,
@@ -121,11 +157,6 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 			2,
 			PRIMARY_TEMPERATURE_COLOR
 		);
-		
-		
-		//_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 20, 2, PRIMARY_TEMPERATURE_COLOR);
-		//_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 20, 2, PRIMARY_TEMPERATURE_COLOR);
-
 	}
 
 	_temperatureSprite[TOP_SIDE]->pushToSprite(_bgSprite[TOP_SIDE], 1, 1, TFT_TRANSPARENT);
@@ -138,17 +169,14 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 	DrawGraphGrid(TOP_SIDE);
 
 	DrawGraphGrid(BOTTOM_SIDE);
+}
 
-	/*
-	DrawGraphGrid(TOP_SIDE);
-	_temperatureSprite[TOP_SIDE]->pushToSprite(_bgSprite[TOP_SIDE], 1, 1, TFT_TRANSPARENT);
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteTop_Y, _bgSprite_W, _bgSpriteTop_H, _bgSprPtr[TOP_SIDE]);
-
-
-	DrawGraphGrid(BOTTOM_SIDE);
-	_temperatureSprite[BOTTOM_SIDE]->pushToSprite(_bgSprite[BOTTOM_SIDE], 1, _bgSpriteTop_H, TFT_TRANSPARENT);
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteBottom_Y, _bgSprite_W, _bgSpriteBottom_H, _bgSprPtr[BOTTOM_SIDE]);
-	*/
+void MS_GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTemperature, float profileTemperate)
+{
+	_primaryTemperatureAutoScaler->AddItem(primaryTemperature);
+	if (!_ignoreSecondary) {
+		_secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+	}
 }
 
 void MS_GraphPanel::DrawTemperatureLegends()
@@ -173,12 +201,11 @@ void MS_GraphPanel::DrawTemperatureLegends()
 		sprite.drawFloat(_minimumTemperature + (temperatureSegment * i), 1, TEMPERATURE_LEGEND_WIDTH - 1, _temperatureLegendHeight - TIME_LEGEND_HEIGHT - (round(pixleSegment * i)));
 	}
 
-	//uint16_t* buffer = (uint16_t*)ps_malloc(2*(TEMPERATURE_LEGEND_WIDTH * _temperatureLegendHeight) + 1);
-	//_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr, buffer);
-	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr);
+	uint16_t* buffer = (uint16_t*)ps_malloc(2*(TEMPERATURE_LEGEND_WIDTH * _temperatureLegendHeight) + 1);
+	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr, buffer);
+	//_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr);
 
 	//Right side
-	/*
 	sprite.fillSprite(TFT_BLACK);
 	sprite.setTextDatum(TL_DATUM);
 	sprite.drawFloat(_maximumTemperature, 1, 1, 0);
@@ -188,10 +215,10 @@ void MS_GraphPanel::DrawTemperatureLegends()
 	for (float i = 1; i < 8; i++) {
 		sprite.drawFloat(_minimumTemperature + (temperatureSegment * i), 1, 1, _temperatureLegendHeight - TIME_LEGEND_HEIGHT - (round(pixleSegment * i)));
 	}
-	*/
+
 	_tft->pushImageDMA(_coordinates.p_x + (_coordinates.w - TEMPERATURE_LEGEND_WIDTH), _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr);
 
-	//free(buffer);
+	free(buffer);
 	_tft->dmaWait();
 	sprite.deleteSprite();
 }
@@ -289,6 +316,7 @@ void MS_GraphPanel::DrawGraphGrid(int slot)
 
 	_bgSprite[slot]->drawRect(0, 0, _bgSprite_W, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
 
+
 	for (int i = 20, x = 1; i < _timeLegend_W - 10; i += 20, x++) {
 		_bgSprite[slot]->drawFastVLine(_timeLegend_W - i, 0, _bgSprite_H, GlobalTheme.panelBorderColor);
 	}
@@ -301,36 +329,88 @@ void MS_GraphPanel::DrawGraphGrid(int slot)
 
 void MS_GraphPanel::ReDrawTemperatureSprites()
 {
-	//Serial.println("STARTING ReDrawTemperatureSprites");
 	_temperatureSprite[TOP_SIDE]->fillSprite(TFT_TRANSPARENT);
 	_temperatureSprite[BOTTOM_SIDE]->fillSprite(TFT_TRANSPARENT);
 
 	_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 
+
+	if (!_ignoreSecondary) {
+		int column = _temperatureSprite_W - 1;
+		float curr = _secondaryTemperatureAutoScaler->GetNewest();
+		if ((int)curr != GAS_NO_VALUE) {
+			_temperatureSprite[TOP_SIDE]->drawFastVLine(
+				column,
+				_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				SEC_TEMPERATURE_COLOR
+			);
+
+			_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+				column,
+				_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				SEC_TEMPERATURE_COLOR
+			);
+
+			curr = _secondaryTemperatureAutoScaler->GetNext();
+			while ((int)curr != GAS_NO_VALUE) {
+				column--;
+
+				_temperatureSprite[TOP_SIDE]->drawFastVLine(
+					column,
+					_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+					2,
+					SEC_TEMPERATURE_COLOR
+				);
+
+				_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+					column,
+					_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+					2,
+					SEC_TEMPERATURE_COLOR
+				);
+
+				curr = _secondaryTemperatureAutoScaler->GetNext();
+			}
+		}
+	}
+
+	
 	int column = _temperatureSprite_W - 1;
 	float curr = _primaryTemperatureAutoScaler->GetNewest();
-	//Serial.printf("what is GAS_NO_VALUE: %f\n", GAS_NO_VALUE);
-	if (curr == GAS_NO_VALUE) {
-		//Serial.println("FIRST TRY is nullptr");
+	if ((int)curr == GAS_NO_VALUE) {
 		return;
 	}
 
-	//Serial.printf("Got item root; %f\n", curr);
-
-
-	_temperatureSprite[TOP_SIDE]->drawFastVLine(column, _temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel), 2, PRIMARY_TEMPERATURE_COLOR);
-	_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(column, _temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel), 2, PRIMARY_TEMPERATURE_COLOR);
+	_temperatureSprite[TOP_SIDE]->drawFastVLine(
+		column,
+		_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+		2,
+		PRIMARY_TEMPERATURE_COLOR
+	);
+	_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+		column,
+		_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+		2,
+		PRIMARY_TEMPERATURE_COLOR
+	);
 	
 	curr = _primaryTemperatureAutoScaler->GetNext();
 	while ((int)curr != GAS_NO_VALUE) {
-		//Serial.printf("Got another item; %f\n", curr);
 		column--;
-		//_temperatureSprite[TOP_SIDE]->scroll(-1, 0);
-		//_temperatureSprite[BOTTOM_SIDE]->scroll(-1, 0);
-		_temperatureSprite[TOP_SIDE]->drawFastVLine(column, _temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel), 2, PRIMARY_TEMPERATURE_COLOR);
-		_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(column, _temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel), 2, PRIMARY_TEMPERATURE_COLOR);
+		_temperatureSprite[TOP_SIDE]->drawFastVLine(
+			column,
+			_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+			2,
+			PRIMARY_TEMPERATURE_COLOR
+		);
+		_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+			column,
+			_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+			2,
+			PRIMARY_TEMPERATURE_COLOR
+		);
 		curr = _primaryTemperatureAutoScaler->GetNext();
 	}
-
-	//Serial.println("ENDING ReDrawTemperatureSprites");
 }

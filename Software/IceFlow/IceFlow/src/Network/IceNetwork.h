@@ -14,6 +14,15 @@
 //Webpages
 #define WEBPAGE_NETWORK "/net.htm"
 
+
+enum IF_NETWORK_STATUS {
+    IF_NETWORK_NONE = 0,
+    IF_NETWORK_CONNECTED,
+    IF_NETWORK_STARTED
+};
+
+static IF_NETWORK_STATUS g_NetworkStatus = IF_NETWORK_NONE;
+
 static bool connectToNetwork()
 {
     WiFi.hostname(__DEVICE_NAME__);
@@ -42,6 +51,7 @@ static bool connectToNetwork()
                     Serial.println("MDNS responder started");
                 }
                 DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
+                g_NetworkStatus = IF_NETWORK_CONNECTED;
                 DisplayQueue.QueueKey(suk_Network_Connected);
                 return true;
             }
@@ -67,4 +77,5 @@ static void startLocalNetwork()
     //DisplayQueue.QueueKeyAndValue(suk_Network_Name, __DEVICE_NAME__);
     //DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.softAPIP().toString().c_str());
     DisplayQueue.QueueKey(suk_Network_Started);
+    g_NetworkStatus = IF_NETWORK_STARTED;
 }

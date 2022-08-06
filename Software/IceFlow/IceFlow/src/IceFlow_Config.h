@@ -17,6 +17,7 @@
 #define OVEN_CONTROLLER_TASK_STACK_SIZE (4096+512) 
 #define RELAY_CONVECTION_FAN 32
 #define SSR_OVEN_HEATERS 33
+//how often to send the tempeature to the displaymanager
 #define TEMPERATURE_DISPLAY_REFRESH_RATE 100
 
 //Hardware definintions
@@ -25,3 +26,6 @@
 
 #define PRIMARY_TEMPERATURE_COLOR TFT_RED
 #define SEC_TEMPERATURE_COLOR TFT_ORANGE
+
+//how often the screen updates it's graphs
+#define UPDATE_GRAPH_RATE 250

@@ -52,10 +52,12 @@ private:
 	int _timeLegend_W = 0;
 	int _timeLegend_X = 0;
 	int _timeLegend_Y = 0;
+
 	bool _ignoreSecondary = false;
 	bool _ignoreProfile = false;
 
 	GraphAutoScaler* _primaryTemperatureAutoScaler = nullptr;
+	GraphAutoScaler* _secondaryTemperatureAutoScaler = nullptr;
 	float _maximumTemperature = UPPER_TEMPERATURE_DRAW_BUFFER;
 	float _minimumTemperature = LOWER_TEMPERATURE_DRAW_BUFFER;
 
@@ -69,12 +71,14 @@ private:
 
 public:
 	MS_GraphPanel();
-	MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates);
+	MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary = false);
 	~MS_GraphPanel();
 	void IgnoreSecondary(bool ignore) { _ignoreSecondary = ignore; }
 	void IgnoreProfile(bool ignore) { _ignoreProfile = ignore; }
 	//void Draw(Profile* profile);
 	void Draw();
+	void ReDraw();
 	void Update(float primaryTemperature, float secondaryTemperature = 0, float profileTemperate = 0);
+	void UpdateValuesOnly(float primaryTemperature, float secondaryTemperature = 0, float profileTemperate = 0);
 };
 

@@ -22,8 +22,6 @@ private:
 	int _numOptions = 0;
 	int _lengthOfLongestOptionText = 0;
 	bool _open = false;
-	bool _opening = false;
-	bool _closing = false;
 
 	void Configure(PopUpMenuDto configDto, String* menuOptions, int numMenuOptions, TFT_eSPI* tft);
 	void Clear();
@@ -42,10 +40,9 @@ public:
 	// Check if touched
 	bool Touched(int x, int y, String& menuString);
 	
+	void Redraw();
+
 	//Returns true if the menu is open
 	bool isOpen() { return _open; }
-
-	bool Opening() { return _opening; }
-	bool Closing() { return _closing; }
 };
 

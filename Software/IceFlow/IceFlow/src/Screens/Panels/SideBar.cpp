@@ -44,7 +44,7 @@ void SideBar::Draw()
 	sprite.deleteSprite();
 }
 
-bool SideBar::Touched(int x, int y)
+SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 {
 	if (_popUpMenu.isOpen()) {
 		String option;
@@ -52,20 +52,20 @@ bool SideBar::Touched(int x, int y)
 			Serial.print("Option touched: ");
 			Serial.println(option);
 			_popUpMenu.Close();
-			return true;
+			return SB_MENU_CLOSED;
 		}
 
 		switch (_activeIcon) {
 		case SettingsIconID:
 			if (_settingsIcon->Touched(x, y)) {
 				_popUpMenu.Close();
-				return true;
+				return SB_MENU_CLOSED;
 			}
 			break;
 		default:
-			return false;
+			return SB_NOT_TOUCHED;
 		}
-		return false;
+		return SB_NOT_TOUCHED;
 	}
 
 	if (_settingsIcon->Touched(x, y)) {
@@ -81,12 +81,12 @@ bool SideBar::Touched(int x, int y)
 			2,
 			_tft);
 		_activeIcon = SettingsIconID;
-		return true;
+		return SB_TOUCHED;
 	}
 
 	if (_profileIcon->Touched(x, y)) {
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
 
-	return false;
+	return SB_NOT_TOUCHED;
 }

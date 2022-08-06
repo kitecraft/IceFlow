@@ -18,7 +18,7 @@
 #include "src/Network/IceNetwork.h"
 #include "src/Network/IceWebServer.h"
 #include "src/Network/IceOTAManager.h"
-bool g_NetworkConnected = false;
+
 
 TaskHandle_t g_WebServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
@@ -31,11 +31,22 @@ static void IRAM_ATTR onTimer() {
 }
 
 
-#include "src/Utilities/PreferencesManager.h"
+
+TaskHandle_t g_networkStartupHandle = nullptr;
+
+//#include "src/Utilities/PreferencesManager.h"
 
 void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
+
+    xTaskCreate(
+        StartNetworkStuff,       /* Function that implements the task. */
+        "NetworkSetup",          /* Text name for the task. */
+        STACK_SIZE,      /* Stack size in words, not bytes. */
+        (void*)1,    /* Parameter passed into the task. */
+        tskIDLE_PRIORITY,/* Priority at which the task is created. */
+        &g_networkStartupHandle);
 
     g_ClockTimer = timerBegin(0, 80, true);
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
@@ -51,17 +62,18 @@ void setup() {
     LoadScreensIntoDM();
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
     //DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
-    StartNetworkStuff();
+
+    //StartNetworkStuff();
 }
 
 void loop() {
     HandleCommandQueue(); 
-    /*
+    
     if (SendDatetimeUpdate) {
         DisplayQueue.QueueKey(suk_DateTime);
         SendDatetimeUpdate = false;
     }
-    */
+    
 }
 
 
@@ -85,15 +97,16 @@ void HandleCommandQueue()
             DisplayQueue.QueueKeyAndValue(suk_Local_IP_Address, WiFi.localIP().toString().c_str());
             break;
         case CC_REQUEST_NET_STATUS:
-            if (g_NetworkConnected) {
+            switch (g_NetworkStatus) {
+            case IF_NETWORK_CONNECTED:
                 DisplayQueue.QueueKey(suk_Network_Connected);
-            }
-            else {
+                break;
+            case IF_NETWORK_STARTED:
                 DisplayQueue.QueueKey(suk_Network_Started);
             }
             break;
         case CC_START_TIME_UPATES:
-            //timerAlarmEnable(g_ClockTimer);
+            timerAlarmEnable(g_ClockTimer);
             break;
         case CC_STOP_TIME_UPDATES:
             timerAlarmDisable(g_ClockTimer);
@@ -114,16 +127,14 @@ void HandleCommandQueue()
     }
 }
 
-void StartNetworkStuff()
+static void IRAM_ATTR StartNetworkStuff(void* pvParameters)
 {
     if (!connectToNetwork())
     {
-        g_NetworkConnected = false;
         startLocalNetwork();
         Serial.println("NOT starting OTA handler");
     }
     else {
-        g_NetworkConnected = true;
         Serial.println("Starting OTA Handler");
         xTaskCreatePinnedToCore(
             OTAThread,
@@ -134,8 +145,7 @@ void StartNetworkStuff()
             &g_OTAHandle,
             OTA_CORE);
 
-        //HandleCommandQueue();
-        //SetupDateTime();
+        SetupDateTime();
     }
 
     Serial.println("Starting Webserver");
@@ -147,10 +157,12 @@ void StartNetworkStuff()
         WEB_SERVER_PRIORITY,
         &g_WebServerHandle,
         WEBSERVER_CORE);
+
+    vTaskDelete(g_networkStartupHandle);
 }
 
 
-void SetupDateTime()
+static void IRAM_ATTR SetupDateTime()
 {
     // setup this after wifi connected
     // you can use custom timeZone,server and timeout

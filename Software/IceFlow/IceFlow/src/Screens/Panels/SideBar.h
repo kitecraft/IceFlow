@@ -30,10 +30,18 @@
 //5th
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
 
+enum SB_TOUCHED_RETURN {
+	SB_TOUCHED = 0,
+	SB_NOT_TOUCHED,
+	SB_MENU_CLOSED,
+};
+
 enum ICONID {
 	NO_ICONID = -1,
 	SettingsIconID = 0,
 };
+
+
 
 class SideBar
 {
@@ -50,6 +58,8 @@ public:
 	~SideBar();
 
 	void Draw();
-	bool Touched(int x, int y);
+	SB_TOUCHED_RETURN Touched(int x, int y);
+	bool IsPopUpOpen() { return _popUpMenu.isOpen(); }
+	void ReDrawPopUP() { _popUpMenu.Redraw(); }
 };
 

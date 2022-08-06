@@ -18,10 +18,11 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 			MS_GRAPHPANEL_W,
 			MS_GRAPHPANEL_H,
 			MS_GRAPHPANEL_X,
-			MS_GRAPHPANEL_Y)
+			MS_GRAPHPANEL_Y),
+		false
 	);
 	//_graphPanel->IgnoreSecondary(true);
-	_graphPanel->IgnoreProfile(true);
+	//_graphPanel->IgnoreProfile(true);
 
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(TIME_W, TIME_H);
@@ -100,7 +101,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	SCREEN_UPDATE_KEYS key = static_cast<SCREEN_UPDATE_KEYS>(inKey);
 	switch (key) {
 	case suk_Network_Connected:
-		//CommandQueue.QueueCommand(CC_START_TIME_UPATES);
+		CommandQueue.QueueCommand(CC_START_TIME_UPATES);
 		_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_GREEN, TFT_TRANSPARENT);
 		break;
 	case suk_Network_Started:
@@ -129,18 +130,25 @@ void MainScreen::UpdateScreenOnInterval()
 {
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
-		_tft->startWrite();
-		_graphPanel->Update(_primaryTemperature, _secondaryTemperature);
-		_tft->dmaWait();
-		_tft->endWrite();
+
+		if (_sideBar->IsPopUpOpen()) {
+			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature);
+		}
+		else {
+			_tft->startWrite();
+			_graphPanel->Update(_primaryTemperature, _secondaryTemperature);
+
+			_tft->dmaWait();
+			_tft->endWrite();
+		}
 	}
 }
 
 
 void MainScreen::HandleTouch(int x, int y)
 {
-	if(_sideBar->Touched(x, y)){
-		Serial.println("Sidebar was touched");
+	if(_sideBar->Touched(x, y) == SB_MENU_CLOSED){
+		_graphPanel->ReDraw();
 	}
 }
 

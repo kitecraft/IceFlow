@@ -33,5 +33,8 @@ public:
 
 	float GetNewest();
 	float GetNext();
+
+	int GetSize() { return _numberOfItemsInList; }
+	void Clear();
 };
 
