@@ -66,8 +66,8 @@ private:
 	float _primaryTemperature = 20;
 	float _secondaryTemperature = 20;
 
-	TextBox* _primaryTemperatureTB;
-	TextBox* _secondaryTemperatureTB;
+	TextBox* _primaryTemperatureTB = nullptr;
+	TextBox* _secondaryTemperatureTB = nullptr;
 
 	unsigned long _nextGraphUpdate = 0;
 

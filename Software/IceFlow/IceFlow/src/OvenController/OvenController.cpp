@@ -154,16 +154,16 @@ void OvenController::FetchTemperatures()
     */
 
     if (_testDirection) {
-        _temperaturePrimary += 0.01;
-        _temperatureSecondary += 0.01;
+        _temperaturePrimary += 0.001;
+        _temperatureSecondary += 0.001;
         if (_temperaturePrimary >= 245) {
             _testDirection = false;
         }
 
     }
     else {
-        _temperaturePrimary -= 0.01;
-        _temperatureSecondary -= 0.01;
+        _temperaturePrimary -= 0.001;
+        _temperatureSecondary -= 0.001;
         if (_temperatureSecondary <= 1) {
             _testDirection = true;
         }

@@ -11,7 +11,7 @@
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
 	Serial.println("");
-	Serial.println("Constuctor start: ");
+	Serial.println("MainScreen: Constuctor start: ");
 	PrintMemUseage();
 	_tft = tft;
 
@@ -92,7 +92,9 @@ MainScreen::~MainScreen()
 {
 	CommandQueue.QueueCommand(CC_STOP_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
+	
 	delete(_sideBar);
+
 	if (_timeSprite != nullptr) {
 		_timeSprite->deleteSprite();
 		delete(_timeSprite);
@@ -101,9 +103,16 @@ MainScreen::~MainScreen()
 		delete(_graphPanel);
 	}
 
+	if (_primaryTemperatureTB != nullptr) {
+		delete(_primaryTemperatureTB);
+	}
+	if (_secondaryTemperatureTB != nullptr) {
+		delete(_secondaryTemperatureTB);
+	}
+
 
 	Serial.println("");
-	Serial.println("Destuctor start: ");
+	Serial.println("MainScreen: Destuctor end: ");
 	PrintMemUseage();
 }
 

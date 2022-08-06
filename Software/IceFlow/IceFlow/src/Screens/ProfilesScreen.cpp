@@ -4,9 +4,14 @@
 #include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "Utilities/ScreenNames.h"
+#include "../Utilities/MemUseage.h"
 
 ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 {
+	Serial.println("");
+	Serial.println("ProfilesScreen: Constuctor start: ");
+	PrintMemUseage();
+
 	_tft = tft;
 
 	if (!ProfileManager.GetSavedProfile(&_currentlySavedProfile)) {
@@ -83,6 +88,9 @@ ProfilesScreen::~ProfilesScreen()
 	if (_graphPanel != nullptr) {
 		delete(_graphPanel);
 	}
+	Serial.println("");
+	Serial.println("ProfilesScreen: Destuctor end: ");
+	PrintMemUseage();
 }
 
 
