@@ -27,7 +27,8 @@ public:
 	GraphAutoScaler(int numberOfValuesToTrack);
 	~GraphAutoScaler();
 	
-	void AddItem(float temperature);
+	//returns true if caused a MinMax recalc
+	bool AddItem(float temperature);
 	float GetMax() { return _maximum; }
 	float GetMin() { return _minimum; }
 

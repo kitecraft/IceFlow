@@ -6,9 +6,13 @@
 #include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/CommandQueue.h"
 #include "../Utilities/ControlCommands.h"
+#include "../Utilities/MemUseage.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
+	Serial.println("");
+	Serial.println("Constuctor start: ");
+	PrintMemUseage();
 	_tft = tft;
 
 	_graphPanel = new MS_GraphPanel(_tft,
@@ -78,6 +82,10 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	//_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	DrawScreen();
+
+	//Serial.println("Constuctor end: ");
+	//PrintMemUseage();
+	//Serial.println("");
 }
 
 MainScreen::~MainScreen()
@@ -92,6 +100,11 @@ MainScreen::~MainScreen()
 	if (_graphPanel != nullptr) {
 		delete(_graphPanel);
 	}
+
+
+	Serial.println("");
+	Serial.println("Destuctor start: ");
+	PrintMemUseage();
 }
 
 

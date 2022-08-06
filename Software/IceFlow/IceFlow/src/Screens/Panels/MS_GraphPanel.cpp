@@ -1,5 +1,4 @@
 #include "MS_GraphPanel.h"
-#include "../../Utilities/MemUseage.h"
 
 MS_GraphPanel::MS_GraphPanel()
 {
@@ -7,8 +6,6 @@ MS_GraphPanel::MS_GraphPanel()
 
 MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary)
 {
-	Serial.println("Constuctor start: ");
-	PrintMemUseage();
 	_tft = tft;
 	_coordinates = coordinates;
 	_ignoreSecondary = ignoreSecondary;
@@ -46,8 +43,6 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool igno
 	_temperatureSprite[TOP_SIDE] = new TFT_eSprite(_tft);
 	_temperatureSprite[BOTTOM_SIDE] = new TFT_eSprite(_tft);
 
-	//_temperatureSprPtr[TOP_SIDE] = (uint16_t*)_temperatureSprite[TOP_SIDE]->createSprite(_temperatureSprite_W, _temperatureSpriteTop_H);
-	//_temperatureSprPtr[BOTTOM_SIDE] = (uint16_t*)_temperatureSprite[BOTTOM_SIDE]->createSprite(_temperatureSprite_W, _temperatureSpriteBottom_H);
 	_temperatureSprite[TOP_SIDE]->createSprite(_temperatureSprite_W, _temperatureSpriteTop_H);
 	_temperatureSprite[BOTTOM_SIDE]->createSprite(_temperatureSprite_W, _temperatureSpriteBottom_H);
 
@@ -60,9 +55,6 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool igno
 	_primaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
 	_secondaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
 
-
-	Serial.println("Constuctor end: ");
-	PrintMemUseage();
 }
 
 MS_GraphPanel::~MS_GraphPanel()
@@ -70,19 +62,33 @@ MS_GraphPanel::~MS_GraphPanel()
 	if (_primaryTemperatureAutoScaler != nullptr) {
 		delete _primaryTemperatureAutoScaler;
 	}
+	if (_secondaryTemperatureAutoScaler != nullptr) {
+		delete _secondaryTemperatureAutoScaler;
+	}
+
+	if (_bgSprite[TOP_SIDE] != nullptr) {
+		_bgSprite[TOP_SIDE]->deleteSprite();
+		delete _bgSprite[TOP_SIDE];
+	}
+	if (_bgSprite[BOTTOM_SIDE] != nullptr) {
+		_bgSprite[BOTTOM_SIDE]->deleteSprite();
+		delete _bgSprite[BOTTOM_SIDE];
+	}
+
 	if (_temperatureSprite[TOP_SIDE] != nullptr) {
+		_temperatureSprite[TOP_SIDE]->deleteSprite();
 		delete _temperatureSprite[TOP_SIDE];
 	}
 	if (_temperatureSprite[BOTTOM_SIDE] != nullptr) {
+		_temperatureSprite[TOP_SIDE]->deleteSprite();
 		delete _temperatureSprite[BOTTOM_SIDE];
 	}
 }
 
-//void MS_GraphPanel::Draw(Profile* profile)
 void MS_GraphPanel::Draw()
 {
-	_maximumTemperature = 10 + UPPER_TEMPERATURE_DRAW_BUFFER;
-	_minimumTemperature = LOWER_TEMPERATURE_DRAW_BUFFER;
+	_maximumTemperature = 10 + TEMPERATURE_DRAW_BUFFER_LARGE;
+	_minimumTemperature = TEMPERATURE_DRAW_BUFFER_SMALL;
 
 	DrawTemperatureLegends();
 	DrawTimeLegend();
@@ -98,31 +104,90 @@ void MS_GraphPanel::ReDraw()
 
 void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float profileTemperate)
 {
-	_primaryTemperatureAutoScaler->AddItem(primaryTemperature);
+	float primMax, primMin;
+	bool primMaxRedraw = false;
+	bool primMinRedraw = false; 
+	bool secMaxRedraw = false;
+	bool SecMinRedraw = false;
 
-	float maxTemp = _primaryTemperatureAutoScaler->GetMax();
-	float minTemp = _primaryTemperatureAutoScaler->GetMin();
+	bool temperatureLegendRedrawRequired = false;
+	bool secondaryRecalculated = false;
 
+	bool primaryRecalculated = _primaryTemperatureAutoScaler->AddItem(primaryTemperature);
+	float origMax = _maximumTemperature;
+	float origMin = _minimumTemperature;
+
+
+	if (primaryRecalculated)
+	{
+		primMax = _primaryTemperatureAutoScaler->GetMax();
+		primMin = _primaryTemperatureAutoScaler->GetMin();
+
+		if (primMax > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
+			_maximumTemperature = primMax + TEMPERATURE_DRAW_BUFFER_LARGE;
+			primMaxRedraw = true;
+		} else if (primMax < _maximumTemperature - TEMPERATURE_DRAW_BUFFER_LARGE) {
+			_maximumTemperature = primMax + TEMPERATURE_DRAW_BUFFER_SMALL;
+			primMaxRedraw = true;
+		}
+
+		if (primMin < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
+			_minimumTemperature = primMin - TEMPERATURE_DRAW_BUFFER_LARGE;
+			primMinRedraw = true;
+		}
+		else if (primMin > _minimumTemperature + TEMPERATURE_DRAW_BUFFER_LARGE) {
+			_minimumTemperature = primMin - TEMPERATURE_DRAW_BUFFER_SMALL;
+			primMinRedraw = true;
+		}
+		temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw ? true : false;
+	}
 
 	if (!_ignoreSecondary) {
-		_secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+		secondaryRecalculated = _secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+		if (secondaryRecalculated || temperatureLegendRedrawRequired) {
+			float secMax = _secondaryTemperatureAutoScaler->GetMax();
+			float secMin = _secondaryTemperatureAutoScaler->GetMin();
 
-		float sMaxTemp = _secondaryTemperatureAutoScaler->GetMax();
-		float sMinTemp = _secondaryTemperatureAutoScaler->GetMin();
-		if (sMaxTemp > maxTemp){
-			maxTemp = sMaxTemp;
-		}
-		if (sMinTemp < minTemp) {
-			minTemp = sMinTemp;
+			if (secMax > primMax) {
+				if (primMaxRedraw) {
+					_maximumTemperature = origMax;
+					primMaxRedraw = false;
+				}
+				if (secMax > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
+					_maximumTemperature = secMax + TEMPERATURE_DRAW_BUFFER_LARGE;
+					secMaxRedraw = true;
+				}
+				else if (secMax < _maximumTemperature - TEMPERATURE_DRAW_BUFFER_LARGE) {
+					_maximumTemperature = secMax + TEMPERATURE_DRAW_BUFFER_SMALL;
+					secMaxRedraw = true;
+				}
+			}
+			if (secMin < primMin) {
+				if (primMinRedraw) {
+					_minimumTemperature = origMin;
+					primMinRedraw = false;
+				}
+				if (secMin < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
+					_minimumTemperature = secMin - TEMPERATURE_DRAW_BUFFER_LARGE;
+					SecMinRedraw = true;
+				}
+				else if (secMin > _minimumTemperature + TEMPERATURE_DRAW_BUFFER_LARGE) {
+					_minimumTemperature = secMin - TEMPERATURE_DRAW_BUFFER_SMALL;
+					SecMinRedraw = true;
+				}
+			}
+
+			//temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw ? true : false;
+			temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw || secMaxRedraw || SecMinRedraw ? true : false;
 		}
 	}
 
-	_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
-
-	if (maxTemp > _maximumTemperature - TEMPERATURE_REDRAW_LIMT ||
-		minTemp < _minimumTemperature + TEMPERATURE_REDRAW_LIMT) {
-		_maximumTemperature = maxTemp + UPPER_TEMPERATURE_DRAW_BUFFER;
-		_minimumTemperature = minTemp - LOWER_TEMPERATURE_DRAW_BUFFER;
+	
+	if (temperatureLegendRedrawRequired) {
+		if (_minimumTemperature < 0) {
+			_minimumTemperature = 0;
+		}
+		_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 		DrawTemperatureLegends();
 		ReDrawTemperatureSprites();
 	}

@@ -9,10 +9,10 @@
 #include "GraphAutoScaler.h"
 
 
-#define UPPER_TEMPERATURE_DRAW_BUFFER 20
-#define LOWER_TEMPERATURE_DRAW_BUFFER 10
+#define TEMPERATURE_DRAW_BUFFER_LARGE 20
+#define TEMPERATURE_DRAW_BUFFER_SMALL 3
+#define TEMPERATURE_DRAW_LIMIT 5
 
-#define TEMPERATURE_REDRAW_LIMT 5
 
 #define TEMPERATURE_LEGEND_WIDTH 23
 #define TEMPERATURE_LEGEND_TEXT_COLOR 0x2f3e
@@ -39,14 +39,13 @@ private:
 	uint16_t* _bgSprPtr[2] = { nullptr };
 
 	TFT_eSprite* _temperatureSprite[2] = { nullptr };
-	//uint16_t* _temperatureSprPtr[2] = { nullptr };
+
 	int _temperatureSprite_W = 0;
 	int _temperatureSprite_H = 0;
 	int _temperatureSpriteTop_H = 0;
 	int _temperatureSpriteBottom_H = 0;
 
 	float _currentScaleDegreesPerPixel;
-
 	int _temperatureLegendHeight;
 
 	int _timeLegend_W = 0;
@@ -58,8 +57,8 @@ private:
 
 	GraphAutoScaler* _primaryTemperatureAutoScaler = nullptr;
 	GraphAutoScaler* _secondaryTemperatureAutoScaler = nullptr;
-	float _maximumTemperature = UPPER_TEMPERATURE_DRAW_BUFFER;
-	float _minimumTemperature = LOWER_TEMPERATURE_DRAW_BUFFER;
+	float _maximumTemperature = TEMPERATURE_DRAW_BUFFER_LARGE;
+	float _minimumTemperature = TEMPERATURE_DRAW_BUFFER_SMALL;
 
 
 	void DrawTemperatureLegends();

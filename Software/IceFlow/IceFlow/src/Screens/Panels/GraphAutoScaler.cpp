@@ -24,8 +24,9 @@ void GraphAutoScaler::Clear()
 	}
 }
 
-void GraphAutoScaler::AddItem(float temperature)
+bool GraphAutoScaler::AddItem(float temperature)
 {
+	bool maxMinsRecalc = false;
 	GraphItem* currentItem = (GraphItem*)ps_malloc(sizeof(GraphItem));
 	currentItem->temperature = temperature;
 	currentItem->nextItem = nullptr;
@@ -43,7 +44,7 @@ void GraphAutoScaler::AddItem(float temperature)
 		_itemListEnd = currentItem;
 		_numberOfItemsInList++;
 		_itemListRoot->prevItem = nullptr;
-		return;
+		return true;
 	}
 	else {
 		currentItem->prevItem = _itemListEnd;
@@ -54,6 +55,7 @@ void GraphAutoScaler::AddItem(float temperature)
 		if (currentItem->temperature > _maximum) {
 			_maximum = currentItem->temperature;
 			_currentSlotOfMaximum = 0;
+			maxMinsRecalc = true;
 		}
 		else {
 			_currentSlotOfMaximum++;
@@ -61,6 +63,7 @@ void GraphAutoScaler::AddItem(float temperature)
 		if (currentItem->temperature < _minimum) {
 			_minimum = currentItem->temperature;
 			_currentSlotOfMinimum = 0;
+			maxMinsRecalc = true;
 		}
 		else {
 			_currentSlotOfMinimum++;
@@ -78,7 +81,10 @@ void GraphAutoScaler::AddItem(float temperature)
 	if (_currentSlotOfMaximum >= _numberOfValuesToTrack ||
 		_currentSlotOfMinimum >= _numberOfValuesToTrack) {
 		RecalculateMaxMins();
+		return true;
 	}
+
+	return maxMinsRecalc;
 }
 
 void GraphAutoScaler::RecalculateMaxMins()
