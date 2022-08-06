@@ -10,9 +10,9 @@
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
-	Serial.println("");
-	Serial.println("MainScreen: Constuctor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("MainScreen: Constuctor start: ");
+	//PrintMemUseage();
 	_tft = tft;
 
 	_graphPanel = new MS_GraphPanel(_tft,
@@ -111,9 +111,9 @@ MainScreen::~MainScreen()
 	}
 
 
-	Serial.println("");
-	Serial.println("MainScreen: Destuctor end: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("MainScreen: Destuctor end: ");
+	//PrintMemUseage();
 }
 
 

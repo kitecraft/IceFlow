@@ -145,6 +145,7 @@
     <ClInclude Include="src\Screens\Panels\GraphItem.h" />
     <ClInclude Include="src\Screens\Panels\Icons\IconBase.h" />
     <ClInclude Include="src\Screens\Panels\Icons\IconBaseDto.h" />
+    <ClInclude Include="src\Screens\Panels\Icons\ManualHeatIcon.h" />
     <ClInclude Include="src\Screens\Panels\Icons\ProfileIcon.h" />
     <ClInclude Include="src\Screens\Panels\Icons\SettingsIcon.h" />
     <ClInclude Include="src\Screens\Panels\MS_GraphPanel.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="src\Screens\OTAScreen.cpp" />
     <ClCompile Include="src\Screens\Panels\GraphAutoScaler.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\IconBase.cpp" />
+    <ClCompile Include="src\Screens\Panels\Icons\ManualHeatIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\ProfileIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\SettingsIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\MS_GraphPanel.cpp" />

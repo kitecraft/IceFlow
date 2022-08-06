@@ -8,9 +8,9 @@
 
 ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 {
-	Serial.println("");
-	Serial.println("ProfilesScreen: Constuctor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ProfilesScreen: Constuctor start: ");
+	//PrintMemUseage();
 
 	_tft = tft;
 
@@ -88,9 +88,9 @@ ProfilesScreen::~ProfilesScreen()
 	if (_graphPanel != nullptr) {
 		delete(_graphPanel);
 	}
-	Serial.println("");
-	Serial.println("ProfilesScreen: Destuctor end: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ProfilesScreen: Destuctor end: ");
+	//PrintMemUseage();
 }
 
 

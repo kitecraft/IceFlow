@@ -63,13 +63,7 @@ void ProgressBar::Update(int progress)
 		return;
 	}
 	_sprite->fillSprite(_config.barBackGroundColor);
-
-	if (progress < 50) {
-		_sprite->setTextColor(_config.theme.textColor, _config.barBackGroundColor);
-	}
-	else {
-		_sprite->setTextColor(_config.theme.textColor, _config.barFillColor);
-	}
+	_sprite->setTextColor(_config.theme.textColor);
 	
 	int w = round(((double)progress / 100.0) * (double)_updateW);
 	_sprite->fillRect(0, 0, w, _updateH, _config.barFillColor);

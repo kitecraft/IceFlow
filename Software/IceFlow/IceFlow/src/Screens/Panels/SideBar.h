@@ -5,6 +5,7 @@
 #include "../Widgets/PopUpMenu.h"
 #include "Icons/SettingsIcon.h"
 #include "Icons/ProfileIcon.h"
+#include "Icons/ManualHeatIcon.h"
 
 #define SIDEBAR_NUMBER_ICONS 5
 
@@ -24,6 +25,9 @@
 //2nd
 #define PROFILE_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*1)
 
+//3rd
+#define MANUAL_HEAT_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*2)
+
 //4th
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*3)
 
@@ -39,6 +43,7 @@ enum SB_TOUCHED_RETURN {
 enum ICONID {
 	NO_ICONID = -1,
 	SettingsIconID = 0,
+	ManualHeatIconID,
 };
 
 
@@ -50,6 +55,8 @@ private:
 	DMCoordinates _coordinates;
 	SettingsIcon* _settingsIcon = nullptr;
 	ProfileIcon* _profileIcon = nullptr;
+	ManualHeatIcon* _manualHeatIcon = nullptr;
+
 	PopUpMenu _popUpMenu;
 	ICONID _activeIcon = NO_ICONID;
 public:

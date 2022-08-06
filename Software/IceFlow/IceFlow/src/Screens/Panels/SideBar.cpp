@@ -22,12 +22,19 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 			DMCoordinates(ICON_X, PROFILE_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + PROFILE_ICON_Y),
 			GlobalTheme),
 		_tft);
+
+	_manualHeatIcon = new ManualHeatIcon(
+		IconBaseDto(
+			DMCoordinates(ICON_X, MANUAL_HEAT_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + MANUAL_HEAT_ICON_Y),
+			GlobalTheme),
+		_tft);
 }
 
 SideBar::~SideBar()
 {
 	delete(_settingsIcon);
 	delete(_profileIcon);
+	delete(_manualHeatIcon);
 }
 
 void SideBar::Draw()
@@ -38,6 +45,7 @@ void SideBar::Draw()
 	sprite.fillSprite(TFT_BLACK);
 	_settingsIcon->Draw(&sprite);
 	_profileIcon->Draw(&sprite);
+	_manualHeatIcon->Draw(&sprite);
 
 	_tft->pushImageDMA(_coordinates.x, _coordinates.y, _coordinates.w, _coordinates.h, sprPtr);
 	_tft->dmaWait();
@@ -87,6 +95,11 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	if (_profileIcon->Touched(x, y)) {
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
+	else if (_manualHeatIcon->Touched(x, y)) {
+		Serial.println("Manual Heat Icon Touched");
+	}
+
+	
 
 	return SB_NOT_TOUCHED;
 }
