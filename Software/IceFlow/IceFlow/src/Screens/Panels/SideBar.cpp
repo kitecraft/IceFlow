@@ -104,7 +104,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
 	else if (_manualHeatIcon->Touched(x, y)) {
-		Serial.println("Manual Heat Icon Touched");
+		return SB_START_MANUAL_HEAT;
 	}
 	else if (_reflowIcon->Touched(x, y)) {
 		Serial.println("Reflow Icon Touched");

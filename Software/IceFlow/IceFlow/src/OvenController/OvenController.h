@@ -57,7 +57,7 @@ public:
 	void EmergencyStop();
 
 	void StartReflowSession(String profileFileName);
-	void StartManualPreHeat(uint16_t targetTemperature);
+	void StartManualHeat(uint16_t targetTemperature);
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
 	//void DisableOven() { EnableDisableOven(false); }

@@ -15,8 +15,9 @@ private:
 public:
 	Button();
 	~Button();
-	Button(ButtonDto config, String label, TFT_eSPI* tft);
+	Button(ButtonDto config, String label, TFT_eSPI* tft, bool useSprite = true);
 	void Draw();
+	void Draw(TFT_eSprite* sprite);
 	bool Touched(int x, int y);
 	void Visible(bool visible) { _visible = visible; }
 	void SetButtonColor(uint16_t buttonColor) { _buttonColor = buttonColor; }

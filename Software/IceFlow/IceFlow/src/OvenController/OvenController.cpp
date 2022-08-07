@@ -171,7 +171,7 @@ void OvenController::FetchTemperatures()
     //delay(100);
 }
 
-void OvenController::StartManualPreHeat(uint16_t targetTemperature)
+void OvenController::StartManualHeat(uint16_t targetTemperature)
 {
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
@@ -180,7 +180,7 @@ void OvenController::StartManualPreHeat(uint16_t targetTemperature)
     Serial.print("Starting pre-heat: ");
     Serial.println(targetTemperature);
     _pidController->Setpoint(targetTemperature);
-    _ovenStatus = OS_MANUAL_HEAT;
+    _ovenStatus = OS_MANUAL_HEAT_ACTIVE;
 }
 
 void OvenController::StartReflowSession(String profileFileName)
@@ -229,11 +229,13 @@ void OvenController::Run()
         switch (_ovenStatus) {
         case OS_IDLE:
             break;
-        case OS_MANUAL_HEAT:
+        case OS_MANUAL_HEAT_ACTIVE:
             HandleManualPreHeat();
             break;
         case OS_REFLOW_ACTIVE:
             HandleReflowSession();
+            break;
+        case OS_CALIBRATION_ACTIVE:
             break;
         default:
             EmergencyStop();
@@ -243,7 +245,7 @@ void OvenController::Run()
 
         // DOOM 
         // DONT FORGET TO RENABLE THIS OR ELSE DOOM WILL OCCUR
-        //CheckConvectionFanStatus();
+        CheckConvectionFanStatus();
         // UNCOMMENT THE ABOVE TO AVERT THE DOOM
         // DOOM
 

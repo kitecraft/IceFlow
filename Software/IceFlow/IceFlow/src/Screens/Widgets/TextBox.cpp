@@ -92,7 +92,7 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 	}
 }
 
-void TextBox::Draw(TFT_eSprite* sprite, const char* text)
+void TextBox::Draw(TFT_eSprite* sprite)
 {
 	if (_config.useRounded) {
 		DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, _config.roundedBlendColor, _config.useDark);
@@ -104,7 +104,18 @@ void TextBox::Draw(TFT_eSprite* sprite, const char* text)
 	sprite->setFreeFont(_config.font);
 	sprite->setTextColor(_config.theme.textColor, _textBG);
 	sprite->setTextDatum(_config.textAlignment);
+}
+
+void TextBox::Draw(TFT_eSprite* sprite, const char* text)
+{
+	Draw(sprite);
 	sprite->drawString(text, _textX, _textY);
+}
+
+void TextBox::Draw(TFT_eSprite* sprite, const int number)
+{
+	Draw(sprite);
+	sprite->drawNumber(number, _textX, _textY);
 }
 
 void TextBox::Update(const char* text)
@@ -114,6 +125,16 @@ void TextBox::Update(const char* text)
 	}
 	_sprite->fillSprite(_textBG);
 	_sprite->drawString(text, _updateTextX, _updateTextY);
+	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
+}
+
+void TextBox::Update(const int number)
+{
+	if (_tft == nullptr) {
+		return;
+	}
+	_sprite->fillSprite(_textBG);
+	_sprite->drawNumber(number, _updateTextX, _updateTextY);
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 }
 

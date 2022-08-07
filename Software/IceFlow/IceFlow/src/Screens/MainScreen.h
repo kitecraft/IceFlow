@@ -7,6 +7,7 @@
 #include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "Panels/MS_GraphPanel.h"
+#include "DialogBoxes/ManualHeatDlg.h"
 
 #define WIFI_X (320 - 4)
 #define WIFI_Y 6
@@ -69,6 +70,8 @@ private:
 	TextBox* _primaryTemperatureTB = nullptr;
 	TextBox* _secondaryTemperatureTB = nullptr;
 
+	ManualHeatDlg* _manualHeatDlg = nullptr;
+
 	unsigned long _nextGraphUpdate = 0;
 
 	void DrawScreen();
@@ -78,6 +81,9 @@ private:
 
 	void UpdatePrimaryTemp(char* val);
 	void UpdateSecondaryTemp(char* val);
+
+	void ManualHeatTouched();
+	void ManualHeatDlgClosed(DialogButtonType action);
 
 public:
 	MainScreen(TFT_eSPI* tft);

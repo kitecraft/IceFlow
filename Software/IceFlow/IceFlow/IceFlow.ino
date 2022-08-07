@@ -117,6 +117,10 @@ void HandleCommandQueue()
         case CC_STOP_TEMPERATURE_STREAM:
             OvenManager.StopTemperatureStream();
             break;
+        case CC_START_MANUAL_HEAT:
+            Serial.print("Starting manual heating: ");
+            Serial.println(data);
+            break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
             Serial.println(data);

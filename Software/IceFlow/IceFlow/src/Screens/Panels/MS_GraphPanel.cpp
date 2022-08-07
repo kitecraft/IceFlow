@@ -149,10 +149,8 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 			float secMin = _secondaryTemperatureAutoScaler->GetMin();
 
 			if (secMax > primMax) {
-				if (primMaxRedraw) {
-					_maximumTemperature = origMax;
-					primMaxRedraw = false;
-				}
+				_maximumTemperature = origMax;
+				primMaxRedraw = false;
 				if (secMax > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
 					_maximumTemperature = secMax + TEMPERATURE_DRAW_BUFFER_LARGE;
 					secMaxRedraw = true;
@@ -163,10 +161,8 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 				}
 			}
 			if (secMin < primMin) {
-				if (primMinRedraw) {
-					_minimumTemperature = origMin;
-					primMinRedraw = false;
-				}
+				_minimumTemperature = origMin;
+				primMinRedraw = false;
 				if (secMin < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
 					_minimumTemperature = secMin - TEMPERATURE_DRAW_BUFFER_LARGE;
 					SecMinRedraw = true;

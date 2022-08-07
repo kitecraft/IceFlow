@@ -80,7 +80,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
-	//_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	DrawScreen();
 
 	//Serial.println("Constuctor end: ");
@@ -110,6 +110,9 @@ MainScreen::~MainScreen()
 		delete(_secondaryTemperatureTB);
 	}
 
+	if (_manualHeatDlg != nullptr) {
+		delete(_manualHeatDlg);
+	}
 
 	//Serial.println("");
 	//Serial.println("MainScreen: Destuctor end: ");
@@ -153,7 +156,7 @@ void MainScreen::UpdateScreenOnInterval()
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
-		if (_sideBar->IsPopUpOpen()) {
+		if (_sideBar->IsPopUpOpen() || _manualHeatDlg != nullptr) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature);
 		}
 		else {
@@ -169,8 +172,26 @@ void MainScreen::UpdateScreenOnInterval()
 
 void MainScreen::HandleTouch(int x, int y)
 {
-	if(_sideBar->Touched(x, y) == SB_MENU_CLOSED){
+	if (_manualHeatDlg != nullptr) {
+		DialogButtonType result = _manualHeatDlg->Touched(x, y);
+		if (result != DB_NONE) {
+			ManualHeatDlgClosed(result);
+			_graphPanel->ReDraw();
+		}
+		return;
+	}
+
+	SB_TOUCHED_RETURN ret = _sideBar->Touched(x, y);
+	switch (ret) {
+	case SB_MENU_CLOSED:
 		_graphPanel->ReDraw();
+		break;
+	case SB_START_MANUAL_HEAT:
+		ManualHeatTouched();
+		return;
+		break;
+	default:
+		break;
 	}
 }
 
@@ -208,8 +229,6 @@ void MainScreen::DrawScreen()
 	
 	_tft->dmaWait();
 	_tft->endWrite();
-
-	//_graphPanel->Draw(&_currentProfile);
 }
 
 void MainScreen::DrawHeader()
@@ -299,4 +318,29 @@ void MainScreen::UpdateSecondaryTemp(char* val)
 	snprintf(value, 9, "%s C", val);
 	_secondaryTemperatureTB->Update(value);
 	_secondaryTemperature = atof(val);
+}
+
+void MainScreen::ManualHeatTouched()
+{
+	if (_manualHeatDlg != nullptr) {
+		delete(_manualHeatDlg);
+	}
+
+	_manualHeatDlg = new ManualHeatDlg(_tft);
+	_manualHeatDlg->Show();
+}
+
+void MainScreen::ManualHeatDlgClosed(DialogButtonType action)
+{
+	int targetTemp = _manualHeatDlg->GetTargetTemperature();
+	_manualHeatDlg->Hide();
+
+	delete _manualHeatDlg;
+	_manualHeatDlg = nullptr;
+
+	if (action == DB_Continue) {
+		char val[4];
+		snprintf(val, 7, "%i", targetTemp);
+		CommandQueue.QueueCommandAndValue(CC_START_MANUAL_HEAT, val);
+	}
 }

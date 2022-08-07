@@ -23,13 +23,16 @@ private:
     TFT_eSprite* _sprite = nullptr;
     uint16_t* _sprPtr = nullptr;
     void DeleteSprite();
+    void Draw(TFT_eSprite* sprite);
 public:
     TextBox(TextBoxDto configDto, TFT_eSPI* tft = nullptr);
     ~TextBox();
 
     void Configure(TextBoxDto configDto, TFT_eSPI* tft = nullptr);
     void Draw(TFT_eSprite* sprite, const char* text);
+    void Draw(TFT_eSprite* sprite, const int number);
     void Update(const char* text);
+    void Update(const int number);
 
     static int DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
 };

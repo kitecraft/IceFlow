@@ -89,7 +89,7 @@ void PopUpMenu::Configure(PopUpMenuDto configDto, String* menuOptions, int numMe
 		_menuOptions[i] = MenuOption(menuOptions[i], optionDto);
 	}
 	
-	_screenReadBuffer = (uint16_t*)calloc(_config.coordinates.w * _config.coordinates.h, sizeof(uint16_t));
+	_screenReadBuffer = (uint16_t*)ps_calloc(_config.coordinates.w * _config.coordinates.h, sizeof(uint16_t));
 }
 
 void PopUpMenu::Open(PopUpMenuDto configDto, String* menuOptions, int numMenuOptions, TFT_eSPI* tft)

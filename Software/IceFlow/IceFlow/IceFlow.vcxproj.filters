@@ -210,6 +210,15 @@
     <ClInclude Include="src\Screens\Panels\Icons\ReflowIcon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlgDto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\DialogBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -291,6 +300,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\Panels\Icons\ReflowIcon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\ManualHeatDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\DialogBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
