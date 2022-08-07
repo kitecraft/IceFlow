@@ -92,6 +92,18 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 	}
 }
 
+bool TextBox::Touched(int x, int y)
+{
+	if (x >= _config.coordinates.p_x &&
+		x <= _config.coordinates.p_x + _config.coordinates.w &&
+		y >= _config.coordinates.p_y &&
+		y <= _config.coordinates.p_y + _config.coordinates.h)
+	{
+		return true;
+	}
+	return false;
+}
+
 void TextBox::Draw(TFT_eSprite* sprite)
 {
 	if (_config.useRounded) {

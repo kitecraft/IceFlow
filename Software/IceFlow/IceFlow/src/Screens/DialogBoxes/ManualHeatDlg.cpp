@@ -9,7 +9,6 @@ ManualHeatDlg::ManualHeatDlg() : DialogBase()
 ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft) 
 	:DialogBase(tft, DMCoordinates(0, 0, MANUAL_HEAT_DLG_W, MANUAL_HEAT_DLG_H, MANUAL_HEAT_DLG_X, MANUAL_HEAT_DLG_Y), GlobalTheme, MEDIUM_FONT)
 {
-
 	_continueButton = new DialogButton(
 		DialogButtonDto(
 			DMCoordinates(MANAUAL_HEAT_CONTINUE_BTN_X, MANAUAL_HEAT_BTN_Y, 0, 0, _coordinates.p_x + MANAUAL_HEAT_CONTINUE_BTN_X, _coordinates.p_y + MANAUAL_HEAT_BTN_Y),
@@ -83,6 +82,9 @@ DialogButtonType ManualHeatDlg::Touched(int x, int y)
 	}
 	else if (_cancelButton->Touched(x, y)) {
 		return DB_Cancel;
+	}
+	else if (_textBox->Touched(x, y)) {
+		Serial.println("TEXT box was touched!");
 	}
 	
 

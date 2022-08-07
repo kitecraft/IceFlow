@@ -221,7 +221,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="192.168.50.30" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
+      <UserProperties arduino.upload.port="COM13" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

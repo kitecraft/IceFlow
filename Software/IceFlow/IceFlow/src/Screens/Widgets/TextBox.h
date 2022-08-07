@@ -29,6 +29,8 @@ public:
     ~TextBox();
 
     void Configure(TextBoxDto configDto, TFT_eSPI* tft = nullptr);
+
+    bool Touched(int x, int y);
     void Draw(TFT_eSprite* sprite, const char* text);
     void Draw(TFT_eSprite* sprite, const int number);
     void Update(const char* text);
