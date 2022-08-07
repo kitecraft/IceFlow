@@ -6,6 +6,7 @@
 #include "Icons/SettingsIcon.h"
 #include "Icons/ProfileIcon.h"
 #include "Icons/ManualHeatIcon.h"
+#include "Icons/ReflowIcon.h"
 
 #define SIDEBAR_NUMBER_ICONS 5
 
@@ -32,7 +33,7 @@
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*3)
 
 //5th
-//#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
+#define REFLOW_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
 
 enum SB_TOUCHED_RETURN {
 	SB_TOUCHED = 0,
@@ -56,6 +57,7 @@ private:
 	SettingsIcon* _settingsIcon = nullptr;
 	ProfileIcon* _profileIcon = nullptr;
 	ManualHeatIcon* _manualHeatIcon = nullptr;
+	ReflowIcon* _reflowIcon = nullptr;
 
 	PopUpMenu _popUpMenu;
 	ICONID _activeIcon = NO_ICONID;

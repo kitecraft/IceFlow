@@ -28,6 +28,12 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 			DMCoordinates(ICON_X, MANUAL_HEAT_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + MANUAL_HEAT_ICON_Y),
 			GlobalTheme),
 		_tft);
+
+	_reflowIcon = new ReflowIcon(
+		IconBaseDto(
+			DMCoordinates(ICON_X, REFLOW_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + REFLOW_ICON_Y),
+			GlobalTheme),
+		_tft);
 }
 
 SideBar::~SideBar()
@@ -35,6 +41,7 @@ SideBar::~SideBar()
 	delete(_settingsIcon);
 	delete(_profileIcon);
 	delete(_manualHeatIcon);
+	delete(_reflowIcon);
 }
 
 void SideBar::Draw()
@@ -46,6 +53,7 @@ void SideBar::Draw()
 	_settingsIcon->Draw(&sprite);
 	_profileIcon->Draw(&sprite);
 	_manualHeatIcon->Draw(&sprite);
+	_reflowIcon->Draw(&sprite);
 
 	_tft->pushImageDMA(_coordinates.x, _coordinates.y, _coordinates.w, _coordinates.h, sprPtr);
 	_tft->dmaWait();
@@ -97,6 +105,9 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 	else if (_manualHeatIcon->Touched(x, y)) {
 		Serial.println("Manual Heat Icon Touched");
+	}
+	else if (_reflowIcon->Touched(x, y)) {
+		Serial.println("Reflow Icon Touched");
 	}
 
 	
