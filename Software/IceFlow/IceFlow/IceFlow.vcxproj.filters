@@ -213,10 +213,13 @@
     <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlgDto.h">
+    <ClInclude Include="src\Screens\DialogBoxes\DialogBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Screens\DialogBoxes\DialogBase.h">
+    <ClInclude Include="src\Screens\DialogBoxes\DialogButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\DialogButtonDto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -306,6 +309,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\DialogBoxes\DialogBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\DialogButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

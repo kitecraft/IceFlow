@@ -85,7 +85,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 
 	if (_settingsIcon->Touched(x, y)) {
-		String options[2] = { "Settings","Info" };		
+		String options[3] = { "Settings", "Calibrate", "Info" };		
 		_popUpMenu.Open(
 			PopUpMenuDto(
 				DMCoordinates(_settingsIcon->GetPX() - 3, _settingsIcon->GetPY(), 0, 0),
@@ -94,7 +94,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 				MEDIUM_FONT,
 				MEDIUM_FONT_TEXT_H),
 			options,
-			2,
+			3,
 			_tft);
 		_activeIcon = SettingsIconID;
 		return SB_TOUCHED;

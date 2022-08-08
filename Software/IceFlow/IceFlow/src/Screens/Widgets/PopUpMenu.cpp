@@ -57,7 +57,7 @@ void PopUpMenu::Configure(PopUpMenuDto configDto, String* menuOptions, int numMe
 
 	int menuOptionHeight = (_config.fontHeight + OPTION_TEXT_V_PADDING + OPTION_BORDER_SIZE);
 	_config.coordinates.w = (OPTION_BORDER_PADDING * 2) + _lengthOfLongestOptionText + menuOptionHeight + 6;
-	_config.coordinates.h = (OPTION_BORDER_PADDING * 2)  + ((menuOptionHeight + (OPTION_SPACING * (_numOptions - 1))) * _numOptions);
+	_config.coordinates.h = (OPTION_BORDER_PADDING * 2)  + (menuOptionHeight * _numOptions) + (OPTION_SPACING * (_numOptions - 1));
 
 	switch (_config.alignment) {
 	case TR_DATUM:

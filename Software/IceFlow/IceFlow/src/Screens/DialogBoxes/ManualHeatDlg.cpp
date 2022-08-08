@@ -77,6 +77,9 @@ ManualHeatDlg::~ManualHeatDlg()
 
 DialogButtonType ManualHeatDlg::Touched(int x, int y)
 {
+
+
+
 	if (_continueButton->Touched(x, y)) {
 		return DB_Continue;
 	}
