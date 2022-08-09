@@ -27,6 +27,7 @@
 
 #define PRIMARY_TEMPERATURE_COLOR TFT_RED
 #define SEC_TEMPERATURE_COLOR TFT_ORANGE
+#define TER_TEMPERATURE_COLOR TFT_GREEN
 
 //how often the screen updates it's graphs
 #define UPDATE_GRAPH_RATE 250

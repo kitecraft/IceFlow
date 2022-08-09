@@ -38,7 +38,7 @@
 #define MS_TEMPERATURE_LABEL_Y ((MS_FOOTER_H / 2) - 1)
 #define MS_PRIMARY_TEMPERATURE_TB_X ( MS_PRIMARY_TEMPERATURE_LABEL_X + 33)
 
-#define MS_SEC_TEMPERATURE_LABEL_X (MS_PRIMARY_TEMPERATURE_TB_X + MS_TEMPERATURE_TB_W + 20)
+#define MS_SEC_TEMPERATURE_LABEL_X (MS_PRIMARY_TEMPERATURE_TB_X + MS_TEMPERATURE_TB_W + 5)
 #define MS_SEC_TEMPERATURE_TB_X (MS_SEC_TEMPERATURE_LABEL_X + 25)
 
 #define MS_DEVICE_NAME_X ((MS_HEADER_H/2) - 3)
@@ -66,6 +66,7 @@ private:
 	bool _temperatureStreamStarted = false;
 	float _primaryTemperature = 20;
 	float _secondaryTemperature = 20;
+	float _tertiaryTermperature = 20;
 
 	TextBox* _primaryTemperatureTB = nullptr;
 	TextBox* _secondaryTemperatureTB = nullptr;

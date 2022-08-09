@@ -4,11 +4,12 @@ MS_GraphPanel::MS_GraphPanel()
 {
 }
 
-MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary)
+MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary, bool ignoreTertiary)
 {
 	_tft = tft;
 	_coordinates = coordinates;
 	_ignoreSecondary = ignoreSecondary;
+	_ignoreTertiary = ignoreTertiary;
 
 	_temperatureLegendHeight = _coordinates.h;
 	_timeLegend_W = _coordinates.w - (TEMPERATURE_LEGEND_WIDTH * 2);
@@ -54,7 +55,7 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool igno
 
 	_primaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
 	_secondaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
-
+	_tertiaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
 }
 
 MS_GraphPanel::~MS_GraphPanel()
@@ -64,6 +65,9 @@ MS_GraphPanel::~MS_GraphPanel()
 	}
 	if (_secondaryTemperatureAutoScaler != nullptr) {
 		delete _secondaryTemperatureAutoScaler;
+	}
+	if (_tertiaryTemperatureAutoScaler != nullptr) {
+		delete _tertiaryTemperatureAutoScaler;
 	}
 
 	if (_bgSprite[TOP_SIDE] != nullptr) {
@@ -85,6 +89,74 @@ MS_GraphPanel::~MS_GraphPanel()
 	}
 }
 
+void MS_GraphPanel::IgnoreSecondary(bool ignore)
+{ 
+	_ignoreSecondary = ignore; 
+	if (_ignoreSecondary) {
+		_secondaryTemperatureAutoScaler->Clear();
+	}
+	_redrawRequired = true;
+}
+
+void MS_GraphPanel::IgnoreTertiary(bool ignore)
+{
+	_ignoreTertiary = ignore;
+	if (_ignoreTertiary) {
+		_tertiaryTemperatureAutoScaler->Clear();
+	}
+	_redrawRequired = true;
+}
+
+void MS_GraphPanel::CalculateNewMaxMins()
+{
+	float max = _primaryTemperatureAutoScaler->GetMax();
+	float min = _primaryTemperatureAutoScaler->GetMin();
+
+	if (!_ignoreSecondary) {
+		float secMax = _secondaryTemperatureAutoScaler->GetMax();
+		float secMin = _secondaryTemperatureAutoScaler->GetMin();
+		if (secMax > max) {
+			max = secMax;
+		}
+		if (secMin < min) {
+			min = secMin;
+		}
+	}
+	if (!_ignoreTertiary) {
+		float terMax = _tertiaryTemperatureAutoScaler->GetMax();
+		float terMin = _tertiaryTemperatureAutoScaler->GetMin();
+		if (terMax > max) {
+			max = terMax;
+		}
+		if (terMin < min) {
+			min = terMin;
+		}
+	}
+
+	if (max > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
+		_maximumTemperature = max + TEMPERATURE_DRAW_BUFFER_LARGE;
+		_redrawRequired = true;
+	}
+	else if (max < _maximumTemperature - TEMPERATURE_DRAW_BUFFER_LARGE) {
+		_maximumTemperature = max + TEMPERATURE_DRAW_BUFFER_SMALL;
+		_redrawRequired = true;
+	}
+
+	if (min < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
+		_minimumTemperature = min - TEMPERATURE_DRAW_BUFFER_LARGE;
+		_redrawRequired = true;
+	}
+	else if (min > _minimumTemperature + TEMPERATURE_DRAW_BUFFER_LARGE) {
+		_minimumTemperature = min - TEMPERATURE_DRAW_BUFFER_SMALL;
+		_redrawRequired = true;
+	}
+
+	if (_minimumTemperature < 0) {
+		_minimumTemperature = 0;
+		_redrawRequired = true;
+	}
+}
+
 void MS_GraphPanel::Draw()
 {
 	_maximumTemperature = 10 + TEMPERATURE_DRAW_BUFFER_LARGE;
@@ -102,96 +174,50 @@ void MS_GraphPanel::ReDraw()
 	DrawTimeLegend();
 }
 
-void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float profileTemperate)
+void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
 {
-	float primMax, primMin;
-	bool primMaxRedraw = false;
-	bool primMinRedraw = false; 
-	bool secMaxRedraw = false;
-	bool SecMinRedraw = false;
-
-	bool temperatureLegendRedrawRequired = false;
 	bool secondaryRecalculated = false;
+	bool tertiaryReclculated = false;
 
 	bool primaryRecalculated = _primaryTemperatureAutoScaler->AddItem(primaryTemperature);
-	float origMax = _maximumTemperature;
-	float origMin = _minimumTemperature;
-
-
-	if (primaryRecalculated)
-	{
-		primMax = _primaryTemperatureAutoScaler->GetMax();
-		primMin = _primaryTemperatureAutoScaler->GetMin();
-
-		if (primMax > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
-			_maximumTemperature = primMax + TEMPERATURE_DRAW_BUFFER_LARGE;
-			primMaxRedraw = true;
-		} else if (primMax < _maximumTemperature - TEMPERATURE_DRAW_BUFFER_LARGE) {
-			_maximumTemperature = primMax + TEMPERATURE_DRAW_BUFFER_SMALL;
-			primMaxRedraw = true;
-		}
-
-		if (primMin < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
-			_minimumTemperature = primMin - TEMPERATURE_DRAW_BUFFER_LARGE;
-			primMinRedraw = true;
-		}
-		else if (primMin > _minimumTemperature + TEMPERATURE_DRAW_BUFFER_LARGE) {
-			_minimumTemperature = primMin - TEMPERATURE_DRAW_BUFFER_SMALL;
-			primMinRedraw = true;
-		}
-		temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw ? true : false;
-	}
-
 	if (!_ignoreSecondary) {
 		secondaryRecalculated = _secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
-		if (secondaryRecalculated || temperatureLegendRedrawRequired) {
-			float secMax = _secondaryTemperatureAutoScaler->GetMax();
-			float secMin = _secondaryTemperatureAutoScaler->GetMin();
-
-			if (secMax > primMax) {
-				_maximumTemperature = origMax;
-				primMaxRedraw = false;
-				if (secMax > _maximumTemperature - TEMPERATURE_DRAW_BUFFER_SMALL) {
-					_maximumTemperature = secMax + TEMPERATURE_DRAW_BUFFER_LARGE;
-					secMaxRedraw = true;
-				}
-				else if (secMax < _maximumTemperature - TEMPERATURE_DRAW_BUFFER_LARGE) {
-					_maximumTemperature = secMax + TEMPERATURE_DRAW_BUFFER_SMALL;
-					secMaxRedraw = true;
-				}
-			}
-			if (secMin < primMin) {
-				_minimumTemperature = origMin;
-				primMinRedraw = false;
-				if (secMin < _minimumTemperature + TEMPERATURE_DRAW_BUFFER_SMALL) {
-					_minimumTemperature = secMin - TEMPERATURE_DRAW_BUFFER_LARGE;
-					SecMinRedraw = true;
-				}
-				else if (secMin > _minimumTemperature + TEMPERATURE_DRAW_BUFFER_LARGE) {
-					_minimumTemperature = secMin - TEMPERATURE_DRAW_BUFFER_SMALL;
-					SecMinRedraw = true;
-				}
-			}
-
-			//temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw ? true : false;
-			temperatureLegendRedrawRequired = primMaxRedraw || primMinRedraw || secMaxRedraw || SecMinRedraw ? true : false;
-		}
 	}
 
-	
-	if (temperatureLegendRedrawRequired) {
-		if (_minimumTemperature < 0) {
-			_minimumTemperature = 0;
-		}
+	if (!_ignoreTertiary) {
+		tertiaryReclculated = _tertiaryTemperatureAutoScaler->AddItem(tertiaryTemperature);
+	}
+
+	if (primaryRecalculated || secondaryRecalculated || tertiaryReclculated) {
+		CalculateNewMaxMins();
+	}
+
+		
+	if (_redrawRequired) {
 		_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 		DrawTemperatureLegends();
 		ReDrawTemperatureSprites();
+		_redrawRequired = false;
 	}
 	else {
 		_temperatureSprite[TOP_SIDE]->scroll(-1, 0);
 		_temperatureSprite[BOTTOM_SIDE]->scroll(-1, 0);
 		_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
 		_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
+
+		if (!_ignoreTertiary) {
+			_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
+				_temperatureSprite_H - round((tertiaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				TER_TEMPERATURE_COLOR
+			);
+
+			_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
+				_temperatureSprite_H - round((tertiaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				TER_TEMPERATURE_COLOR
+			);
+		}
 
 		if (!_ignoreSecondary) {
 			_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
@@ -232,11 +258,14 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 	DrawGraphGrid(BOTTOM_SIDE);
 }
 
-void MS_GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTemperature, float profileTemperate)
+void MS_GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
 {
 	_primaryTemperatureAutoScaler->AddItem(primaryTemperature);
 	if (!_ignoreSecondary) {
 		_secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+	}
+	if (!_ignoreTertiary) {
+		_tertiaryTemperatureAutoScaler->AddItem(tertiaryTemperature);
 	}
 }
 
@@ -395,7 +424,47 @@ void MS_GraphPanel::ReDrawTemperatureSprites()
 
 	_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 
+	if (!_ignoreTertiary) {
+		int column = _temperatureSprite_W - 1;
+		float curr = _tertiaryTemperatureAutoScaler->GetNewest();
+		if ((int)curr != GAS_NO_VALUE) {
+			_temperatureSprite[TOP_SIDE]->drawFastVLine(
+				column,
+				_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				TER_TEMPERATURE_COLOR
+			);
 
+			_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+				column,
+				_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+				2,
+				TER_TEMPERATURE_COLOR
+			);
+
+			curr = _tertiaryTemperatureAutoScaler->GetNext();
+			while ((int)curr != GAS_NO_VALUE) {
+				column--;
+
+				_temperatureSprite[TOP_SIDE]->drawFastVLine(
+					column,
+					_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+					2,
+					TER_TEMPERATURE_COLOR
+				);
+
+				_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(
+					column,
+					_temperatureSprite_H - round((curr - _minimumTemperature) * _currentScaleDegreesPerPixel),
+					2,
+					TER_TEMPERATURE_COLOR
+				);
+
+				curr = _tertiaryTemperatureAutoScaler->GetNext();
+			}
+		}
+	}
+	
 	if (!_ignoreSecondary) {
 		int column = _temperatureSprite_W - 1;
 		float curr = _secondaryTemperatureAutoScaler->GetNewest();

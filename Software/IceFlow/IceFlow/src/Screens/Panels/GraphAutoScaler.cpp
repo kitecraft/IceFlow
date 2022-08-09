@@ -22,6 +22,11 @@ void GraphAutoScaler::Clear()
 		_itemListRoot = currItem->nextItem;
 		free(currItem);
 	}
+	_numberOfItemsInList = 0;
+	_maximum = 0;
+	_currentSlotOfMaximum = 0;
+	_minimum = 0;
+	_currentSlotOfMinimum = 0;
 }
 
 bool GraphAutoScaler::AddItem(float temperature)

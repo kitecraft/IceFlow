@@ -178,14 +178,13 @@ void OvenController::FetchTemperatures()
     //delay(100);
 }
 
-void OvenController::StartManualHeat(uint16_t targetTemperature)
+void OvenController::StartManualHeat(int targetTemperature)
 {
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
     }
     //g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_PREHEAT_SCREEN);
-    Serial.print("Starting pre-heat: ");
-    Serial.println(targetTemperature);
+    _manualTargetTemperature = targetTemperature;
     _pidController->Setpoint(targetTemperature);
     _ovenStatus = OS_MANUAL_HEAT_ACTIVE;
 
@@ -274,6 +273,32 @@ void OvenController::Run()
         //vTaskDelay(500);
         
         vTaskDelay(1);
+    }
+}
+
+void OvenController::SendStatus()
+{
+    switch (_ovenStatus) {
+    case OS_IDLE:
+        DisplayQueue.QueueKey(suk_Oven_Stopped);
+        break;
+    case OS_MANUAL_HEAT_ACTIVE:
+        char val[4];
+        snprintf(val, 4, "%i", _manualTargetTemperature);
+        DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
+        break;
+    case OS_REFLOW_ACTIVE:
+        Serial.println("Sending: OS_REFLOW_ACTIVE");
+        DisplayQueue.QueueKey(suk_Oven_Reflow_On);
+        break;
+    case OS_CALIBRATION_ACTIVE:
+        Serial.println("Sending: OS_CALIBRATION_ACTIVE");
+        DisplayQueue.QueueKey(suk_Oven_Calibration_On);
+        break;
+    default:
+        Serial.println("Sending: default");
+        DisplayQueue.QueueKey(suk_Oven_Stopped);
+        break;
     }
 }
 

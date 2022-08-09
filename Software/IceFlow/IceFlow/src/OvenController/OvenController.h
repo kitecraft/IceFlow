@@ -24,6 +24,7 @@ private:
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
 	bool _convectionFanOnManual = false;
+	int _manualTargetTemperature = 0;
 
 	double _temperaturePrimary = 30;
 	double _temperatureSecondary = 5;
@@ -60,9 +61,11 @@ public:
 	void StopOven();
 
 	void StartReflowSession(String profileFileName);
-	void StartManualHeat(uint16_t targetTemperature);
+	void StartManualHeat(int targetTemperature);
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
+
+	void SendStatus();
 	//void DisableOven() { EnableDisableOven(false); }
 	//void EnableOven() { EnableDisableOven(true); }
 	//bool IsOvenEnabled();

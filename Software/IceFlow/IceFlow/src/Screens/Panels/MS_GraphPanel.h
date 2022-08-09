@@ -53,10 +53,13 @@ private:
 	int _timeLegend_Y = 0;
 
 	bool _ignoreSecondary = false;
-	bool _ignoreProfile = false;
+	bool _ignoreTertiary = false;
+	bool _redrawRequired = false;
 
 	GraphAutoScaler* _primaryTemperatureAutoScaler = nullptr;
 	GraphAutoScaler* _secondaryTemperatureAutoScaler = nullptr;
+	GraphAutoScaler* _tertiaryTemperatureAutoScaler = nullptr;
+
 	float _maximumTemperature = TEMPERATURE_DRAW_BUFFER_LARGE;
 	float _minimumTemperature = TEMPERATURE_DRAW_BUFFER_SMALL;
 
@@ -67,17 +70,18 @@ private:
 	void DrawGraphGrid(int slot);
 
 	void ReDrawTemperatureSprites();
+	void CalculateNewMaxMins();
 
 public:
 	MS_GraphPanel();
-	MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary = false);
+	MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary = false, bool ignoreTertiary = false);
 	~MS_GraphPanel();
-	void IgnoreSecondary(bool ignore) { _ignoreSecondary = ignore; }
-	void IgnoreProfile(bool ignore) { _ignoreProfile = ignore; }
-	//void Draw(Profile* profile);
+	void IgnoreSecondary(bool ignore);
+	void IgnoreTertiary(bool ignore);
+
 	void Draw();
 	void ReDraw();
-	void Update(float primaryTemperature, float secondaryTemperature = 0, float profileTemperate = 0);
-	void UpdateValuesOnly(float primaryTemperature, float secondaryTemperature = 0, float profileTemperate = 0);
+	void Update(float primaryTemperature, float secondaryTemperature = 0, float tertiaryTemperature = 0);
+	void UpdateValuesOnly(float primaryTemperature, float secondaryTemperature = 0, float tertiaryTemperature = 0);
 };
 
