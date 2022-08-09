@@ -53,6 +53,11 @@
 #define MS_GRAPHPANEL_W 270
 #define MS_GRAPHPANEL_H (240 - MS_GRAPHPANEL_Y*2)
 
+#define MS_HEATER_ICON_X (MS_SEC_TEMPERATURE_TB_X + MS_TEMPERATURE_TB_W + 7)
+#define MS_HEATER_ICON_Y (MS_FOOTER_Y + 4)
+#define MS_HEATER_ICON_W 15
+#define MS_HEATER_ICON_H 24
+
 class MainScreen
 {
 private:
@@ -85,6 +90,8 @@ private:
 
 	void ManualHeatTouched();
 	void ManualHeatDlgClosed(DialogButtonType action);
+
+	void DrawHeatersIcon(bool status);
 
 public:
 	MainScreen(TFT_eSPI* tft);

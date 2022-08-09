@@ -117,12 +117,15 @@ void OvenController::EnableOvenHeaters()
         EnableConvectionFan();
     }
     _heatersOn = true;
+    DisplayQueue.QueueKey(suk_Oven_Heaters_On);
+    
 }
 
 void OvenController::DisableOvenHeaters()
 {
     digitalWrite(SSR_OVEN_HEATERS, RELAY_OFF);
     _heatersOn = false;
+    DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
 }
 
 void OvenController::StopOven()

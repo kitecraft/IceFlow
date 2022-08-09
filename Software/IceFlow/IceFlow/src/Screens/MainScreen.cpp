@@ -153,6 +153,12 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
 		break;
+	case suk_Oven_Heaters_On:
+		DrawHeatersIcon(true);
+		break;
+	case suk_Oven_Heaters_Off:
+		DrawHeatersIcon(false);
+		break;
 	default:
 		break;
 	}
@@ -233,7 +239,7 @@ void MainScreen::DrawScreen()
 	_sideBar->Draw();
 	DrawHeader();
 	DrawFooter();
-
+	DrawHeatersIcon(false);
 	_graphPanel->Draw();
 	
 	_tft->dmaWait();
@@ -352,4 +358,24 @@ void MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 		snprintf(val, 7, "%i", targetTemp);
 		CommandQueue.QueueCommandAndValue(CC_START_MANUAL_HEAT, val);
 	}
+}
+
+void MainScreen::DrawHeatersIcon(bool status)
+{
+	int color = GlobalTheme.panelDarkColor;
+	if (status) {
+		color = TFT_RED;
+	}
+
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(MS_HEATER_ICON_W, MS_HEATER_ICON_H);
+
+	sprite.fillSprite(GlobalTheme.panelLightColor);
+	sprite.drawRoundRect(0, 3, MS_HEATER_ICON_W, MS_HEATER_ICON_H - 6, 5, GlobalTheme.panelBorderColor);
+	sprite.drawRoundRect(1, 4, MS_HEATER_ICON_W-2, MS_HEATER_ICON_H - 8, 5, GlobalTheme.panelBorderColor);
+	sprite.fillSmoothRoundRect(2, 5, MS_HEATER_ICON_W-4, MS_HEATER_ICON_H - 10, 5, color, GlobalTheme.panelBorderColor);
+	
+	_tft->pushImageDMA(MS_HEATER_ICON_X, MS_HEATER_ICON_Y, MS_HEATER_ICON_W, MS_HEATER_ICON_H, sprPtr);
+	_tft->dmaWait();
+	sprite.deleteSprite();
 }
