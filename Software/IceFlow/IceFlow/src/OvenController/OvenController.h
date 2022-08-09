@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <PID_v2.h>
+#include <Bounce2.h>
 #include "../IceFlow_Config.h"
 #include "OvenEnums.h"
 #include "../ProfileManager/ProfileManager.h"
@@ -17,6 +18,8 @@ private:
 
 	OvenStatus _ovenStatus = OS_IDLE;
 	REFLOW_PHASE _reflowPhase = RP_NOT_ACTIVE;
+
+	Bounce2::Button _stopButton;
 
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
@@ -47,14 +50,14 @@ private:
 	unsigned long _nextTemperatureDisplayUpdate = 0;
 
 
-	void HandleManualPreHeat();
+	void HandleOvenHeatersWithPID();
 	void HandleReflowSession();
 	//void EnableDisableOven(bool state);
 public:
 	bool Init();
 	void Run();
 
-	void EmergencyStop();
+	void StopOven();
 
 	void StartReflowSession(String profileFileName);
 	void StartManualHeat(uint16_t targetTemperature);

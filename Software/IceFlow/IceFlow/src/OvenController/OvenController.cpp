@@ -1,5 +1,7 @@
 #include "OvenController.h"
 #include "../Utilities/PreferencesManager.h"
+#include "../DisplayManager/Utilities/DisplayQueue.h"
+#include "../Screens/Utilities/ScreenUpdateKeys.h"
 
 bool OvenController::Init()
 {
@@ -9,6 +11,9 @@ bool OvenController::Init()
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
 
+    _stopButton.attach(STOP_BUTTON, INPUT_PULLUP);
+    _stopButton.interval(25);
+    _stopButton.setPressedState(LOW);
     //_ovenEnabledMutex = portMUX_INITIALIZER_UNLOCKED;
 
     _kp = GetPidKP();
@@ -21,10 +26,11 @@ bool OvenController::Init()
     Serial.print(_ki);
     Serial.print(" - ");
     Serial.println(_kd);
-    
     _pidController = new PID_v2(_kp, _ki, _kd, PID::Direct);
     _pidController->SetSampleTime(20);
-    //_pidController->Start(_temperaturePrimary, 0, 20.0);
+
+    FetchPrimaryTemperature();
+    _pidController->Start(_temperaturePrimary, 0, 0);
 
     xTaskCreatePinnedToCore(
         OvenControllerTask,
@@ -119,14 +125,15 @@ void OvenController::DisableOvenHeaters()
     _heatersOn = false;
 }
 
-void OvenController::EmergencyStop()
+void OvenController::StopOven()
 {
     Serial.println("\n-----\nEMERGENCY STOP\n-----\n");
     _ovenStatus = OS_IDLE;
     _reflowPhase = RP_NOT_ACTIVE;
     DisableOvenHeaters();
     DisableConvectionFan();
-    //g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_MAIN);
+    DisplayQueue.QueueKey(suk_Oven_Stopped);
+    
 }
 
 void OvenController::FetchPrimaryTemperature()
@@ -181,6 +188,10 @@ void OvenController::StartManualHeat(uint16_t targetTemperature)
     Serial.println(targetTemperature);
     _pidController->Setpoint(targetTemperature);
     _ovenStatus = OS_MANUAL_HEAT_ACTIVE;
+
+    char val[4];
+    snprintf(val, 4, "%i", targetTemperature);
+    DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
 }
 
 void OvenController::StartReflowSession(String profileFileName)
@@ -190,12 +201,12 @@ void OvenController::StartReflowSession(String profileFileName)
         return;
     }
     */
+
+    DisplayQueue.QueueKey(suk_Oven_Reflow_On);
 }
 
-void OvenController::HandleManualPreHeat()
+void OvenController::HandleOvenHeatersWithPID()
 {
-    //Serial.print("Temp: ");
-    //Serial.print(_temperaturePrimary);
     const double output = _pidController->Run(_temperaturePrimary);
     if (output == 0 && _heatersOn)
     {
@@ -204,14 +215,11 @@ void OvenController::HandleManualPreHeat()
     else if (output > 0 && !_heatersOn) {
         EnableOvenHeaters();
     }
-
-    //Serial.print("  | Output: ");
-    //Serial.println(output);
-    //delay(500);
 }
 
 void OvenController::HandleReflowSession()
 {
+    HandleOvenHeatersWithPID();
 
 }
 
@@ -223,6 +231,10 @@ void OvenController::Run()
             vTaskDelay(1);
         }
         */
+        _stopButton.update();
+        if (_stopButton.pressed()) {
+            StopOven();
+        }
 
         FetchTemperatures();
 
@@ -230,7 +242,7 @@ void OvenController::Run()
         case OS_IDLE:
             break;
         case OS_MANUAL_HEAT_ACTIVE:
-            HandleManualPreHeat();
+            HandleOvenHeatersWithPID();
             break;
         case OS_REFLOW_ACTIVE:
             HandleReflowSession();
@@ -238,7 +250,7 @@ void OvenController::Run()
         case OS_CALIBRATION_ACTIVE:
             break;
         default:
-            EmergencyStop();
+            StopOven();
             Serial.println("\n***\nSomething has gone horribly wrong.\nPlease unplug the oven.\nThe warranty is void\n***\n");
             break;
         }

@@ -13,4 +13,8 @@ enum SCREEN_UPDATE_KEYS {
 	suk_PrimaryTemperature,
 	suk_SecondaryTemperature,
 	suk_TemperatureStreamStarted,
+	suk_Oven_Stopped,
+	suk_Oven_Manual_On,
+	suk_Oven_Reflow_On,
+	suk_Oven_Calibration_On
 };

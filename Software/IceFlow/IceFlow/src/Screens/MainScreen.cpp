@@ -144,6 +144,12 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_TemperatureStreamStarted:
 		_temperatureStreamStarted = true;
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+	case suk_Oven_Manual_On:
+		Serial.print("Oven started: ");
+		Serial.println(value);
+		break;
+	case suk_Oven_Stopped:
+		break;
 	default:
 		break;
 	}

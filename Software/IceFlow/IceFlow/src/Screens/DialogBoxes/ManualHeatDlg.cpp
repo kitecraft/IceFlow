@@ -77,9 +77,6 @@ ManualHeatDlg::~ManualHeatDlg()
 
 DialogButtonType ManualHeatDlg::Touched(int x, int y)
 {
-
-
-
 	if (_continueButton->Touched(x, y)) {
 		return DB_Continue;
 	}
@@ -90,6 +87,5 @@ DialogButtonType ManualHeatDlg::Touched(int x, int y)
 		Serial.println("TEXT box was touched!");
 	}
 	
-
 	return DB_NONE;
 }

@@ -17,6 +17,7 @@
 #define OVEN_CONTROLLER_TASK_STACK_SIZE (4096+512) 
 #define RELAY_CONVECTION_FAN 32
 #define SSR_OVEN_HEATERS 33
+#define STOP_BUTTON 22
 //how often to send the tempeature to the displaymanager
 #define TEMPERATURE_DISPLAY_REFRESH_RATE 100
 
