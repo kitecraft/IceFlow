@@ -72,7 +72,7 @@ void Button::Draw(TFT_eSprite* sprite)
 		);
 
 		sprite->setFreeFont(_config.font);
-		sprite->setTextColor(_config.theme.textColor, _buttonColor);
+		sprite->setTextColor(_config.theme.textColor);
 		sprite->setTextDatum(MC_DATUM);
 		sprite->drawString(_label, _config.coordinates.x + _config.coordinates.w / 2, _config.coordinates.y + _config.coordinates.h / 2);
 	}

@@ -48,6 +48,7 @@ private:
 
 	void Draw();
 	void DrawHeader();
+	void ProcessTouch(int x, int y);
 public:
 	ProfilesScreen(TFT_eSPI* tft);
 	~ProfilesScreen();

@@ -73,19 +73,65 @@ ManualHeatDlg::~ManualHeatDlg()
 	if (_cancelButton != nullptr) {
 		delete _cancelButton;
 	}
+	if (_numberPadDlg != nullptr) {
+		delete _numberPadDlg;
+	}
 }
 
 DialogButtonType ManualHeatDlg::Touched(int x, int y)
 {
-	if (_continueButton->Touched(x, y)) {
+	if (_numberPadDlg != nullptr && _numberPadDlg->Visible()) {
+		if (_numberPadDlg->Touched(x, y))
+		{
+			CloseNumberPad();
+		}
+	} else if (_continueButton->Touched(x, y)) {
 		return DB_Continue;
 	}
 	else if (_cancelButton->Touched(x, y)) {
 		return DB_Cancel;
 	}
 	else if (_textBox->Touched(x, y)) {
-		Serial.println("TEXT box was touched!");
+		OpenNumberPad();
 	}
 	
 	return DB_NONE;
+}
+
+void ManualHeatDlg::UpdateValue(int newTemperature)
+{
+	if (newTemperature == 0 || newTemperature > 300) {
+		return;
+	}
+
+	_targetTemperature = newTemperature;
+	if (_visible) {
+		_textBox->Update(_targetTemperature);
+	}
+	else {
+		_textBox->Draw(_sprite, _targetTemperature);
+	}
+}
+
+void ManualHeatDlg::OpenNumberPad()
+{
+	if (_numberPadDlg == nullptr) {
+
+		_numberPadDlg = new NumberPadDialogBox(_tft, "Target");
+		_numberPadDlg->SetNumber(_targetTemperature);
+
+		//Hide();
+		_numberPadDlg->Show();
+	}
+}
+
+void ManualHeatDlg::CloseNumberPad()
+{
+	_numberPadDlg->Hide();
+	UpdateValue(_numberPadDlg->GetNumber());
+	//Show();
+
+	_tft->dmaWait();
+	delete(_numberPadDlg);
+	_numberPadDlg = nullptr;
 }

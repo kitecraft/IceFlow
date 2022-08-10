@@ -186,13 +186,13 @@ void OvenController::StartManualHeat(int targetTemperature)
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
     }
-    //g_displayQueue.AddScreenChangeToQueue(DISPLAY_SCREEN_TYPE_PREHEAT_SCREEN);
     _manualTargetTemperature = targetTemperature;
-    _pidController->Setpoint(targetTemperature);
+
+    _pidController->Setpoint(_manualTargetTemperature);
     _ovenStatus = OS_MANUAL_HEAT_ACTIVE;
 
     char val[4];
-    snprintf(val, 4, "%i", targetTemperature);
+    snprintf(val, 4, "%i", _manualTargetTemperature);
     DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
 }
 
@@ -302,6 +302,13 @@ void OvenController::SendStatus()
         Serial.println("Sending: default");
         DisplayQueue.QueueKey(suk_Oven_Stopped);
         break;
+    }
+
+    if (_heatersOn) {
+        DisplayQueue.QueueKey(suk_Oven_Heaters_On);
+    }
+    else {
+        DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
     }
 }
 

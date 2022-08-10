@@ -43,19 +43,13 @@ void DialogBase::Show()
 	_screenReadBuffer = (uint16_t*)ps_calloc(_coordinates.w * _coordinates.h, sizeof(uint16_t));
 	_tft->readRect(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _screenReadBuffer);
 
-	_tft->startWrite();
 	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _sprPtr);
 	_visible = true;
-	_tft->dmaWait();
-	_tft->endWrite();
 }
 
 void DialogBase::Hide()
 {
-	_tft->startWrite();
 	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _screenReadBuffer);
 	_visible = false;
-	_tft->dmaWait();
-	_tft->endWrite();
 	ClearBuffer();
 }

@@ -22,19 +22,15 @@ private:
     TFT_eSPI* _tft = nullptr;
     TFT_eSprite* _sprite = nullptr;
     uint16_t* _sprPtr = nullptr;
-    void DeleteSprite();
-    void Draw(TFT_eSprite* sprite);
+    void Draw(TFT_eSprite* sprite, bool useDark);
 public:
     TextBox(TextBoxDto configDto, TFT_eSPI* tft = nullptr);
     ~TextBox();
 
-    void Configure(TextBoxDto configDto, TFT_eSPI* tft = nullptr);
-
     bool Touched(int x, int y);
-    void Draw(TFT_eSprite* sprite, const char* text);
-    void Draw(TFT_eSprite* sprite, const int number);
-    void Update(const char* text);
-    void Update(const int number);
-
+    void Draw(TFT_eSprite* sprite, const char* text, bool useDark = false);
+    void Draw(TFT_eSprite* sprite, const int number, bool useDark = false);
+    void Update(const char* text, bool useDark = false);
+    void Update(const int number, bool useDark = false);
     static int DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
 };

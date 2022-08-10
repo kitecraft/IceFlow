@@ -10,9 +10,9 @@
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
-	//Serial.println("");
-	//Serial.println("MainScreen: Constuctor start: ");
-	//PrintMemUseage();
+	Serial.println("");
+	Serial.println("MainScreen: Constuctor start: ");
+	PrintMemUseage();
 	_tft = tft;
 
 	_graphPanel = new MS_GraphPanel(_tft,
@@ -85,13 +85,17 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
 	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
-	//Serial.println("Constuctor end: ");
-	//PrintMemUseage();
-	//Serial.println("");
+	Serial.println("Constuctor end: ");
+	PrintMemUseage();
+	Serial.println("");
 }
 
 MainScreen::~MainScreen()
 {
+	Serial.println("");
+	Serial.println("MainScreen: Destuctor start: ");
+	PrintMemUseage();
+
 	CommandQueue.QueueCommand(CC_STOP_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
 	
@@ -116,9 +120,9 @@ MainScreen::~MainScreen()
 		delete(_manualHeatDlg);
 	}
 
-	//Serial.println("");
-	//Serial.println("MainScreen: Destuctor end: ");
-	//PrintMemUseage();
+	Serial.println("");
+	Serial.println("MainScreen: Destuctor end: ");
+	PrintMemUseage();
 }
 
 
@@ -187,6 +191,8 @@ void MainScreen::UpdateScreenOnInterval()
 
 void MainScreen::HandleTouch(int x, int y)
 {
+	_tft->startWrite();
+
 	if (_manualHeatDlg != nullptr) {
 		DialogButtonType result = _manualHeatDlg->Touched(x, y);
 		if (result != DB_NONE) {
@@ -208,6 +214,8 @@ void MainScreen::HandleTouch(int x, int y)
 	default:
 		break;
 	}
+	_tft->dmaWait();
+	_tft->endWrite();
 }
 
 void MainScreen::DrawScreen()

@@ -3,32 +3,11 @@
 
 TextBox::TextBox(TextBoxDto configDto, TFT_eSPI* tft)
 {
-	Configure(configDto, tft);
-}
-
-TextBox::~TextBox()
-{
-	DeleteSprite();
-}
-
-void TextBox::DeleteSprite()
-{
-	if (_sprite != nullptr)
-	{
-		_sprite->deleteSprite();
-		delete(_sprite);
-		_sprite = nullptr;
-	}
-}
-
-void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
-{
 	_tft = tft;
 	_config = configDto;
-	DeleteSprite();
 
 	if (_config.useRounded) {
-		_updateX = _config.coordinates.p_x + _config.coordinates.h/2;
+		_updateX = _config.coordinates.p_x + _config.coordinates.h / 2;
 		_updateY = _config.coordinates.p_y + 3;
 		_updateW = _config.coordinates.w - _config.coordinates.h;
 		_updateH = _config.coordinates.h - 6;
@@ -44,7 +23,7 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 	switch (_config.textAlignment) {
 	case ML_DATUM:
 		if (_config.useRounded) {
-			_textX = _config.coordinates.x + _config.coordinates.h/2;
+			_textX = _config.coordinates.x + _config.coordinates.h / 2;
 			_updateTextX = 0;
 		}
 		else {
@@ -56,7 +35,7 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 		break;
 	case MR_DATUM:
 		if (_config.useRounded) {
-			_textX = _config.coordinates.x + _config.coordinates.w - (_config.coordinates.h/2);
+			_textX = _config.coordinates.x + _config.coordinates.w - (_config.coordinates.h / 2);
 			_updateTextX = _updateW;
 		}
 		else {
@@ -92,6 +71,16 @@ void TextBox::Configure(TextBoxDto configDto, TFT_eSPI* tft)
 	}
 }
 
+TextBox::~TextBox()
+{
+	if (_sprite != nullptr)
+	{
+		_sprite->deleteSprite();
+		delete(_sprite);
+		_sprite = nullptr;
+	}
+}
+
 bool TextBox::Touched(int x, int y)
 {
 	if (x >= _config.coordinates.p_x &&
@@ -104,13 +93,14 @@ bool TextBox::Touched(int x, int y)
 	return false;
 }
 
-void TextBox::Draw(TFT_eSprite* sprite)
+void TextBox::Draw(TFT_eSprite* sprite, bool useDark)
 {
+	bool shouldUseDark = useDark ? useDark : _config.useDark;
 	if (_config.useRounded) {
-		DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, _config.roundedBlendColor, _config.useDark);
+		DrawRoundedBox(sprite, _config.coordinates, _config.coordinates.h/2, _config.theme, _config.roundedBlendColor, shouldUseDark);
 	}
 	else {
-		DrawSquaredBox(sprite, _config.coordinates, _config.theme, _config.useDark);
+		DrawSquaredBox(sprite, _config.coordinates, _config.theme, shouldUseDark);
 	}
 	
 	sprite->setFreeFont(_config.font);
@@ -118,36 +108,75 @@ void TextBox::Draw(TFT_eSprite* sprite)
 	sprite->setTextDatum(_config.textAlignment);
 }
 
-void TextBox::Draw(TFT_eSprite* sprite, const char* text)
+void TextBox::Draw(TFT_eSprite* sprite, const char* text, bool useDark)
 {
-	Draw(sprite);
+	Draw(sprite, useDark);
+	uint16_t origBGColor = _textBG;
+	if (useDark) {
+		_textBG = _config.theme.panelDarkColor;
+	}
+	else {
+		_textBG = _config.theme.panelLightColor;
+	}
+	sprite->setFreeFont(_config.font);
+	sprite->setTextColor(_config.theme.textColor, _textBG);
 	sprite->drawString(text, _textX, _textY);
+	_textBG = origBGColor;
 }
 
-void TextBox::Draw(TFT_eSprite* sprite, const int number)
+void TextBox::Draw(TFT_eSprite* sprite, const int number, bool useDark)
 {
-	Draw(sprite);
+	Draw(sprite, useDark);
+	uint16_t origBGColor = _textBG;
+	if (useDark) {
+		_textBG = _config.theme.panelDarkColor;
+	}
+	else {
+		_textBG = _config.theme.panelLightColor;
+	}
+	sprite->setFreeFont(_config.font);
+	sprite->setTextColor(_config.theme.textColor, _textBG);
 	sprite->drawNumber(number, _textX, _textY);
+	_textBG = origBGColor;
 }
 
-void TextBox::Update(const char* text)
+void TextBox::Update(const char* text, bool useDark)
 {
 	if (_tft == nullptr) {
 		return;
 	}
+	uint16_t origBGColor = _textBG;
+	if (useDark) {
+		_textBG = _config.theme.panelDarkColor;
+	}
+	else {
+		_textBG = _config.theme.panelLightColor;
+	}
 	_sprite->fillSprite(_textBG);
+	_sprite->setTextColor(_config.theme.textColor, _textBG);
 	_sprite->drawString(text, _updateTextX, _updateTextY);
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
+	_textBG = origBGColor;
 }
 
-void TextBox::Update(const int number)
+void TextBox::Update(const int number, bool useDark)
 {
 	if (_tft == nullptr) {
 		return;
 	}
+
+	uint16_t origBGColor = _textBG;
+	if (useDark) {
+		_textBG = _config.theme.panelDarkColor;
+	}
+	else {
+		_textBG = _config.theme.panelLightColor;
+	}
 	_sprite->fillSprite(_textBG);
+	_sprite->setTextColor(_config.theme.textColor, _textBG);
 	_sprite->drawNumber(number, _updateTextX, _updateTextY);
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
+	_textBG = origBGColor;
 }
 
 int TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)

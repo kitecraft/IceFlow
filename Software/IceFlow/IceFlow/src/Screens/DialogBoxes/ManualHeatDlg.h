@@ -3,6 +3,7 @@
 #include "DialogBase.h"
 #include "../Widgets/TextBox.h"
 #include "DialogButton.h"
+#include "NumberPadDialogBox.h"
 
 
 #define MANUAL_HEAT_DLG_W 190
@@ -18,8 +19,8 @@
 #define MANAUAL_HEAT_TEXT_Y (MANUAL_HEAT_TB_Y + MEDIUM_FONT_TEXT_BOX_H + 8)
 
 #define MANAUAL_HEAT_BTN_Y (MANUAL_HEAT_DLG_H - DIALOG_BUTTON_HEIGHT - 8)
-#define MANAUAL_HEAT_CONTINUE_BTN_X ((MANUAL_HEAT_DLG_W/2) - (DIALOG_BUTTON_WIDTH + 5))
-#define MANAUAL_HEAT_CANCEL_BTN_X ((MANUAL_HEAT_DLG_W/2) + 5)
+#define MANAUAL_HEAT_CANCEL_BTN_X ((MANUAL_HEAT_DLG_W/2) - (DIALOG_BUTTON_WIDTH + 5))
+#define MANAUAL_HEAT_CONTINUE_BTN_X ((MANUAL_HEAT_DLG_W/2) + 5)
 
 
 class ManualHeatDlg :
@@ -32,6 +33,11 @@ private:
 	DialogButton* _continueButton = nullptr;
 	DialogButton* _cancelButton = nullptr;
 
+	NumberPadDialogBox* _numberPadDlg = nullptr;
+
+	void OpenNumberPad();
+	void CloseNumberPad();
+	void UpdateValue(int newTemperature);
 public:
 	ManualHeatDlg();
 	ManualHeatDlg(TFT_eSPI* tft);
@@ -39,6 +45,5 @@ public:
 
 	DialogButtonType Touched(int x, int y);
 	int GetTargetTemperature() { return _targetTemperature; }
-
 };
 

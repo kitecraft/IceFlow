@@ -222,6 +222,12 @@
     <ClInclude Include="src\Screens\DialogBoxes\DialogButtonDto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\NumberPadDialogBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\NumPadButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -312,6 +318,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\DialogBoxes\DialogButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\NumberPadDialogBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\NumPadButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

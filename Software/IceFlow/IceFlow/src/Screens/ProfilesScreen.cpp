@@ -107,6 +107,14 @@ void ProfilesScreen::UpdateScreenOnInterval()
 
 void ProfilesScreen::HandleTouch(int x, int y)
 {
+	_tft->startWrite();
+	ProcessTouch(x, y);
+	_tft->dmaWait();
+	_tft->endWrite();
+}
+
+void ProfilesScreen::ProcessTouch(int x, int y) 
+{
 	if (_showGridButton->Touched(x, y)) {
 		if (_graphPanel->GridVisible()) {
 			_graphPanel->ShowGrid(false);
@@ -116,11 +124,8 @@ void ProfilesScreen::HandleTouch(int x, int y)
 			_graphPanel->ShowGrid(true);
 			_showGridButton->SetButtonColor(GlobalTheme.panelLightColor);
 		}
-		_tft->startWrite();
 		_showGridButton->Draw();
 		_graphPanel->ReDraw();
-		_tft->dmaWait();
-		_tft->endWrite();
 		return;
 	}
 
@@ -166,6 +171,7 @@ void ProfilesScreen::HandleTouch(int x, int y)
 		Draw();
 		return;
 	}
+
 }
 
 void ProfilesScreen::Draw()

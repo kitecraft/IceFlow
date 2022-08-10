@@ -180,10 +180,7 @@ bool ProfileListPanel::Touched(int x, int y, String& option)
 		}
 		if (updateRequired) {
 			//Serial.println("Running the update");
-			_tft->startWrite();
 			Update();
-			_tft->dmaWait();
-			_tft->endWrite();
 		}
 	}
 	return false;
