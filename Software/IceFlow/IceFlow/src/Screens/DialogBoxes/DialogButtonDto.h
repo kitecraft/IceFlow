@@ -10,6 +10,7 @@ enum DialogButtonType {
 	DB_Save,
 	DB_Continue,
 	DB_OK,
+	DB_SUBMIT
 };
 
 class DialogButtonDto {

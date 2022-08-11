@@ -18,6 +18,9 @@ DialogButton::DialogButton(DialogButtonDto config, TFT_eSPI* tft)
 	case DB_OK:
 		label = "OK";
 		break;
+	case DB_SUBMIT:
+		label = "Submit";
+		break;
 	default:
 		label = "Nope";
 		break;

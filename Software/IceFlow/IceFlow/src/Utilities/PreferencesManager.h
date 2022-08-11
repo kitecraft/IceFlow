@@ -14,14 +14,19 @@
 #define DEFAULT_PID_KI_PREF "DEF_KI" 
 #define DEFAULT_PID_KD_PREF "DEF_KD"
 #define PID_DEFAULT_KP 3
-#define PID_DEFAULT_KI 0.24
+#define PID_DEFAULT_KI 3
 #define PID_DEFAULT_KD 1.2
+
+#define OM_MANUAL_HEAT_TARGET_KEY "OM_HT"
+#define OM_MANUAL_HEAT_TARGET_DEFAULT 200
+#define OM_DO_NOT_EXCEED_TEMPERATURE_KEY "OM_DNET"
+#define OM_DO_NOT_EXCEED_TEMPERATURE_VALUE 250
 
 static String GetSsid()
 {
     String ret;
     Preferences preferences;
-    preferences.begin(WIFI_PREFERENCES_FILENAME, false);
+    preferences.begin(WIFI_PREFERENCES_FILENAME);
     ret = preferences.getString(WIFI_PREFERENCES_SSID_KEY, "");
     preferences.end();
     return ret;
@@ -39,7 +44,7 @@ static String GetSsidPassword()
 {
     String ret;
     Preferences preferences;
-    preferences.begin(WIFI_PREFERENCES_FILENAME, false);
+    preferences.begin(WIFI_PREFERENCES_FILENAME);
     ret = preferences.getString(WIFI_PREFERENCES_PASWORD_KEY, "");
     preferences.end();
 
@@ -58,7 +63,7 @@ static String GetSavedProfileFileName()
 {
     String ret = "";
     Preferences preferences;
-    preferences.begin(PROFILE_MANAGER_FILENAME, false);
+    preferences.begin(PROFILE_MANAGER_FILENAME);
     ret = preferences.getString(SAVED_PROFILE, PROFILE_DEFAULT_FILE);
     if (ret.isEmpty()) {
         ret = PROFILE_DEFAULT_FILE;
@@ -88,7 +93,7 @@ static double GetPidKP()
 {
     double ret;
     Preferences preferences;
-    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.begin(OVEN_MANAGER_FILENAME);
     ret = preferences.getDouble(DEFAULT_PID_KP_PREF, PID_DEFAULT_KP);
     preferences.end();
     return ret;
@@ -106,7 +111,7 @@ static double GetPidKI()
 {
     double ret;
     Preferences preferences;
-    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.begin(OVEN_MANAGER_FILENAME);
     ret = preferences.getDouble(DEFAULT_PID_KI_PREF, PID_DEFAULT_KI);
     preferences.end();
     return ret;
@@ -124,8 +129,44 @@ static double GetPidKD()
 {
     double ret;
     Preferences preferences;
-    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.begin(OVEN_MANAGER_FILENAME);
     ret = preferences.getDouble(DEFAULT_PID_KD_PREF, PID_DEFAULT_KD);
+    preferences.end();
+    return ret;
+}
+
+static void SaveMaualHeatTargetTemperature(int temperature)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putInt(OM_MANUAL_HEAT_TARGET_KEY, temperature);
+    preferences.end();
+}
+
+static double GetMaualHeatTargetTemperature()
+{
+    double ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME);
+    ret = preferences.getInt(OM_MANUAL_HEAT_TARGET_KEY, OM_MANUAL_HEAT_TARGET_DEFAULT);
+    preferences.end();
+    return ret;
+}
+
+static void SaveOvenDoNotExceedTemperature(int temperature)
+{
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME, false);
+    preferences.putInt(OM_DO_NOT_EXCEED_TEMPERATURE_KEY, temperature);
+    preferences.end();
+}
+
+static double GetOvenDoNotExceedTemperature()
+{
+    double ret;
+    Preferences preferences;
+    preferences.begin(OVEN_MANAGER_FILENAME);
+    ret = preferences.getInt(OM_DO_NOT_EXCEED_TEMPERATURE_KEY, OM_DO_NOT_EXCEED_TEMPERATURE_VALUE);
     preferences.end();
     return ret;
 }

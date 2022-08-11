@@ -6,7 +6,7 @@ NumberPadDialogBox::NumberPadDialogBox() : DialogBase()
 }
 
 NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
-	:DialogBase(tft, DMCoordinates(0, 0, NumberPad_DLG_W, NumberPad_DLG_H, NumberPad_DLG_X, NumberPad_DLG_Y), GlobalTheme, LARGE_FONT)
+	:DialogBase(tft, DMCoordinates(0, 0, NumberPad_DLG_W, NumberPad_DLG_H, NumberPad_DLG_X, NumberPad_DLG_Y), GlobalTheme, title)
 {
 	_textBox = new TextBox(TextBoxDto(
 		DMCoordinates(
@@ -23,6 +23,7 @@ NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
 		_tft);
 	UpdateValue(0);
 
+	/*
 	TextBox::DrawTextBox(_sprite,
 		TextBoxDto(
 			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H, 0, 0),
@@ -31,7 +32,7 @@ NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
 			MC_DATUM,
 			true),
 		"Target");
-
+	*/
 	DrawButtons();
 }
 

@@ -69,6 +69,10 @@ TextBox::TextBox(TextBoxDto configDto, TFT_eSPI* tft)
 		_sprite->setTextColor(_config.theme.textColor, _textBG);
 		_sprite->setTextDatum(_config.textAlignment);
 	}
+
+	if (_config.font == LARGE_FONT && !_config.useRounded) {
+		_updateTextY -= 1;
+	}
 }
 
 TextBox::~TextBox()

@@ -11,7 +11,6 @@ protected:
     TFT_eSPI* _tft;
     DMCoordinates _coordinates;
     DMTheme _theme;
-    const GFXfont* _font = nullptr;
 
     bool _visible = false;
 
@@ -24,7 +23,7 @@ protected:
 public:
 	DialogBase() {}
     ~DialogBase();
-    DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, const GFXfont* font);
+    DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, String title);
 
     void Show();
     void Hide();

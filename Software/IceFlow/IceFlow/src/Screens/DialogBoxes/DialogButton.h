@@ -17,5 +17,6 @@ public:
 	DialogButton(DialogButtonDto config, TFT_eSPI* tft);
 	void Draw(TFT_eSprite* sprite);
 	bool Touched(int x, int y);
+	DialogButtonType GetType() { return _config.type; }
 };
 

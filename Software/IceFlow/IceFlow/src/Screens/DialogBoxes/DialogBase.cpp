@@ -1,12 +1,12 @@
 #include "DialogBase.h"
 #include "../Widgets/Box.h"
+#include "../Widgets/TextBox.h"
 
-DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, const GFXfont* font)
+DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, String title)
 {
 	_tft = tft;
 	_coordinates = coordinates;
 	_theme = theme;
-	_font = font;
 
 	_sprite = new TFT_eSprite(_tft);
 	_sprPtr = (uint16_t*)_sprite->createSprite(_coordinates.w, _coordinates.h);
@@ -16,6 +16,14 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 	_sprite->fillSprite(_theme.panelLightColor);
 
 	DrawSquaredBox(_sprite, coordinates, theme, true);
+	TextBox::DrawTextBox(_sprite,
+		TextBoxDto(
+			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H, 0, 0),
+			GlobalTheme,
+			LARGE_FONT,
+			ML_DATUM,
+			true),
+		title.c_str());
 }
 
 DialogBase::~DialogBase()

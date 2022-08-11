@@ -7,6 +7,7 @@
 #include "../DisplayManager/Utilities/CommandQueue.h"
 #include "../Utilities/ControlCommands.h"
 #include "../Utilities/MemUseage.h"
+#include "../Utilities/PreferencesManager.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
@@ -120,6 +121,10 @@ MainScreen::~MainScreen()
 		delete(_manualHeatDlg);
 	}
 
+	if (_messageBox != nullptr) {
+		delete _messageBox;
+	}
+
 	Serial.println("");
 	Serial.println("MainScreen: Destuctor end: ");
 	PrintMemUseage();
@@ -192,15 +197,33 @@ void MainScreen::UpdateScreenOnInterval()
 void MainScreen::HandleTouch(int x, int y)
 {
 	_tft->startWrite();
+	ProcessTouch(x, y);
+	_tft->dmaWait();
+	_tft->endWrite();
+}
+
+void MainScreen::ProcessTouch(int x, int y)
+{
+	if (_messageBox != nullptr) {
+		if (_messageBox->Touched(x, y) != DB_NONE) {
+			_messageBox->Hide();
+			delete _messageBox;
+			_messageBox = nullptr;
+			_manualHeatDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
+		}
+		return;
+	}
 
 	if (_manualHeatDlg != nullptr) {
 		DialogButtonType result = _manualHeatDlg->Touched(x, y);
 		if (result != DB_NONE) {
-			ManualHeatDlgClosed(result);
-			_graphPanel->ReDraw();
+			if (ManualHeatDlgClosed(result)) {
+				//_graphPanel->ReDraw();
+			}
 		}
 		return;
 	}
+
 
 	SB_TOUCHED_RETURN ret = _sideBar->Touched(x, y);
 	switch (ret) {
@@ -210,12 +233,9 @@ void MainScreen::HandleTouch(int x, int y)
 	case SB_START_MANUAL_HEAT:
 		ManualHeatTouched();
 		return;
-		break;
 	default:
 		break;
 	}
-	_tft->dmaWait();
-	_tft->endWrite();
 }
 
 void MainScreen::DrawScreen()
@@ -350,22 +370,34 @@ void MainScreen::ManualHeatTouched()
 	}
 
 	_manualHeatDlg = new ManualHeatDlg(_tft);
+	_manualHeatDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
 	_manualHeatDlg->Show();
 }
 
-void MainScreen::ManualHeatDlgClosed(DialogButtonType action)
+bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 {
 	int targetTemp = _manualHeatDlg->GetTargetTemperature();
-	_manualHeatDlg->Hide();
-
-	delete _manualHeatDlg;
-	_manualHeatDlg = nullptr;
 
 	if (action == DB_Continue) {
+		int highest = GetOvenDoNotExceedTemperature();
+		if (targetTemp > highest - 10) {
+			String message = "OVEN SAFETY LIMIT\nTarget can not be higher than '" + String(highest - 10) + " degrees Celcius'";
+			_messageBox = new MessageBox(_tft, "Over Limit", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox->Show();
+			return false;
+		}
+
 		char val[4];
 		snprintf(val, 7, "%i", targetTemp);
 		CommandQueue.QueueCommandAndValue(CC_START_MANUAL_HEAT, val);
+		SaveMaualHeatTargetTemperature(targetTemp);
 	}
+
+	_manualHeatDlg->Hide();
+	delete _manualHeatDlg;
+	_manualHeatDlg = nullptr;
+
+	return true;
 }
 
 void MainScreen::DrawHeatersIcon(bool status)

@@ -140,6 +140,7 @@
     <ClInclude Include="src\Screens\DialogBoxes\DialogButton.h" />
     <ClInclude Include="src\Screens\DialogBoxes\DialogButtonDto.h" />
     <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlg.h" />
+    <ClInclude Include="src\Screens\DialogBoxes\MessageBox.h" />
     <ClInclude Include="src\Screens\DialogBoxes\NumberPadDialogBox.h" />
     <ClInclude Include="src\Screens\DialogBoxes\NumPadButton.h" />
     <ClInclude Include="src\Screens\DMFonts\segoeui5pt7b.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="src\Screens\DialogBoxes\DialogBase.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\DialogButton.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\ManualHeatDlg.cpp" />
+    <ClCompile Include="src\Screens\DialogBoxes\MessageBox.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\NumberPadDialogBox.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\NumPadButton.cpp" />
     <ClCompile Include="src\Screens\MainScreen.cpp" />

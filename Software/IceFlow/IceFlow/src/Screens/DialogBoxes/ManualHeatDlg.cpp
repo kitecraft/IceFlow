@@ -7,7 +7,7 @@ ManualHeatDlg::ManualHeatDlg() : DialogBase()
 }
 
 ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft) 
-	:DialogBase(tft, DMCoordinates(0, 0, MANUAL_HEAT_DLG_W, MANUAL_HEAT_DLG_H, MANUAL_HEAT_DLG_X, MANUAL_HEAT_DLG_Y), GlobalTheme, MEDIUM_FONT)
+	:DialogBase(tft, DMCoordinates(0, 0, MANUAL_HEAT_DLG_W, MANUAL_HEAT_DLG_H, MANUAL_HEAT_DLG_X, MANUAL_HEAT_DLG_Y), GlobalTheme, MANAUAL_HEAT_DIALOG_TITLE)
 {
 	_continueButton = new DialogButton(
 		DialogButtonDto(
@@ -42,6 +42,7 @@ ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft)
 		MR_DATUM),
 		_tft);
 		
+	/*
 	TextBox::DrawTextBox(_sprite, 
 		TextBoxDto(
 			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H,0,0),
@@ -50,7 +51,7 @@ ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft)
 		MC_DATUM,
 		true), 
 		"Manual Heat");
-
+		*/
 	_textBox->Draw(_sprite, _targetTemperature);
 
 	_sprite->setTextColor(_theme.textColor);
@@ -100,7 +101,7 @@ DialogButtonType ManualHeatDlg::Touched(int x, int y)
 
 void ManualHeatDlg::UpdateValue(int newTemperature)
 {
-	if (newTemperature == 0 || newTemperature > 300) {
+	if (newTemperature == 0) {
 		return;
 	}
 
