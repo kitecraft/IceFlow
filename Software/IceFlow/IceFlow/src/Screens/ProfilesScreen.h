@@ -24,8 +24,8 @@
 #define BUTTON_W (PROFILE_FILE_LISTBOX_W/2)
 #define BUTTON_H 21
 #define BUTTON_Y (240 - BUTTON_H)
-#define EXIT_BUTTON_X (PROFILE_FILE_LISTBOX_X + BUTTON_W)
-#define SAVE_BUTTON_X PROFILE_FILE_LISTBOX_X
+#define EXIT_EDIT_BUTTON_X (PROFILE_FILE_LISTBOX_X + BUTTON_W)
+#define SAVE_SET_BUTTON_X PROFILE_FILE_LISTBOX_X
 
 #define SHOW_GRID_BTN_W 30
 #define SHOW_GRID_BTN_X (HEADER_W - SHOW_GRID_BTN_W - 11)
@@ -39,9 +39,10 @@ private:
 	Profile _currentlySavedProfile;
 	ProfileListPanel* _profileListPanel = nullptr;
 	Button* _exitButton = nullptr;
-	Button* _saveButton = nullptr;
+	Button* _editButton = nullptr;
+	Button* _setButton = nullptr;
 	Button* _cancelButton = nullptr;
-	bool _saveRequired = false;
+	bool _setRequired = false;
 	Button* _showGridButton = nullptr;
 
 	PS_ProfileGraphPanel* _graphPanel = nullptr;

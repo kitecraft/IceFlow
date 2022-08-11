@@ -22,29 +22,38 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 
 	_exitButton = new Button(
 		ButtonDto(
-			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_BUTTON_X, BUTTON_Y),
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_EDIT_BUTTON_X, BUTTON_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),
 		"Exit",
 		_tft);
 
+	_editButton = new Button(
+			ButtonDto(
+				DMCoordinates(0, 0, BUTTON_W, BUTTON_H, SAVE_SET_BUTTON_X, BUTTON_Y),
+				GlobalTheme,
+				SMALL_FONT,
+				BUTTON_COLOR),
+			"Edit",
+			_tft);
+
 	_cancelButton = new Button(
 		ButtonDto(
-			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_BUTTON_X, BUTTON_Y),
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, EXIT_EDIT_BUTTON_X, BUTTON_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),
 		"Cancel",
 		_tft);
 
-	_saveButton = new Button(
+	_setButton = new Button(
 		ButtonDto(
-			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, SAVE_BUTTON_X, BUTTON_Y),
+			DMCoordinates(0, 0, BUTTON_W, BUTTON_H, SAVE_SET_BUTTON_X, BUTTON_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),
-		"Save",
+		"Set",
 		_tft);
 
 
@@ -59,7 +68,7 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 		_tft);
 
 	_profileListPanel = new ProfileListPanel(_tft);
-	_saveRequired = false;
+	_setRequired = false;
 
 	_graphPanel = new PS_ProfileGraphPanel(_tft);
 
@@ -73,8 +82,11 @@ ProfilesScreen::~ProfilesScreen()
 	if (_exitButton != nullptr) {
 		delete(_exitButton);
 	}
-	if (_saveButton != nullptr) {
-		delete(_saveButton);
+	if (_editButton != nullptr) {
+		delete(_editButton);
+	}
+	if (_setButton != nullptr) {
+		delete(_setButton);
 	}
 	if (_cancelButton != nullptr) {
 		delete(_cancelButton);
@@ -129,17 +141,17 @@ void ProfilesScreen::ProcessTouch(int x, int y)
 		return;
 	}
 
-	if (_saveRequired) {
-		if (_saveButton->Touched(x, y)) {
+	if (_setRequired) {
+		if (_setButton->Touched(x, y)) {
 			ProfileManager.SaveProfileNameToPreferences(_currentlyLoadedProfile.filename);
 			_currentlySavedProfile = _currentlyLoadedProfile;
-			_saveRequired = false;
+			_setRequired = false;
 			Draw();
 			return;
 		}
 		if (_cancelButton->Touched(x, y)) {
 			_currentlyLoadedProfile = _currentlySavedProfile;
-			_saveRequired = false;
+			_setRequired = false;
 			Draw();
 			return;
 		}
@@ -147,6 +159,9 @@ void ProfilesScreen::ProcessTouch(int x, int y)
 	else {
 		if (_exitButton->Touched(x, y)) {
 			DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		}
+		if (_editButton->Touched(x, y)) {
+			
 		}
 	}
 
@@ -162,10 +177,10 @@ void ProfilesScreen::ProcessTouch(int x, int y)
 		}
 
 		if (_currentlyLoadedProfile.filename != _currentlySavedProfile.filename) {
-			_saveRequired = true;
+			_setRequired = true;
 		}
 		else {
-			_saveRequired = false;
+			_setRequired = false;
 		}
 
 		Draw();
@@ -179,16 +194,23 @@ void ProfilesScreen::Draw()
 	_tft->startWrite();
 	DrawHeader();
 	
-	if (_saveRequired) {
-		_saveButton->Visible(true);
-		_cancelButton->Draw();
+	if (_setRequired) {
+		_setButton->Visible(true);
+		_cancelButton->Visible(true);
+		_editButton->Visible(false);
+		_exitButton->Visible(false);
 	}
 	else {
-		_saveButton->Visible(false);
-		_exitButton->Draw();
+		_setButton->Visible(false);
+		_cancelButton->Visible(false);
+		_editButton->Visible(true);
+		_exitButton->Visible(true);
 	}
 
-	_saveButton->Draw();
+	_setButton->Draw();
+	_editButton->Draw();
+	_cancelButton->Draw();
+	_exitButton->Draw();
 	_profileListPanel->Draw(_currentlyLoadedProfile.filename);
 	_graphPanel->Draw(_currentlyLoadedProfile.filename);
 

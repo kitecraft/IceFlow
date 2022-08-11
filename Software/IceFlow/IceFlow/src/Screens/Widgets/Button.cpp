@@ -28,7 +28,7 @@ Button::Button(ButtonDto config, String label, TFT_eSPI* tft, bool useSprite)
 
 void Button::Draw()
 {
-	if (_sprite == nullptr) {
+	if (_sprite == nullptr || !_visible) {
 		return;
 	}
 
