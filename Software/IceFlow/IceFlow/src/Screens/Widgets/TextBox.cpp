@@ -112,8 +112,9 @@ void TextBox::Draw(TFT_eSprite* sprite, bool useDark)
 	sprite->setTextDatum(_config.textAlignment);
 }
 
-void TextBox::Draw(TFT_eSprite* sprite, const char* text, bool useDark)
+void TextBox::Draw(TFT_eSprite* sprite, String text, bool useDark)
 {
+	_text = text;
 	Draw(sprite, useDark);
 	uint16_t origBGColor = _textBG;
 	if (useDark) {
@@ -128,9 +129,22 @@ void TextBox::Draw(TFT_eSprite* sprite, const char* text, bool useDark)
 	_textBG = origBGColor;
 }
 
+void TextBox::Draw(TFT_eSprite* sprite, const char* text, bool useDark)
+{
+	Draw(sprite, String(text), useDark);
+}
+
 void TextBox::Draw(TFT_eSprite* sprite, const int number, bool useDark)
 {
-	Draw(sprite, useDark);
+	Draw(sprite, String(number), useDark);
+}
+
+void TextBox::Update(String text, bool useDark)
+{
+	if (_tft == nullptr) {
+		return;
+	}
+	_text = text;
 	uint16_t origBGColor = _textBG;
 	if (useDark) {
 		_textBG = _config.theme.panelDarkColor;
@@ -138,14 +152,18 @@ void TextBox::Draw(TFT_eSprite* sprite, const int number, bool useDark)
 	else {
 		_textBG = _config.theme.panelLightColor;
 	}
-	sprite->setFreeFont(_config.font);
-	sprite->setTextColor(_config.theme.textColor, _textBG);
-	sprite->drawNumber(number, _textX, _textY);
+	_sprite->fillSprite(_textBG);
+	_sprite->setTextColor(_config.theme.textColor, _textBG);
+	_sprite->drawString(text, _updateTextX, _updateTextY);
+	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 	_textBG = origBGColor;
 }
 
 void TextBox::Update(const char* text, bool useDark)
 {
+	Update(String(text), useDark);
+
+	/*
 	if (_tft == nullptr) {
 		return;
 	}
@@ -161,10 +179,13 @@ void TextBox::Update(const char* text, bool useDark)
 	_sprite->drawString(text, _updateTextX, _updateTextY);
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 	_textBG = origBGColor;
+	*/
 }
 
 void TextBox::Update(const int number, bool useDark)
 {
+	Update(String(number), useDark);
+	/*
 	if (_tft == nullptr) {
 		return;
 	}
@@ -181,6 +202,7 @@ void TextBox::Update(const int number, bool useDark)
 	_sprite->drawNumber(number, _updateTextX, _updateTextY);
 	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
 	_textBG = origBGColor;
+	*/
 }
 
 int TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)

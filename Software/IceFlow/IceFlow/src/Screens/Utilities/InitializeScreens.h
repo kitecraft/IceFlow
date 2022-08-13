@@ -7,6 +7,7 @@
 #include "../OTAScreen.h"
 #include "../MainScreen.h"
 #include "../ProfilesScreen.h"
+#include "../EditProfileScreen.h"
 
 static void LoadScreensIntoDM()
 {
@@ -40,6 +41,17 @@ static void LoadScreensIntoDM()
 			Update_ProfilesScreen,
 			nullptr,
 			HandleTouch_ProfilesScreen
+		)
+	);
+
+	Display.AddScreen(
+		SN_EDIT_PROFILES_SCREEN,
+		ScreenContainer(
+			Create_EditProfileScreen,
+			Destroy_EditProfileScreen,
+			nullptr,
+			nullptr,
+			HandleTouch_EditProfileScreen
 		)
 	);
 }

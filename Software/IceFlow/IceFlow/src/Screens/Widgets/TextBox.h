@@ -11,6 +11,7 @@ private:
     int _textX = 0;
     int _textY = 0;
     uint16_t _textBG = 0;
+    String _text = "";
 
     int _updateX = 0;
     int _updateY = 0;
@@ -28,9 +29,12 @@ public:
     ~TextBox();
 
     bool Touched(int x, int y);
+    void Draw(TFT_eSprite* sprite, String text, bool useDark = false);
     void Draw(TFT_eSprite* sprite, const char* text, bool useDark = false);
     void Draw(TFT_eSprite* sprite, const int number, bool useDark = false);
     void Update(const char* text, bool useDark = false);
     void Update(const int number, bool useDark = false);
+    void Update(String text, bool useDark = false);
     static int DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
+    String GetText() { return _text; }
 };

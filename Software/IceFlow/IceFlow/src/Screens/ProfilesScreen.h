@@ -4,6 +4,8 @@
 #include "Utilities/Screens_Config.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "Widgets/Button.h"
+#include "Widgets/Box.h"
+#include "Widgets/TextBox.h"
 #include "Panels/ProfileListPanel.h"
 #include "Panels/PS_ProfileGraphPanel.h"
 

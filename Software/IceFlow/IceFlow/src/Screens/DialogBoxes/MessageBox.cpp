@@ -203,7 +203,7 @@ void MessageBox::CreateContinueCancel()
 
 	_buttonB = new DialogButton(
 		DialogButtonDto(
-			DMCoordinates(_dualButtons_ButtonB_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonA_X, _coordinates.p_y + _buttonY),
+			DMCoordinates(_dualButtons_ButtonB_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonB_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
 			DB_Cancel),
@@ -224,13 +224,13 @@ DialogButtonType MessageBox::Touched(int x, int y)
 			return _buttonA->GetType();
 		}
 	}
-	else if (_buttonB != nullptr) {
-			if (_buttonB->Touched(x, y))
-			{
-				return _buttonB->GetType();
-			}
+	
+	if (_buttonB != nullptr) {
+		if (_buttonB->Touched(x, y))
+		{
+			return _buttonB->GetType();
 		}
-
+	}
 	return DB_NONE;
 }
 

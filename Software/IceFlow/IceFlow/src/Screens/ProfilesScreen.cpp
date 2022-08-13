@@ -1,6 +1,4 @@
 #include "ProfilesScreen.h"
-#include "Widgets/Box.h"
-#include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "Utilities/ScreenNames.h"
@@ -16,6 +14,11 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 
 	if (!ProfileManager.GetSavedProfile(&_currentlySavedProfile)) {
 		Serial.println("Failed to load Profile");
+		_tft->setFreeFont(SMALL_FONT);
+		_tft->setTextColor(GlobalTheme.textColor);
+		_tft->setTextDatum(TL_DATUM);
+		_tft->drawString("Failed to load profile", 10, 10);
+		return;
 	}
 
 	_currentlyLoadedProfile = _currentlySavedProfile;
@@ -161,7 +164,7 @@ void ProfilesScreen::ProcessTouch(int x, int y)
 			DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
 		}
 		if (_editButton->Touched(x, y)) {
-			
+			DisplayQueue.QueueScreenChange(SN_EDIT_PROFILES_SCREEN);
 		}
 	}
 

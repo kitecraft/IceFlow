@@ -20,6 +20,7 @@ public:
 	void Draw(TFT_eSprite* sprite);
 	bool Touched(int x, int y);
 	void Visible(bool visible) { _visible = visible; }
+	bool IsVisible() { return _visible; }
 	void SetButtonColor(uint16_t buttonColor) { _buttonColor = buttonColor; }
 };
 
