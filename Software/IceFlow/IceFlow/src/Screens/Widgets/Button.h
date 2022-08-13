@@ -18,6 +18,7 @@ public:
 	Button(ButtonDto config, String label, TFT_eSPI* tft, bool useSprite = true);
 	void Draw();
 	void Draw(TFT_eSprite* sprite);
+	void Draw(TFT_eSprite* sprite, String label);
 	bool Touched(int x, int y);
 	void Visible(bool visible) { _visible = visible; }
 	bool IsVisible() { return _visible; }

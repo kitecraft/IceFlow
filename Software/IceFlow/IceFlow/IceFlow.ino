@@ -89,6 +89,7 @@ void HandleCommandQueue()
 
         switch (command) {
         case CC_START_OTA:
+            OvenManager.StopOven();
             DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
             DisplayQueue.QueueKeyAndValue(suk_Device_Name, __DEVICE_NAME__);
             DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());

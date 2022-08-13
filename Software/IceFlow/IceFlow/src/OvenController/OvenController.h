@@ -23,10 +23,9 @@ private:
 
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
-	bool _convectionFanOnManual = false;
 	int _manualTargetTemperature = 0;
 
-	double _temperaturePrimary = 30;
+	double _temperaturePrimary = 15;
 	double _temperatureSecondary = 5;
 	bool _streamTemperatures = false;
 	bool _testDirection = true;

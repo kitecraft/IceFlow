@@ -237,6 +237,12 @@
     <ClInclude Include="src\Screens\DialogBoxes\KeyboardDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\KeyboardButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\DialogBoxes\KeyboardButtonType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -342,6 +348,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\DialogBoxes\KeyboardDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\DialogBoxes\KeyboardButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

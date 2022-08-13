@@ -87,11 +87,11 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 		if (_numberPadDlg->Touched(x, y))
 		{
 			CloseNumberPad();
-			return;
 		}
+		return;
 	}
 
-	if (_keyboard != nullptr) {
+	if (_keyboardOpen) {
 		HandleSaveAsKeyboard(x, y);
 		return;
 	}
@@ -120,8 +120,11 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 	}
 	
 	if (_saveAsButton->Touched(x, y)) {
-		_keyboard = new KeyboardDialog(_tft, GlobalTheme, "New profile name");
+		_keyboard = new KeyboardDialog(_tft, "New profile name");
+		String newName  = _profile.name.substring(0, _keyboard->GetMaxLength() - 3);
+		_keyboard->SetValue(newName + "(C)");
 		_keyboard->Show();
+		_keyboardOpen = true;
 		return;
 	}
 
@@ -182,12 +185,30 @@ void EditProfileScreen::HandleMessageBoxTouch(int x, int y)
 
 void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 {
-	if (_keyboard->Touched(x, y)) {
-		_keyboard->Hide();
+	DialogButtonType ret = _keyboard->Touched(x, y);
+	if (ret == DB_Cancel) {
 		delete _keyboard;
 		_keyboard = nullptr;
-		return;
+		_keyboardOpen = false;
+		Draw();
 	}
+	if (ret == DB_Continue) {
+		String newName = _keyboard->GetValue();
+		newName.trim();
+		if (newName.isEmpty()) {
+			String message = "Profile name can not be empty.";
+			_messageBox = new MessageBox(_tft, "Missing name", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox->Show();
+			_activeMessageBox = EPS_OK_MB;
+			return;
+		}
+		_profile.name = newName;
+		delete _keyboard;
+		_keyboard = nullptr;
+		_keyboardOpen = false;
+		Draw();
+	}
+
 	return;
 }
 
@@ -211,7 +232,7 @@ void EditProfileScreen::HandleSaveProfileMessageBox(DialogButtonType buttonPress
 		if (ProfileManager.SaveProfileToDisk(_profile)) {
 			_profileCopy = _profile;
 			Draw();
-			String message = "The profile has been saved.\nPress OK to return to the Profile Editor.";
+			String message = "The profile has been saved.";
 			_messageBox = new MessageBox(_tft, "Profile saved", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
 			_messageBox->Show();
 			_activeMessageBox = EPS_OK_MB;
@@ -251,12 +272,12 @@ void EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
 	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
 		return;
 	}
+	EndMessageBox();
 
 	if (buttonPressed == DB_Continue) {
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
 
-	EndMessageBox();
 	return;
 }
 

@@ -139,6 +139,14 @@ void TextBox::Draw(TFT_eSprite* sprite, const int number, bool useDark)
 	Draw(sprite, String(number), useDark);
 }
 
+void TextBox::Draw(TFT_eSprite* sprite, String text, uint16_t bgColor)
+{
+	uint16_t origBGColor = _config.theme.panelLightColor;
+	_config.theme.panelLightColor = bgColor;
+	Draw(sprite, text);
+	_config.theme.panelLightColor = origBGColor;
+}
+
 void TextBox::Update(String text, bool useDark)
 {
 	if (_tft == nullptr) {
@@ -162,47 +170,19 @@ void TextBox::Update(String text, bool useDark)
 void TextBox::Update(const char* text, bool useDark)
 {
 	Update(String(text), useDark);
+}
 
-	/*
-	if (_tft == nullptr) {
-		return;
-	}
-	uint16_t origBGColor = _textBG;
-	if (useDark) {
-		_textBG = _config.theme.panelDarkColor;
-	}
-	else {
-		_textBG = _config.theme.panelLightColor;
-	}
-	_sprite->fillSprite(_textBG);
-	_sprite->setTextColor(_config.theme.textColor, _textBG);
-	_sprite->drawString(text, _updateTextX, _updateTextY);
-	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
-	_textBG = origBGColor;
-	*/
+void TextBox::Update(String text, uint16_t bgColor)
+{
+	uint16_t origBGColor = _config.theme.panelLightColor;
+	_config.theme.panelLightColor = bgColor;
+	Update(text);
+	_config.theme.panelLightColor = origBGColor;
 }
 
 void TextBox::Update(const int number, bool useDark)
 {
 	Update(String(number), useDark);
-	/*
-	if (_tft == nullptr) {
-		return;
-	}
-
-	uint16_t origBGColor = _textBG;
-	if (useDark) {
-		_textBG = _config.theme.panelDarkColor;
-	}
-	else {
-		_textBG = _config.theme.panelLightColor;
-	}
-	_sprite->fillSprite(_textBG);
-	_sprite->setTextColor(_config.theme.textColor, _textBG);
-	_sprite->drawNumber(number, _updateTextX, _updateTextY);
-	_tft->pushImageDMA(_updateX, _updateY, _updateW, _updateH, _sprPtr);
-	_textBG = origBGColor;
-	*/
 }
 
 int TextBox::DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text)

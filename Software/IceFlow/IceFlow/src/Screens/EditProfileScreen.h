@@ -84,6 +84,7 @@ private:
 	EPS_MESSAGE_BOX_TYPE _activeMessageBox = EPS_NO_MB;
 
 	KeyboardDialog* _keyboard = nullptr;
+	bool _keyboardOpen = false;
 	
 	NumberPadDialogBox* _numberPadDlg = nullptr;
 

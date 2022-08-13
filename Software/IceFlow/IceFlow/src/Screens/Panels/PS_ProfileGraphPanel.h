@@ -37,7 +37,7 @@ class PS_ProfileGraphPanel
 private:
 	TFT_eSPI* _tft;
 	Profile _profile;
-	bool _showGrid = false;
+	bool _showGrid = true;
 
 	int _maxTime = 0;
 	int _maxTemp = 0;

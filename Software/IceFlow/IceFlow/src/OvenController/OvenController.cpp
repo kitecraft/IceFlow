@@ -65,34 +65,25 @@ bool OvenController::IsOvenEnabled()
 
 void OvenController::CheckConvectionFanStatus()
 {
-    //If oven is On, and manual mode is on, and Fan is on, 
-    //Turn of manual mode when temperature exceeds minium
-    if (_heatersOn && _convectionFanOnManual && (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN)) {
-        EnableConvectionFan(); //Make sure it's on
-        _convectionFanOnManual = false;
-        return;
-    }
     //If the oven and fan are both on, return
-    else if (_heatersOn && _convectionFanOn) {
+    if (_heatersOn && _convectionFanOn) {
         return;
     }
+
     //If the oven is on, but the fan isn't, turn the fan on
     else if (_heatersOn && !_convectionFanOn) {
         EnableConvectionFan();
-        _convectionFanOnManual = false;
-        _convectionFanOnManual = false;
     }
+
     //If the oven is off, and the fan is on, turn if off if the temperature is below threshold
     //and not in manual mode
-    else if (!_heatersOn && (_convectionFanOn && (_temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) && !_convectionFanOnManual))
+    else if (!_heatersOn && (_convectionFanOn && (_temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN)))
     {
         DisableConvectionFan();
-        _convectionFanOnManual = false;
         _convectionFanOn = false;
     }
     else if (!_heatersOn && !_convectionFanOn && (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN)) {
         EnableConvectionFan();
-        _convectionFanOnManual = false;
         return;
     }
 }
@@ -106,7 +97,6 @@ void OvenController::EnableConvectionFan()
 void OvenController::DisableConvectionFan()
 {
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
-    _convectionFanOnManual = false;
     _convectionFanOn = false;
 }
 
@@ -163,19 +153,26 @@ void OvenController::FetchTemperatures()
     }
     */
 
-    if (_testDirection) {
+    //if (_testDirection) {
+    if(_heatersOn) {
         _temperaturePrimary += 0.001;
         _temperatureSecondary += 0.001;
-        if (_temperaturePrimary >= 245) {
-            _testDirection = false;
-        }
+        //if (_temperaturePrimary >= 245) {
+        //    _testDirection = false;
+        //}
 
     }
     else {
         _temperaturePrimary -= 0.001;
         _temperatureSecondary -= 0.001;
-        if (_temperatureSecondary <= 1) {
-            _testDirection = true;
+        //if (_temperatureSecondary <= 1) {
+        //    _testDirection = true;
+        //}
+        if (_temperaturePrimary < 15) {
+            _temperaturePrimary = 15;
+        }
+        if (_temperatureSecondary < 5) {
+            _temperatureSecondary = 5;
         }
     }
     //delay(100);

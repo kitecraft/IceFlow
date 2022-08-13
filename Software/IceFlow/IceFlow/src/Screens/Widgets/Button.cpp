@@ -37,6 +37,12 @@ void Button::Draw()
 	_tft->pushImageDMA(_config.coordinates.p_x, _config.coordinates.p_y, _config.coordinates.w, _config.coordinates.h, _sprPtr);
 }
 
+void Button::Draw(TFT_eSprite* sprite, String label)
+{
+	_label = label;
+	Draw(sprite);
+}
+
 void Button::Draw(TFT_eSprite* sprite)
 {
 	if (_visible) {
