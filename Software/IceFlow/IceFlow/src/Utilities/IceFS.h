@@ -26,7 +26,7 @@ static String IceFS_ReadFile(String filename)
 	return ret;
 }
 
-static int GetDirectoryListing(String directory, String *&strArray)
+static int IceFS_GetDirectoryListing(String directory, String *&strArray)
 {
     if (directory.endsWith("/")) {
         directory.remove(directory.length() - 1);
@@ -67,7 +67,14 @@ static int GetDirectoryListing(String directory, String *&strArray)
 	return filecount;
 }
 
-static double GetFreespaceBytes()
+static bool IceFS_DeleteFile(String fileName)
+{
+    SPIFFS.begin(false);
+
+    return SPIFFS.remove(fileName);
+}
+
+static double IceFS_GetFreespaceBytes()
 {
     return (SPIFFS.totalBytes() - SPIFFS.usedBytes());
 }

@@ -81,6 +81,10 @@ void Button::Draw(TFT_eSprite* sprite)
 
 bool Button::Touched(int x, int y)
 {
+	if (!_visible) {
+		return false;
+	}
+
 	if (x >= _config.coordinates.p_x &&
 		x <= _config.coordinates.p_x + _config.coordinates.w &&
 		y >= _config.coordinates.p_y &&

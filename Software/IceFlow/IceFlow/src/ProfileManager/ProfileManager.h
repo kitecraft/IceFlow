@@ -18,7 +18,9 @@ public:
 	String GetNameOfLastLoadedProfile();
 	void SaveProfileNameToPreferences(String profileFileName);
 	String GetNameOfProfileByFileName(String profileFileName);
-	double GetFreeSpaceKB() { return (GetFreespaceBytes() / 1024.0); }
+	double GetFreeSpaceKB() { return (IceFS_GetFreespaceBytes() / 1024.0); }
+
+	bool DeleteProfile(String profileFileName);
 };
 
 extern IceFlowProfileManager ProfileManager;

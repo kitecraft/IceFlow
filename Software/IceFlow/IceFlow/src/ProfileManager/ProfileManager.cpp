@@ -4,7 +4,7 @@
 
 int IceFlowProfileManager::GetListOfProfileFileNames(String*& strArray)
 {
-	return GetDirectoryListing(PROFILE_SPIFFS_FILE_DIRECTORY, strArray);
+	return IceFS_GetDirectoryListing(PROFILE_SPIFFS_FILE_DIRECTORY, strArray);
 }
 
 bool IceFlowProfileManager::SaveProfileToDisk(Profile profile)
@@ -69,6 +69,12 @@ String IceFlowProfileManager::GetNameOfProfileByFileName(String profileFileName)
 		return profile.name;
 	}
 	return "";
+}
+
+bool IceFlowProfileManager::DeleteProfile(String profileFileName)
+{
+	String fullPathToFile = String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName;
+	return IceFS_DeleteFile(fullPathToFile);
 }
 
 IceFlowProfileManager ProfileManager;

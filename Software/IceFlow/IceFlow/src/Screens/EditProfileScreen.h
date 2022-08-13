@@ -58,7 +58,8 @@ enum EPS_MESSAGE_BOX_TYPE {
 	EPS_NO_MB,
 	EPS_EXIT_MB,
 	EPS_DELETE_MB,
-	EPS_NO_EDIT_MB
+	EPS_OK_MB,
+	EPS_DELETE_SUCCESS_MB,
 };
 
 class EditProfileScreen
@@ -82,7 +83,6 @@ private:
 
 	MessageBox* _messageBox = nullptr;
 
-
 	NumberPadDialogBox* _numberPadDlg = nullptr;
 
 	void UpdateProfile(TextBoxName textBoxName, uint16_t val);
@@ -95,9 +95,10 @@ private:
 
 	bool HandleMessageBoxTouch(int x, int y);
 	void EndMessageBox();
+	bool HandleOKMessageBox(DialogButtonType buttonPressed);
 	bool HandleExitMessageBox(DialogButtonType buttonPressed);
 	bool HandleDeleteMessageBox(DialogButtonType buttonPressed);
-	bool HandleNoEditMessageBox(DialogButtonType buttonPressed);
+	bool HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed);
 
 	void CreateTextBoxes();
 	void UpdateTextbox(TextBoxName textBoxName);

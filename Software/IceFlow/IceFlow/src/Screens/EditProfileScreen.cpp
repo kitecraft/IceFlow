@@ -72,12 +72,12 @@ void EditProfileScreen::HandleTouch(int x, int y)
 
 void EditProfileScreen::ProcessTouch(int x, int y)
 {
-	if (_activeMessageBox != EPS_NO_MB && _messageBox->Visible()) {
+	if (_activeMessageBox != EPS_NO_MB) {
 		HandleMessageBoxTouch(x, y);
 		return;
 	}
 
-	if (_numberPadDlg != nullptr && _numberPadDlg->Visible()) {
+	if (_numberPadDlg != nullptr) {
 		if (_numberPadDlg->Touched(x, y))
 		{
 			CloseNumberPad();
@@ -94,10 +94,14 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 				String message = "Default profile can not be edited.";
 				_messageBox = new MessageBox(_tft, "No edit", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
 				_messageBox->Show();
-				_activeMessageBox = EPS_NO_EDIT_MB;
+				_activeMessageBox = EPS_OK_MB;
 			}
 			return;
 		}
+	}
+
+	if (_saveButton->Touched(x, y)) {
+		return;
 	}
 	
 	if (_saveAsButton->Touched(x, y)) {
@@ -146,10 +150,14 @@ bool EditProfileScreen::HandleMessageBoxTouch(int x, int y)
 		break;
 	case EPS_DELETE_MB:
 		return HandleDeleteMessageBox(ret);
-	case EPS_NO_EDIT_MB:
-		return HandleNoEditMessageBox(ret);
+	case EPS_DELETE_SUCCESS_MB:
+		return HandleDeleteSuccessMessageBox(ret);
+	case EPS_OK_MB:
+		return HandleOKMessageBox(ret);
 		break;
 	}
+
+	return false;
 }
 
 void EditProfileScreen::EndMessageBox()
@@ -158,6 +166,25 @@ void EditProfileScreen::EndMessageBox()
 	delete _messageBox;
 	_messageBox = nullptr;
 	_activeMessageBox = EPS_NO_MB;
+}
+
+bool EditProfileScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
+{
+	if (buttonPressed != DB_OK) {
+		return false;
+	}
+
+	EndMessageBox();
+	return true;
+}
+
+bool EditProfileScreen::HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed)
+{
+	if (HandleOKMessageBox(buttonPressed)) {
+		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
+		return true;
+	}
+	return false;
 }
 
 bool EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
@@ -179,18 +206,36 @@ bool EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
 		return false;
 	}
-	EndMessageBox();
-	return true;
-}
 
-bool EditProfileScreen::HandleNoEditMessageBox(DialogButtonType buttonPressed)
-{
-	if (buttonPressed != DB_OK) {
-		return false;
+	EndMessageBox();
+
+	if (buttonPressed == DB_Continue) {
+		bool ret = ProfileManager.DeleteProfile(_profile.filename);
+		if (ret) {
+			_profile = Profile();
+			if (!ProfileManager.GetProfile(PROFILE_DEFAULT_FILE, &_profile)) {
+				Serial.println("Failed to load Profile");
+				_tft->setFreeFont(SMALL_FONT);
+				_tft->setTextColor(GlobalTheme.textColor);
+				_tft->setTextDatum(TL_DATUM);
+				_tft->drawString("Failed to load profile", 10, 10);
+
+				String message = "Failed to delete file '" + String(_profile.filename) + "'!";
+				_messageBox = new MessageBox(_tft, "Delete Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+				_messageBox->Show();
+				_activeMessageBox = EPS_OK_MB;
+			}
+			else {
+				ProfileManager.SaveProfileNameToPreferences(_profile.filename);
+				String message = "The profile has been deleted.\nPress OK to return to the Profile Manager.";
+				_messageBox = new MessageBox(_tft, "Profile delete", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox->Show();
+				_activeMessageBox = EPS_DELETE_SUCCESS_MB;
+			}
+		}
 	}
 
-	EndMessageBox();
-	return true;
+	return false;
 }
 
 void EditProfileScreen::Draw()
@@ -538,7 +583,7 @@ void EditProfileScreen::CreateButtons()
 
 	_deleteButton = new Button(
 		ButtonDto(
-			DMCoordinates(0, 0, PES_BUTTON_W, PES_BUTTON_H, BUTTON_COLUMN_C_X, BUTTON_ROW_B_Y),
+			DMCoordinates(0, 0, PES_BUTTON_W, PES_BUTTON_H, BUTTON_COLUMN_C_X, BUTTON_ROW_A_Y),
 			GlobalTheme,
 			SMALL_FONT,
 			BUTTON_COLOR),

@@ -217,6 +217,9 @@ void MessageBox::CreateContinueCancel()
 
 DialogButtonType MessageBox::Touched(int x, int y)
 {
+	if (!_visible) {
+		return DB_NONE;
+	}
 
 	if (_buttonA != nullptr) {
 		if (_buttonA->Touched(x, y))
