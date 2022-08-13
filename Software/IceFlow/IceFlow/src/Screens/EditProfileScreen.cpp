@@ -26,7 +26,10 @@ EditProfileScreen::EditProfileScreen(TFT_eSPI* tft)
 	CreateTextBoxes();
 	CreateButtons();
 
+	_tft->startWrite();
 	Draw();
+	_tft->dmaWait();
+	_tft->endWrite();
 }
 
 EditProfileScreen::~EditProfileScreen()
@@ -52,6 +55,9 @@ EditProfileScreen::~EditProfileScreen()
 	}
 	if (_numberPadDlg != nullptr) {
 		delete _numberPadDlg;
+	}
+	if (_keyboard != nullptr) {
+		delete _keyboard;
 	}
 
 	for (int i = 0; i < NUMBER_OF_TEXTBOXES; i++) {
@@ -85,6 +91,11 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 		}
 	}
 
+	if (_keyboard != nullptr) {
+		HandleSaveAsKeyboard(x, y);
+		return;
+	}
+
 	for (int i = 0; i < NUMBER_OF_TEXTBOXES; i++) {
 		if (_textBoxes[i]->Touched(x, y)) {
 			if (_profile.filename != PROFILE_DEFAULT_FILE) {
@@ -101,10 +112,16 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 	}
 
 	if (_saveButton->Touched(x, y)) {
+		String message = "Save profile '" + String(_profile.name) + "'?";
+		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox->Show();
+		_activeMessageBox = EPS_SAVE_MB;
 		return;
 	}
 	
 	if (_saveAsButton->Touched(x, y)) {
+		_keyboard = new KeyboardDialog(_tft, GlobalTheme, "New profile name");
+		_keyboard->Show();
 		return;
 	}
 
@@ -137,27 +154,41 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 	}
 }
 
-bool EditProfileScreen::HandleMessageBoxTouch(int x, int y)
+void EditProfileScreen::HandleMessageBoxTouch(int x, int y)
 {
 	DialogButtonType ret = _messageBox->Touched(x, y);
 	if (ret == DB_NONE) {
-		return false;
+		return;
 	}
 
 	switch (_activeMessageBox) {
 	case EPS_EXIT_MB:
-		return HandleExitMessageBox(ret);
+		HandleExitMessageBox(ret);
 		break;
 	case EPS_DELETE_MB:
-		return HandleDeleteMessageBox(ret);
+		HandleDeleteMessageBox(ret);
+		break;
 	case EPS_DELETE_SUCCESS_MB:
-		return HandleDeleteSuccessMessageBox(ret);
+		HandleDeleteSuccessMessageBox(ret);
+		break;
+	case EPS_SAVE_MB:
+		HandleSaveProfileMessageBox(ret);
+		break;
 	case EPS_OK_MB:
-		return HandleOKMessageBox(ret);
+		HandleOKMessageBox(ret);
 		break;
 	}
+}
 
-	return false;
+void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
+{
+	if (_keyboard->Touched(x, y)) {
+		_keyboard->Hide();
+		delete _keyboard;
+		_keyboard = nullptr;
+		return;
+	}
+	return;
 }
 
 void EditProfileScreen::EndMessageBox()
@@ -166,6 +197,34 @@ void EditProfileScreen::EndMessageBox()
 	delete _messageBox;
 	_messageBox = nullptr;
 	_activeMessageBox = EPS_NO_MB;
+}
+
+void EditProfileScreen::HandleSaveProfileMessageBox(DialogButtonType buttonPressed)
+{
+	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+		return;
+	}
+
+	EndMessageBox();
+
+	if (buttonPressed == DB_Continue) {
+		if (ProfileManager.SaveProfileToDisk(_profile)) {
+			_profileCopy = _profile;
+			Draw();
+			String message = "The profile has been saved.\nPress OK to return to the Profile Editor.";
+			_messageBox = new MessageBox(_tft, "Profile saved", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+			_messageBox->Show();
+			_activeMessageBox = EPS_OK_MB;
+		}
+		else {
+			String message = "Failed to save the profile.";
+			_messageBox = new MessageBox(_tft, "Error: ", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox->Show();
+			_activeMessageBox = EPS_OK_MB;
+		}
+	}
+
+	return;
 }
 
 bool EditProfileScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
@@ -178,19 +237,19 @@ bool EditProfileScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
 	return true;
 }
 
-bool EditProfileScreen::HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed)
+void EditProfileScreen::HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed)
 {
 	if (HandleOKMessageBox(buttonPressed)) {
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
-		return true;
+		return;
 	}
-	return false;
+	return;
 }
 
-bool EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
+void EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
 {
 	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
-		return false;
+		return;
 	}
 
 	if (buttonPressed == DB_Continue) {
@@ -198,13 +257,13 @@ bool EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
 	}
 
 	EndMessageBox();
-	return true;
+	return;
 }
 
-bool EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
+void EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 {
 	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
-		return false;
+		return;
 	}
 
 	EndMessageBox();
@@ -219,10 +278,6 @@ bool EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 				_tft->setTextColor(GlobalTheme.textColor);
 				_tft->setTextDatum(TL_DATUM);
 				_tft->drawString("Failed to load profile", 10, 10);
-
-				String message = "Failed to delete file '" + String(_profile.filename) + "'!";
-				_messageBox = new MessageBox(_tft, "Delete Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
-				_messageBox->Show();
 				_activeMessageBox = EPS_OK_MB;
 			}
 			else {
@@ -233,14 +288,19 @@ bool EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 				_activeMessageBox = EPS_DELETE_SUCCESS_MB;
 			}
 		}
+		else {
+			String message = "Failed to delete file '" + String(_profile.filename) + "'!";
+			_messageBox = new MessageBox(_tft, "Delete Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_activeMessageBox = EPS_DELETE_SUCCESS_MB;
+			_messageBox->Show();
+		}
 	}
 
-	return false;
+	return;
 }
 
 void EditProfileScreen::Draw()
 {
-	_tft->startWrite();
 	_tft->fillScreen(TFT_BLACK);
 
 	DrawTextBoxes();
@@ -249,9 +309,6 @@ void EditProfileScreen::Draw()
 	}
 	DrawButtons();
 	DrawHeader();
-
-	_tft->dmaWait();
-	_tft->endWrite();
 }
 
 void EditProfileScreen::DrawTextBoxes()
@@ -510,7 +567,7 @@ void EditProfileScreen::UpdateTextbox(TextBoxName textBoxName)
 	}
 }
 
-void EditProfileScreen::UpdateProfile(TextBoxName textBoxName, uint16_t val)
+void EditProfileScreen::UpdateTextBox(TextBoxName textBoxName, uint16_t val)
 {
 	switch (textBoxName) {
 	case PreHeatTargetTemperature:
@@ -608,7 +665,7 @@ void EditProfileScreen::CloseNumberPad()
 	
 	int val = _numberPadDlg->GetNumber();
 	if(val != 0){
-		UpdateProfile(_activeTextBox, val);
+		UpdateTextBox(_activeTextBox, val);
 		UpdateTextbox(_activeTextBox);
 		_tft->dmaWait();
 	}

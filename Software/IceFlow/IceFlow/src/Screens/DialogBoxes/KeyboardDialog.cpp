@@ -1,11 +1,9 @@
-#include "DialogBase.h"
-#include "../Widgets/Box.h"
-#include "../Widgets/TextBox.h"
+#include "KeyboardDialog.h"
 
-DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, String title)
+KeyboardDialog::KeyboardDialog(TFT_eSPI* tft, DMTheme theme, String title)
 {
 	_tft = tft;
-	_coordinates = coordinates;
+	_coordinates = DMCoordinates(0, 0, 320, 100, 0, 0);
 	_theme = theme;
 
 	_sprite = new TFT_eSprite(_tft);
@@ -13,8 +11,9 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 
 
 	//_sprite->fillSprite(_theme.panelDarkColor);
-	_sprite->fillSprite(_theme.panelLightColor);
+	_sprite->fillSprite(TFT_GREEN);
 
+	/*
 	DrawSquaredBox(_sprite, coordinates, theme, true);
 	TextBox::DrawTextBox(_sprite,
 		TextBoxDto(
@@ -24,20 +23,21 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 			ML_DATUM,
 			true),
 		title.c_str());
+		*/
 }
 
-DialogBase::~DialogBase()
+KeyboardDialog::~KeyboardDialog()
 {
 	if (_sprite != nullptr) {
 		_sprite->deleteSprite();
 		delete _sprite;
 		_sprite = nullptr;
 	}
-	
+
 	ClearBuffer();
 }
 
-void DialogBase::ClearBuffer()
+void KeyboardDialog::ClearBuffer()
 {
 	if (_screenReadBuffer != nullptr) {
 		free(_screenReadBuffer);
@@ -45,7 +45,7 @@ void DialogBase::ClearBuffer()
 	}
 }
 
-void DialogBase::Show()
+void KeyboardDialog::Show()
 {
 	ClearBuffer();
 	_screenReadBuffer = (uint16_t*)ps_calloc(_coordinates.w * _coordinates.h, sizeof(uint16_t));
@@ -55,10 +55,18 @@ void DialogBase::Show()
 	_visible = true;
 }
 
-void DialogBase::Hide()
+void KeyboardDialog::Hide()
 {
 	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _screenReadBuffer);
-	_tft->dmaWait();
 	_visible = false;
 	ClearBuffer();
+}
+
+DialogButtonType KeyboardDialog::Touched(int x, int y)
+{
+	if (!_visible) {
+		return DB_NONE;
+	}
+
+	return DB_NONE;
 }

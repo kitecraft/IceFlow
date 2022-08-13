@@ -26,6 +26,17 @@ static String IceFS_ReadFile(String filename)
 	return ret;
 }
 
+static bool IceFS_WriteFile(String fileName, String contents)
+{
+    fs::File file = SPIFFS.open(fileName, FILE_WRITE);
+    int ret = file.print(contents);
+    file.close();
+    if (ret > 0) {
+        return true;
+    }
+    return false;
+}
+
 static int IceFS_GetDirectoryListing(String directory, String *&strArray)
 {
     if (directory.endsWith("/")) {

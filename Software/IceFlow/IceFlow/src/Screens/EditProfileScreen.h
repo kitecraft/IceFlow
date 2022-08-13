@@ -8,6 +8,7 @@
 #include "Widgets/TextBox.h"
 #include "DialogBoxes/MessageBox.h"
 #include "DialogBoxes/NumberPadDialogBox.h"
+#include "DialogBoxes/KeyboardDialog.h"
 
 #define HEADER_X 0
 #define HEADER_Y 0
@@ -60,6 +61,7 @@ enum EPS_MESSAGE_BOX_TYPE {
 	EPS_DELETE_MB,
 	EPS_OK_MB,
 	EPS_DELETE_SUCCESS_MB,
+	EPS_SAVE_MB
 };
 
 class EditProfileScreen
@@ -74,31 +76,34 @@ private:
 	Button* _exitButton = nullptr;
 	Button* _deleteButton = nullptr;
 
-	EPS_MESSAGE_BOX_TYPE _activeMessageBox = EPS_NO_MB;
-
+	bool _saveRequired = false;
 	TextBox* _textBoxes[NUMBER_OF_TEXTBOXES] = { nullptr };
 	TextBoxName _activeTextBox = TB_NO_TEXTBOX;
 
-	bool _saveRequired = false;
-
 	MessageBox* _messageBox = nullptr;
+	EPS_MESSAGE_BOX_TYPE _activeMessageBox = EPS_NO_MB;
 
+	KeyboardDialog* _keyboard = nullptr;
+	
 	NumberPadDialogBox* _numberPadDlg = nullptr;
 
-	void UpdateProfile(TextBoxName textBoxName, uint16_t val);
+	void UpdateTextBox(TextBoxName textBoxName, uint16_t val);
 
 	void Draw();
 	void DrawTextBoxes();
 	void DrawHeader();
 	void DrawButtons();
-	void ProcessTouch(int x, int y);
 
-	bool HandleMessageBoxTouch(int x, int y);
+	void ProcessTouch(int x, int y);
+	void HandleMessageBoxTouch(int x, int y);
 	void EndMessageBox();
 	bool HandleOKMessageBox(DialogButtonType buttonPressed);
-	bool HandleExitMessageBox(DialogButtonType buttonPressed);
-	bool HandleDeleteMessageBox(DialogButtonType buttonPressed);
-	bool HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed);
+	void HandleExitMessageBox(DialogButtonType buttonPressed);
+	void HandleDeleteMessageBox(DialogButtonType buttonPressed);
+	void HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed);
+	void HandleSaveProfileMessageBox(DialogButtonType buttonPressed);
+
+	void HandleSaveAsKeyboard(int x, int y);
 
 	void CreateTextBoxes();
 	void UpdateTextbox(TextBoxName textBoxName);

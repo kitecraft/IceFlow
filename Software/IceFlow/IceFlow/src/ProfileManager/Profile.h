@@ -73,7 +73,7 @@ public:
 	String toJsonString()
 	{
 		String ret = "{\"name\":\"" + name + "\",";
-		ret += "\"pretheat\" : {";
+		ret += "\"preheat\" : {";
 		ret += "\"target_temperature\" : " + String(pre_heat_target_temperature) + ",";
 		ret += "\"ramp_time\" : " + String(pre_heat_ramp_time) + "},";
 		ret += "\"soak\" : {";

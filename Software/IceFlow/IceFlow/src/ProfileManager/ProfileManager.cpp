@@ -9,7 +9,7 @@ int IceFlowProfileManager::GetListOfProfileFileNames(String*& strArray)
 
 bool IceFlowProfileManager::SaveProfileToDisk(Profile profile)
 {
-	return true;
+	return IceFS_WriteFile(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profile.filename, profile.toJsonString());
 }
 
 bool IceFlowProfileManager::GetProfile(String profileFileName, Profile* profile)

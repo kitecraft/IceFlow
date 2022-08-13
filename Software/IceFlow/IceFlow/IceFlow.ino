@@ -13,8 +13,6 @@
 #include "src/Screens/Utilities/InitializeScreens.h"
 #include "src/OvenController/OvenController.h"
 
-
-
 #include "src/Network/IceNetwork.h"
 #include "src/Network/IceWebServer.h"
 #include "src/Network/IceOTAManager.h"

@@ -4,10 +4,11 @@
 #include "../Utilities/Screens_Config.h"
 #include "../Utilities/DMCoordinates.h"
 #include "../Utilities/DMTheme.h"
+#include "DialogButton.h"
 
-class DialogBase
+class KeyboardDialog
 {
-protected:
+private:
     TFT_eSPI* _tft;
     DMCoordinates _coordinates;
     DMTheme _theme;
@@ -20,14 +21,14 @@ protected:
     uint16_t* _screenReadBuffer = nullptr;
     void ClearBuffer();
 
-
 public:
-	DialogBase() {}
-    ~DialogBase();
-    DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, String title);
+    KeyboardDialog() {}
+    ~KeyboardDialog();
+    KeyboardDialog(TFT_eSPI* tft, DMTheme theme, String title);
 
     void Show();
     void Hide();
-    bool Visible() { return _visible; }
+    bool IsVisible() { return _visible; }
+    DialogButtonType Touched(int x, int y);
 };
 
