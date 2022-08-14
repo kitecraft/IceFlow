@@ -26,9 +26,14 @@ static String IceFS_ReadFile(String filename)
 	return ret;
 }
 
+static bool IceFs_DoesFileExist(String fileName)
+{
+    return SPIFFS.exists(fileName);
+}
+
 static bool IceFS_WriteFile(String fileName, String contents)
 {
-    fs::File file = SPIFFS.open(fileName, FILE_WRITE);
+    fs::File file = SPIFFS.open(fileName, FILE_WRITE, true);
     int ret = file.print(contents);
     file.close();
     if (ret > 0) {

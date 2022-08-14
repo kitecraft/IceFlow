@@ -57,7 +57,7 @@ String IceFlowProfileManager::GetNameOfLastLoadedProfile()
 	return GetSavedProfileFileName();
 }
 
-void IceFlowProfileManager::SaveProfileNameToPreferences(String profileFileName)
+void IceFlowProfileManager::SaveProfileFileNameToPreferences(String profileFileName)
 {
 	SaveProfileFilename(profileFileName);
 }
@@ -75,6 +75,29 @@ bool IceFlowProfileManager::DeleteProfile(String profileFileName)
 {
 	String fullPathToFile = String(PROFILE_SPIFFS_FILE_DIRECTORY) + profileFileName;
 	return IceFS_DeleteFile(fullPathToFile);
+}
+
+bool IceFlowProfileManager::SaveProfileAsNewToDisk(Profile profile)
+{
+	String fileName = profile.name.substring(0, MAXIMUM_PROFILE_FILE_NAME_LENGTH - 1);
+	fileName.replace(" ", "_");
+	int fileCounter = 0;
+	String tmpFileName = fileName + String(PROFILE_FILENAME_EXTENSION);
+
+	bool found = IceFs_DoesFileExist(String(PROFILE_SPIFFS_FILE_DIRECTORY) + tmpFileName);
+	while (found) {
+		fileCounter++;
+		fileName.remove(fileName.length() - 1);
+		tmpFileName = fileName + String(fileCounter) + String(PROFILE_FILENAME_EXTENSION);
+		found = IceFs_DoesFileExist(String(PROFILE_SPIFFS_FILE_DIRECTORY) + tmpFileName);
+	}
+	
+	profile.filename = tmpFileName;
+	bool ret = IceFS_WriteFile(String(PROFILE_SPIFFS_FILE_DIRECTORY) + profile.filename, profile.toJsonString());
+	if (ret) {
+		SaveProfileFileNameToPreferences(profile.filename);
+	}
+	return ret;
 }
 
 IceFlowProfileManager ProfileManager;

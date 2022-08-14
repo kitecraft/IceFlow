@@ -146,7 +146,7 @@ void ProfilesScreen::ProcessTouch(int x, int y)
 
 	if (_setRequired) {
 		if (_setButton->Touched(x, y)) {
-			ProfileManager.SaveProfileNameToPreferences(_currentlyLoadedProfile.filename);
+			ProfileManager.SaveProfileFileNameToPreferences(_currentlyLoadedProfile.filename);
 			_currentlySavedProfile = _currentlyLoadedProfile;
 			_setRequired = false;
 			Draw();

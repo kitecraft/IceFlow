@@ -5,18 +5,23 @@
 
 
 #define PROFILE_SPIFFS_FILE_DIRECTORY "/p/"
+#define MAXIMUM_PROFILE_FILE_NAME_LENGTH 8
+#define PROFILE_FILENAME_EXTENSION ".json"
 
 class IceFlowProfileManager
 {
 private:
+	String GetNameOfLastLoadedProfile();
 
 public:
+	void SaveProfileFileNameToPreferences(String profileFileName);
+	bool SaveProfileToDisk(Profile profile);
+	bool SaveProfileAsNewToDisk(Profile profile);
+
 	int GetListOfProfileFileNames(String*& strArray);
-	bool SaveProfileToDisk(Profile profile); //saved as Profile <name>.json with spaces to _
-	bool GetProfile(String profileFileName, Profile* profile); // 
+	bool GetProfile(String profileFileName, Profile* profile);
 	bool GetSavedProfile(Profile* profile);
-	String GetNameOfLastLoadedProfile();
-	void SaveProfileNameToPreferences(String profileFileName);
+
 	String GetNameOfProfileByFileName(String profileFileName);
 	double GetFreeSpaceKB() { return (IceFS_GetFreespaceBytes() / 1024.0); }
 

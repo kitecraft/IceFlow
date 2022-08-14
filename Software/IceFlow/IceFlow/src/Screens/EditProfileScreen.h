@@ -61,7 +61,8 @@ enum EPS_MESSAGE_BOX_TYPE {
 	EPS_DELETE_MB,
 	EPS_OK_MB,
 	EPS_DELETE_SUCCESS_MB,
-	EPS_SAVE_MB
+	EPS_SAVE_MB,
+	EPS_CONFIRM_SAVEAS_MB
 };
 
 class EditProfileScreen
@@ -103,8 +104,10 @@ private:
 	void HandleDeleteMessageBox(DialogButtonType buttonPressed);
 	void HandleDeleteSuccessMessageBox(DialogButtonType buttonPressed);
 	void HandleSaveProfileMessageBox(DialogButtonType buttonPressed);
+	void HandleSaveAsMessageBox(DialogButtonType buttonPressed);
 
 	void HandleSaveAsKeyboard(int x, int y);
+	void CloseKeyboard();
 
 	void CreateTextBoxes();
 	void UpdateTextbox(TextBoxName textBoxName);

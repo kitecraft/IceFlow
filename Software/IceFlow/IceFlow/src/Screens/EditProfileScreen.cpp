@@ -177,6 +177,9 @@ void EditProfileScreen::HandleMessageBoxTouch(int x, int y)
 	case EPS_SAVE_MB:
 		HandleSaveProfileMessageBox(ret);
 		break;
+	case EPS_CONFIRM_SAVEAS_MB:
+		HandleSaveAsMessageBox(ret);
+		break;
 	case EPS_OK_MB:
 		HandleOKMessageBox(ret);
 		break;
@@ -186,13 +189,11 @@ void EditProfileScreen::HandleMessageBoxTouch(int x, int y)
 void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 {
 	DialogButtonType ret = _keyboard->Touched(x, y);
+
 	if (ret == DB_Cancel) {
-		delete _keyboard;
-		_keyboard = nullptr;
-		_keyboardOpen = false;
-		Draw();
+		CloseKeyboard();
 	}
-	if (ret == DB_Continue) {
+	else if (ret == DB_Continue) {
 		String newName = _keyboard->GetValue();
 		newName.trim();
 		if (newName.isEmpty()) {
@@ -202,14 +203,22 @@ void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 			_activeMessageBox = EPS_OK_MB;
 			return;
 		}
-		_profile.name = newName;
-		delete _keyboard;
-		_keyboard = nullptr;
-		_keyboardOpen = false;
-		Draw();
-	}
 
+		_keyboard->SetValue(newName);
+		String message = "Save profile '" + newName + "'?";
+		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox->Show();
+		_activeMessageBox = EPS_CONFIRM_SAVEAS_MB;
+	}
 	return;
+}
+
+void EditProfileScreen::CloseKeyboard()
+{
+	delete _keyboard;
+	_keyboard = nullptr;
+	_keyboardOpen = false;
+	Draw();
 }
 
 void EditProfileScreen::EndMessageBox()
@@ -218,6 +227,45 @@ void EditProfileScreen::EndMessageBox()
 	delete _messageBox;
 	_messageBox = nullptr;
 	_activeMessageBox = EPS_NO_MB;
+}
+
+void EditProfileScreen::HandleSaveAsMessageBox(DialogButtonType buttonPressed)
+{
+	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+		return;
+	}
+
+	EndMessageBox();
+
+	if (buttonPressed == DB_Continue) {
+		String newName = _keyboard->GetValue();
+		_profile.name = newName;
+		if (ProfileManager.SaveProfileAsNewToDisk(_profile)) {
+			if (!ProfileManager.GetSavedProfile(&_profile)) {
+				ProfileManager.GetProfile(PROFILE_DEFAULT_FILE, &_profile);
+				CloseKeyboard();
+				String message = "Something incorrect has transpired.\nFailed to load new profile.";
+				_messageBox = new MessageBox(_tft, "Badness occured.", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox->Show();
+				_activeMessageBox = EPS_OK_MB;
+			}
+			else {
+				_profileCopy = _profile;
+				CloseKeyboard();
+				String message = "Profile has been successfully saved.";
+				_messageBox = new MessageBox(_tft, "Profile Saved.", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox->Show();
+				_activeMessageBox = EPS_OK_MB;
+			}
+		}
+		else {
+			String message = "Failed to save profile.";
+			_messageBox = new MessageBox(_tft, "Save Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox->Show();
+			_activeMessageBox = EPS_OK_MB;
+			return;
+		}
+	}
 }
 
 void EditProfileScreen::HandleSaveProfileMessageBox(DialogButtonType buttonPressed)
@@ -302,7 +350,7 @@ void EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 				_activeMessageBox = EPS_OK_MB;
 			}
 			else {
-				ProfileManager.SaveProfileNameToPreferences(_profile.filename);
+				ProfileManager.SaveProfileFileNameToPreferences(_profile.filename);
 				String message = "The profile has been deleted.\nPress OK to return to the Profile Manager.";
 				_messageBox = new MessageBox(_tft, "Profile delete", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
 				_messageBox->Show();
