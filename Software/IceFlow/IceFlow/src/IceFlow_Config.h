@@ -18,8 +18,16 @@
 #define RELAY_CONVECTION_FAN 32
 #define SSR_OVEN_HEATERS 33
 #define STOP_BUTTON 22
+#define STOP_BUTTON_DEBOUNCE_TIME 100
+#define OVEN_TEMPERATURE_UPDATE_RATE 75
 //how often to send the tempeature to the displaymanager
 #define TEMPERATURE_DISPLAY_REFRESH_RATE 100
+
+//Thermocouplers
+#define THERMOCOUPLER_CLK 12
+#define THERMOCOUPLER_DO 27
+#define THERMOCOUPLER_PRIMARY_CS 14
+#define THERMOCOUPLER_SECONDARY_CS 16
 
 //Hardware definintions
 #define RELAY_OFF LOW

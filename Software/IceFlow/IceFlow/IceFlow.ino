@@ -32,8 +32,6 @@ static void IRAM_ATTR onTimer() {
 
 TaskHandle_t g_networkStartupHandle = nullptr;
 
-//#include "src/Utilities/PreferencesManager.h"
-
 void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
@@ -49,12 +47,12 @@ void setup() {
     g_ClockTimer = timerBegin(0, 80, true);
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
-    
+
     //Init the oven
     OvenManager.Init();
 
     //SaveProfileFilename("def_prof.json");
-    
+
     //Initialize the DisplayManager
     Display.Init();
     LoadScreensIntoDM();
@@ -63,6 +61,8 @@ void setup() {
 
     //StartNetworkStuff();
 }
+
+
 
 void loop() {
     HandleCommandQueue(); 
@@ -89,7 +89,7 @@ void HandleCommandQueue()
 
         switch (command) {
         case CC_START_OTA:
-            OvenManager.StopOven();
+            //OvenManager.StopOven();
             DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
             DisplayQueue.QueueKeyAndValue(suk_Device_Name, __DEVICE_NAME__);
             DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
@@ -132,6 +132,29 @@ void HandleCommandQueue()
     }
 }
 
+static void IRAM_ATTR SetupDateTime()
+{
+    // setup this after wifi connected
+    // you can use custom timeZone,server and timeout
+    // DateTime.setTimeZone(-4);
+    //   DateTime.setServer("asia.pool.ntp.org");
+    //   DateTime.begin(15 * 1000);
+    DateTime.setServer("0.ca.pool.ntp.org");
+    DateTime.setTimeZone(TZ_America_Edmonton);
+    DateTime.begin();
+    if (!DateTime.isTimeValid()) {
+        Serial.println("Failed to get time from server.");
+    }
+    else {
+        Serial.printf("UTC    Time:   %s\n", DateTime.formatUTC(DateFormatter::SIMPLE).c_str());
+        //DisplayQueue.QueueKey(suk_DateTime);
+        //Serial.printf("Timestamp is %ld\n", DateTime.now());
+    }
+
+
+    //showTime();
+}
+
 static void IRAM_ATTR StartNetworkStuff(void* pvParameters)
 {
     if (!connectToNetwork())
@@ -166,30 +189,6 @@ static void IRAM_ATTR StartNetworkStuff(void* pvParameters)
     vTaskDelete(g_networkStartupHandle);
 }
 
-
-static void IRAM_ATTR SetupDateTime()
-{
-    // setup this after wifi connected
-    // you can use custom timeZone,server and timeout
-    // DateTime.setTimeZone(-4);
-    //   DateTime.setServer("asia.pool.ntp.org");
-    //   DateTime.begin(15 * 1000);
-    DateTime.setServer("0.ca.pool.ntp.org");
-    DateTime.setTimeZone(TZ_America_Edmonton);
-    DateTime.begin();
-    if (!DateTime.isTimeValid()) {
-        Serial.println("Failed to get time from server.");
-    }
-    else {
-        Serial.printf("UTC    Time:   %s\n", DateTime.formatUTC(DateFormatter::SIMPLE).c_str());
-        //DisplayQueue.QueueKey(suk_DateTime);
-        //Serial.printf("Timestamp is %ld\n", DateTime.now());
-    }
-
-
-    //showTime();
-}
-
 void showTime() {
     Serial.printf("TimeZone:      %s\n", DateTime.getTimeZone());
     Serial.printf("Up     Time:   %lu seconds\n", millis() / 1000);
@@ -211,3 +210,4 @@ void showTime() {
     Serial.printf("OS local:     %s", asctime(localtime(&t)));
     Serial.printf("OS UTC:       %s", asctime(gmtime(&t)));
 }
+

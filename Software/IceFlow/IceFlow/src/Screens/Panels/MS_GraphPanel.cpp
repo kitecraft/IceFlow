@@ -188,7 +188,7 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 		tertiaryReclculated = _tertiaryTemperatureAutoScaler->AddItem(tertiaryTemperature);
 	}
 
-	if (primaryRecalculated || secondaryRecalculated || tertiaryReclculated) {
+	if (primaryRecalculated || secondaryRecalculated || tertiaryReclculated || _redrawRequired) {
 		CalculateNewMaxMins();
 	}
 

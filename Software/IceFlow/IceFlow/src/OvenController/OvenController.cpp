@@ -3,6 +3,7 @@
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
 
+
 bool OvenController::Init()
 {
     pinMode(SSR_OVEN_HEATERS, OUTPUT);
@@ -11,10 +12,13 @@ bool OvenController::Init()
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
 
-    _stopButton.attach(STOP_BUTTON, INPUT_PULLUP);
-    _stopButton.interval(25);
-    _stopButton.setPressedState(LOW);
-    //_ovenEnabledMutex = portMUX_INITIALIZER_UNLOCKED;
+    pinMode(STOP_BUTTON, INPUT_PULLUP);
+
+    Serial.println("Initializing sensor A...");
+    _primaryTemperatureSensor.begin(THERMOCOUPLER_CLK, THERMOCOUPLER_PRIMARY_CS, THERMOCOUPLER_DO);
+    _primaryTemperatureSensor.setSWSPIdelay(4);
+    Serial.print("Status: ");
+    Serial.println(_primaryTemperatureSensor.getStatus());
 
     _kp = GetPidKP();
     _ki = GetPidKI();
@@ -44,24 +48,6 @@ bool OvenController::Init()
 
     return true;
 }
-
-/*
-void OvenController::EnableDisableOven(bool state)
-{
-    EmergencyStop();
-    portENTER_CRITICAL(&_ovenEnabledMutex);
-    _ovenEnabled = state;
-    portEXIT_CRITICAL(&_ovenEnabledMutex);
-}
-bool OvenController::IsOvenEnabled()
-{
-    bool ret;
-    portENTER_CRITICAL(&_ovenEnabledMutex);
-    ret = _ovenEnabled;
-    portEXIT_CRITICAL(&_ovenEnabledMutex);
-    return ret;
-}
-*/
 
 void OvenController::CheckConvectionFanStatus()
 {
@@ -131,27 +117,42 @@ void OvenController::StopOven()
 
 void OvenController::FetchPrimaryTemperature()
 {
+    if (_nextTemperatureUpdate < millis()) {
+        _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
+        double prevTemp = _temperaturePrimary;
+        int ret = _primaryTemperatureSensor.read();
+        if (ret != STATUS_OK) {
+            Serial.println("Something wrong with thermocouple!");
+        }
+        else {
+            _temperaturePrimary = (double)_primaryTemperatureSensor.getTemperature();
+            if (_temperaturePrimary == 0 || isnan(_temperaturePrimary)) {
+                //Serial.println("ISNAN error!");
+                _temperaturePrimary = prevTemp;
+            }
+        }
+    }
 
 }
 
 void OvenController::FetchSecondaryTemperature()
 {
-
+    _temperatureSecondary = 10;
 }
 
 void OvenController::FetchTemperatures()
 {
-    /*
     FetchPrimaryTemperature();
     FetchSecondaryTemperature();
 
+    /*
     if (_temperaturePrimary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
         _temperaturePrimary <= OVEN_MINIUMUM_TEMPERATURE_PANIC ||
         _temperatureSecondary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
         _temperatureSecondary <= OVEN_MINIUMUM_TEMPERATURE_PANIC) {
         _ovenStatus = OS_BADNESS;
     }
-    */
+
 
     //if (_testDirection) {
     if(_heatersOn) {
@@ -168,6 +169,7 @@ void OvenController::FetchTemperatures()
         //if (_temperatureSecondary <= 1) {
         //    _testDirection = true;
         //}
+        
         if (_temperaturePrimary < 15) {
             _temperaturePrimary = 15;
         }
@@ -175,7 +177,10 @@ void OvenController::FetchTemperatures()
             _temperatureSecondary = 5;
         }
     }
-    //delay(100);
+    */
+
+
+
 }
 
 void OvenController::StartManualHeat(int targetTemperature)
@@ -225,14 +230,12 @@ void OvenController::HandleReflowSession()
 void OvenController::Run()
 {
     while (true) {
-        /*
-        while (!IsOvenEnabled()) {
-            vTaskDelay(1);
-        }
-        */
-        _stopButton.update();
-        if (_stopButton.pressed()) {
-            StopOven();
+
+        if (digitalRead(STOP_BUTTON) == LOW) {
+            if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
+                StopOven();
+                _lastButtonPress = millis();
+            }
         }
 
         FetchTemperatures();
@@ -254,23 +257,18 @@ void OvenController::Run()
             break;
         }
 
-        // DOOM 
-        // DONT FORGET TO RENABLE THIS OR ELSE DOOM WILL OCCUR
         CheckConvectionFanStatus();
-        // UNCOMMENT THE ABOVE TO AVERT THE DOOM
-        // DOOM
 
         if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
             char val[7];
             snprintf(val, 7, "%.2f", _temperaturePrimary);
             DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
 
-            snprintf(val, 7, "%.2f", _temperatureSecondary);
+            //snprintf(val, 7, "%.2f", _temperatureSecondary);
+            snprintf(val, 7, "%.2f", _temperaturePrimary - 5);
             DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
             _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
         }
-
-        //vTaskDelay(500);
         
         vTaskDelay(1);
     }
@@ -288,15 +286,12 @@ void OvenController::SendStatus()
         DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
         break;
     case OS_REFLOW_ACTIVE:
-        Serial.println("Sending: OS_REFLOW_ACTIVE");
         DisplayQueue.QueueKey(suk_Oven_Reflow_On);
         break;
     case OS_CALIBRATION_ACTIVE:
-        Serial.println("Sending: OS_CALIBRATION_ACTIVE");
         DisplayQueue.QueueKey(suk_Oven_Calibration_On);
         break;
     default:
-        Serial.println("Sending: default");
         DisplayQueue.QueueKey(suk_Oven_Stopped);
         break;
     }

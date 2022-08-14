@@ -1,33 +1,34 @@
 #pragma once
 #include <Arduino.h>
 #include <PID_v2.h>
-#include <Bounce2.h>
 #include "../IceFlow_Config.h"
 #include "OvenEnums.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
-
+#include "MAX31855.h"
 
 class OvenController
 {
 private:
 	TaskHandle_t _taskHandle = nullptr;
-	//bool _ovenEnabled = true;
-	//portMUX_TYPE _ovenEnabledMutex;
 
 	OvenStatus _ovenStatus = OS_IDLE;
 	REFLOW_PHASE _reflowPhase = RP_NOT_ACTIVE;
 
-	Bounce2::Button _stopButton;
+	unsigned long _lastButtonPress = 0;
 
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
 	int _manualTargetTemperature = 0;
 
+	MAX31855 _primaryTemperatureSensor;
+	unsigned long _nextTemperatureUpdate = 0;
+
 	double _temperaturePrimary = 15;
 	double _temperatureSecondary = 5;
 	bool _streamTemperatures = false;
+
 	bool _testDirection = true;
 
 	//PID
@@ -52,7 +53,6 @@ private:
 
 	void HandleOvenHeatersWithPID();
 	void HandleReflowSession();
-	//void EnableDisableOven(bool state);
 public:
 	bool Init();
 	void Run();
@@ -65,9 +65,6 @@ public:
 	void StopTemperatureStream() { _streamTemperatures = false; }
 
 	void SendStatus();
-	//void DisableOven() { EnableDisableOven(false); }
-	//void EnableOven() { EnableDisableOven(true); }
-	//bool IsOvenEnabled();
 };
 
 extern OvenController OvenManager;
