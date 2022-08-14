@@ -495,6 +495,7 @@ void EditProfileScreen::DrawButtons()
 		return;
 	}
 
+	_deleteButton->Visible(true);
 	_deleteButton->Draw();
 
 	if (_profile == _profileCopy) {
