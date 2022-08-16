@@ -29,7 +29,6 @@ static void IRAM_ATTR onTimer() {
 }
 
 
-
 TaskHandle_t g_networkStartupHandle = nullptr;
 
 void setup() {
@@ -37,11 +36,11 @@ void setup() {
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
 
     xTaskCreate(
-        StartNetworkStuff,       /* Function that implements the task. */
-        "NetworkSetup",          /* Text name for the task. */
-        STACK_SIZE,      /* Stack size in words, not bytes. */
-        (void*)1,    /* Parameter passed into the task. */
-        tskIDLE_PRIORITY,/* Priority at which the task is created. */
+        StartNetworkStuff,
+        "NetworkSetup",
+        STACK_SIZE,
+        (void*)1,
+        tskIDLE_PRIORITY,
         &g_networkStartupHandle);
 
     g_ClockTimer = timerBegin(0, 80, true);
@@ -57,12 +56,7 @@ void setup() {
     Display.Init();
     LoadScreensIntoDM();
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
-    //DisplayQueue.QueueScreenChange(SN_OTA_SCREEN);
-
-    //StartNetworkStuff();
 }
-
-
 
 void loop() {
     HandleCommandQueue(); 

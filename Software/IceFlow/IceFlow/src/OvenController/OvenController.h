@@ -6,6 +6,7 @@
 #include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
+#include "AutoTune.h"
 #include "MAX31855.h"
 
 class OvenController
@@ -25,12 +26,15 @@ private:
 	MAX31855 _primaryTemperatureSensor;
 	unsigned long _nextTemperatureUpdate = 0;
 
+	unsigned long _nextTemperatureDisplayUpdate = 0;
 	double _temperaturePrimary = 15;
 	double _temperatureSecondary = 5;
 	bool _streamTemperatures = false;
-	bool _testDirection = true;
+
+	//bool _testDirection = true;
 
 	//PID
+	AutoTune* _autoTune = nullptr;
 	PID_v2* _pidController = nullptr;
 	double _kp;
 	double _ki;
@@ -47,12 +51,12 @@ private:
 	void FetchPrimaryTemperature();
 	void FetchSecondaryTemperature();
 	void FetchTemperatures();
-	unsigned long _nextTemperatureDisplayUpdate = 0;
 
 	void SetTargetTemperature(float target);
 	void HandleOvenHeatersWithPID();
 	void HandleReflowSession();
 	void HandleAutoTune();
+
 public:
 	bool Init();
 	void Run();
@@ -64,7 +68,8 @@ public:
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
 
-	void StartAutoTune();
+	void StartAutoTune(float targetTemperature, bool engagePIDController = false);
+	void StartAutoTuneWithPIDsOn(float targetTemperature);
 	void SendStatus();
 };
 

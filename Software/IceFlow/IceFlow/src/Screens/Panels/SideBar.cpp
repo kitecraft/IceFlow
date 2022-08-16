@@ -68,6 +68,9 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 			Serial.print("Option touched: ");
 			Serial.println(option);
 			_popUpMenu.Close();
+			if (option == "AutoTune") {
+				Serial.println("Start the autotune process here");
+			}
 			return SB_MENU_CLOSED;
 		}
 
@@ -85,7 +88,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 
 	if (_settingsIcon->Touched(x, y)) {
-		String options[3] = { "Settings", "Calibrate", "Info" };		
+		String options[3] = { "Settings", "AutoTune", "Info" };		
 		_popUpMenu.Open(
 			PopUpMenuDto(
 				DMCoordinates(_settingsIcon->GetPX() - 3, _settingsIcon->GetPY(), 0, 0),

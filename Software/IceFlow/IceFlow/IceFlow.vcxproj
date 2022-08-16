@@ -132,6 +132,7 @@
     <ClInclude Include="src\Network\IceNetwork.h" />
     <ClInclude Include="src\Network\IceOTAManager.h" />
     <ClInclude Include="src\Network\IceWebServer.h" />
+    <ClInclude Include="src\OvenController\AutoTune.h" />
     <ClInclude Include="src\OvenController\OvenController.h" />
     <ClInclude Include="src\OvenController\OvenEnums.h" />
     <ClInclude Include="src\ProfileManager\Profile.h" />

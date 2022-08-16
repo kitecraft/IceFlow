@@ -106,9 +106,9 @@ void OvenController::DisableOvenHeaters()
 
 void OvenController::StopOven()
 {
-    Serial.println("\n-----\nEMERGENCY STOP\n-----\n");
     _ovenStatus = OS_IDLE;
     _reflowPhase = RP_NOT_ACTIVE;
+
     DisableOvenHeaters();
     DisableConvectionFan();
     SetTargetTemperature(0);
@@ -195,6 +195,18 @@ void OvenController::FetchTemperatures()
 
 }
 
+void OvenController::HandleOvenHeatersWithPID()
+{
+    const double output = _pidController->Run(_temperaturePrimary);
+    if (output == 0 && _heatersOn)
+    {
+        DisableOvenHeaters();
+    }
+    else if (output > 0 && !_heatersOn) {
+        EnableOvenHeaters();
+    }
+}
+
 void OvenController::SetTargetTemperature(float target)
 {
     _targetTemperature = target;
@@ -226,20 +238,168 @@ void OvenController::StartReflowSession(String profileFileName)
     DisplayQueue.QueueKey(suk_Oven_Reflow_On);
 }
 
-void OvenController::HandleOvenHeatersWithPID()
+void OvenController::HandleReflowSession()
 {
-    const double output = _pidController->Run(_temperaturePrimary);
-    if (output == 0 && _heatersOn)
-    {
-        DisableOvenHeaters();
-    }
-    else if (output > 0 && !_heatersOn) {
-        EnableOvenHeaters();
+    if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+        Serial.print("Oven must be below: ");
+        Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN);
+        Serial.println(" degrees Celcius before Reflow can begin");
     }
 }
 
-void OvenController::HandleReflowSession()
+void OvenController::StartAutoTune(float targetTemperature, bool engagePIDController)
 {
+    Serial.println("Starting PID Auto Tune!");
+    if (_ovenStatus != OS_IDLE || _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
+        Serial.println("Oven must be idle or in mnaul mode to start Auto Tune.");
+        return;
+    }
+
+    StopOven();
+    _ovenStatus = OS_AUTOTUNE_ACTIVE;
+    _autoTune = new AutoTune(targetTemperature);
+    if (!engagePIDController) {
+        EnableOvenHeaters();
+    }
+    
+}
+
+void OvenController::StartAutoTuneWithPIDsOn(float targetTemperature)
+{
+    StartAutoTune(targetTemperature, true);
+}
+
+void OvenController::HandleAutoTune()
+{
+    if (_autoTune->engageCurrentPIDController) {
+        HandleOvenHeatersWithPID();
+    }
+
+    _autoTune->currentTemp = _temperaturePrimary;
+    unsigned long time = millis();
+    _autoTune->maxTemp = max(_autoTune->maxTemp, _autoTune->currentTemp);
+    _autoTune->minTemp = min(_autoTune->minTemp, _autoTune->currentTemp);
+    if (_autoTune->heating == true && _autoTune->currentTemp > _autoTune->targetTemperature)   // switch heating -> off
+    {
+        if (time - _autoTune->t2 > 2500)
+        {
+            _autoTune->heating = false;
+            if (!_autoTune->engageCurrentPIDController) {
+                DisableOvenHeaters();
+            }
+            _autoTune->t1 = time;
+            _autoTune->t_high = _autoTune->t1 - _autoTune->t2;
+            _autoTune->maxTemp = _temperaturePrimary;
+        }
+    }
+    if (_autoTune->heating == false && _autoTune->currentTemp < _autoTune->targetTemperature)
+    {
+        if (time - _autoTune->t1 > 5000)
+        {
+            _autoTune->heating = true;
+            _autoTune->t2 = time;
+            _autoTune->t_low = _autoTune->t2 - _autoTune->t1; // half wave length
+            if (_autoTune->cycles > 0)
+            {
+
+                Serial.printf("maxTemp: %i  minTemp: %i\n", _autoTune->maxTemp, _autoTune->minTemp);
+                if (_autoTune->cycles > 2)
+                {
+                    // Parameter according Ziegler¡§CNichols method: http://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
+                    _autoTune->Ku = (4.0 * _autoTune->d) / (3.14159 * (_autoTune->maxTemp - _autoTune->minTemp));
+                    _autoTune->Tu = ((float)(_autoTune->t_low + _autoTune->t_high) / 1000.0);
+                    Serial.printf("Ku: %i  Tu: %i\n", _autoTune->Ku, _autoTune->Tu);
+                    _autoTune->Kp = 0.6 * _autoTune->Ku;
+                    _autoTune->Ki = 2 * _autoTune->Kp / _autoTune->Tu;
+                    _autoTune->Kd = _autoTune->Kp * _autoTune->Tu * 0.125;
+                    Serial.printf("Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+                }
+            }
+
+            if (!_autoTune->engageCurrentPIDController) {
+                DisableOvenHeaters();
+            }
+            _autoTune->cycles++;
+            _autoTune->minTemp = _temperaturePrimary;
+        }
+    }
+    if (_autoTune->currentTemp > (_temperaturePrimary + 20))
+    {
+        StopOven();
+        delete _autoTune;
+        Serial.println("AutoTune: Excceded Max Temperature!!  Bailing out");
+        return;
+    }
+    if (time - _autoTune->temp_millis > 1000)
+    {
+        _autoTune->temp_millis = time;
+        // Print temperatures here because all is well
+    }
+    if (((time - _autoTune->t1) + (time - _autoTune->t2)) > (10L * 60L * 1000L * 2L))   // 20 Minutes
+    {
+        StopOven();
+        delete _autoTune;
+        Serial.println("AutoTune: Exceeded run time limit!!  Bailing out");
+        return;
+    }
+    if (_autoTune->cycles > 5)
+    {
+        StopOven();
+        Serial.println("AutoTune: FINSIHED!");
+        Serial.printf("Results are:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+
+        _autoTune->Kp = 0.33* _autoTune->Ku;
+        _autoTune->Ki = _autoTune->Kp/ _autoTune->Tu;
+        _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
+        Serial.printf("Some overshoot:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+
+
+        _autoTune->Kp = 0.2* _autoTune->Ku;
+        _autoTune->Ki = 2* _autoTune->Kp/ _autoTune->Tu;
+        _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
+        Serial.printf("No overshoot:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+
+        Serial.println("ALL VALUES ARE EXPERIMENTAL.\nNO WARRANTIES OR GUARANTEES ARE MADE AT ALL.\n\n****DO YOU HAVE A FIRE EXTINGUISHER HANDY?****\n\n");
+        delete _autoTune;
+        return;
+    }
+}
+
+void OvenController::Run()
+{
+    while (true) {
+
+        if (digitalRead(STOP_BUTTON) == LOW) {
+            if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
+                StopOven();
+                _lastButtonPress = millis();
+            }
+        }
+
+        FetchTemperatures();
+
+        switch (_ovenStatus) {
+        case OS_IDLE:
+            break;
+        case OS_MANUAL_HEAT_ACTIVE:
+            HandleOvenHeatersWithPID();
+            break;
+        case OS_REFLOW_ACTIVE:
+            HandleReflowSession();
+            break;
+        case OS_AUTOTUNE_ACTIVE:
+            HandleAutoTune();
+            break;
+        default:
+            StopOven();
+            Serial.println("\n***\nSomething has gone horribly wrong.\nPlease unplug the oven.\nThe warranty is void\n***\n");
+            break;
+        }
+
+        CheckConvectionFanStatus();
+        
+        vTaskDelay(1);
+    }
 }
 
 void OvenController::SendStatus()
@@ -269,51 +429,6 @@ void OvenController::SendStatus()
     }
     else {
         DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
-    }
-}
-
-void OvenController::StartAutoTune()
-{
-}
-
-
-void OvenController::HandleAutoTune()
-{
-}
-
-void OvenController::Run()
-{
-    while (true) {
-
-        if (digitalRead(STOP_BUTTON) == LOW) {
-            if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
-                StopOven();
-                _lastButtonPress = millis();
-            }
-        }
-
-        FetchTemperatures();
-
-        switch (_ovenStatus) {
-        case OS_IDLE:
-            break;
-        case OS_MANUAL_HEAT_ACTIVE:
-            HandleOvenHeatersWithPID();
-            break;
-        case OS_REFLOW_ACTIVE:
-            HandleReflowSession();
-            break;
-        case OS_AUTOTUNE_ACTIVE:
-            break;
-        default:
-            StopOven();
-            Serial.println("\n***\nSomething has gone horribly wrong.\nPlease unplug the oven.\nThe warranty is void\n***\n");
-            break;
-        }
-
-        CheckConvectionFanStatus();
-        
-        vTaskDelay(1);
     }
 }
 
