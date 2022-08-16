@@ -15,8 +15,8 @@ bool OvenController::Init()
     pinMode(STOP_BUTTON, INPUT_PULLUP);
 
     Serial.println("Initializing sensor A...");
-    _primaryTemperatureSensor.begin(THERMOCOUPLER_CLK, THERMOCOUPLER_PRIMARY_CS, THERMOCOUPLER_DO);
-    _primaryTemperatureSensor.setSWSPIdelay(4);
+    _primaryTemperatureSensor.selectHSPI();
+    _primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
     Serial.print("Status: ");
     Serial.println(_primaryTemperatureSensor.getStatus());
 
@@ -127,7 +127,7 @@ void OvenController::FetchPrimaryTemperature()
         else {
             _temperaturePrimary = (double)_primaryTemperatureSensor.getTemperature();
             if (_temperaturePrimary == 0 || isnan(_temperaturePrimary)) {
-                //Serial.println("ISNAN error!");
+                Serial.println("ISNAN error!");
                 _temperaturePrimary = prevTemp;
             }
         }
