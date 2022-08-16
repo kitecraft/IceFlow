@@ -111,6 +111,7 @@ void OvenController::StopOven()
     _reflowPhase = RP_NOT_ACTIVE;
     DisableOvenHeaters();
     DisableConvectionFan();
+    SetTargetTemperature(0);
     DisplayQueue.QueueKey(suk_Oven_Stopped);
     
 }
@@ -144,6 +145,17 @@ void OvenController::FetchTemperatures()
 {
     FetchPrimaryTemperature();
     FetchSecondaryTemperature();
+
+    if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
+        char val[7];
+        snprintf(val, 7, "%.2f", _temperaturePrimary);
+        DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
+
+        //snprintf(val, 7, "%.2f", _temperatureSecondary);
+        snprintf(val, 7, "%.2f", _temperaturePrimary - 5);
+        DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
+        _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
+    }
 
     /*
     if (_temperaturePrimary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
@@ -183,18 +195,23 @@ void OvenController::FetchTemperatures()
 
 }
 
+void OvenController::SetTargetTemperature(float target)
+{
+    _targetTemperature = target;
+    _pidController->Setpoint(_targetTemperature);
+
+}
+
 void OvenController::StartManualHeat(int targetTemperature)
 {
     if (_ovenStatus == OS_REFLOW_ACTIVE) {
         return;
     }
-    _manualTargetTemperature = targetTemperature;
-
-    _pidController->Setpoint(_manualTargetTemperature);
     _ovenStatus = OS_MANUAL_HEAT_ACTIVE;
+    SetTargetTemperature(targetTemperature);
 
     char val[4];
-    snprintf(val, 4, "%i", _manualTargetTemperature);
+    snprintf(val, 4, "%i", _targetTemperature);
     DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
 }
 
@@ -223,8 +240,45 @@ void OvenController::HandleOvenHeatersWithPID()
 
 void OvenController::HandleReflowSession()
 {
-    HandleOvenHeatersWithPID();
+}
 
+void OvenController::SendStatus()
+{
+    switch (_ovenStatus) {
+    case OS_IDLE:
+        DisplayQueue.QueueKey(suk_Oven_Stopped);
+        break;
+    case OS_MANUAL_HEAT_ACTIVE:
+        char val[4];
+        snprintf(val, 4, "%i", _targetTemperature);
+        DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
+        break;
+    case OS_REFLOW_ACTIVE:
+        DisplayQueue.QueueKey(suk_Oven_Reflow_On);
+        break;
+    case OS_AUTOTUNE_ACTIVE:
+        DisplayQueue.QueueKey(suk_Oven_AutoTune_On);
+        break;
+    default:
+        DisplayQueue.QueueKey(suk_Oven_Stopped);
+        break;
+    }
+
+    if (_heatersOn) {
+        DisplayQueue.QueueKey(suk_Oven_Heaters_On);
+    }
+    else {
+        DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
+    }
+}
+
+void OvenController::StartAutoTune()
+{
+}
+
+
+void OvenController::HandleAutoTune()
+{
 }
 
 void OvenController::Run()
@@ -249,7 +303,7 @@ void OvenController::Run()
         case OS_REFLOW_ACTIVE:
             HandleReflowSession();
             break;
-        case OS_CALIBRATION_ACTIVE:
+        case OS_AUTOTUNE_ACTIVE:
             break;
         default:
             StopOven();
@@ -258,49 +312,8 @@ void OvenController::Run()
         }
 
         CheckConvectionFanStatus();
-
-        if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
-            char val[7];
-            snprintf(val, 7, "%.2f", _temperaturePrimary);
-            DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
-
-            //snprintf(val, 7, "%.2f", _temperatureSecondary);
-            snprintf(val, 7, "%.2f", _temperaturePrimary - 5);
-            DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
-            _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
-        }
         
         vTaskDelay(1);
-    }
-}
-
-void OvenController::SendStatus()
-{
-    switch (_ovenStatus) {
-    case OS_IDLE:
-        DisplayQueue.QueueKey(suk_Oven_Stopped);
-        break;
-    case OS_MANUAL_HEAT_ACTIVE:
-        char val[4];
-        snprintf(val, 4, "%i", _manualTargetTemperature);
-        DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
-        break;
-    case OS_REFLOW_ACTIVE:
-        DisplayQueue.QueueKey(suk_Oven_Reflow_On);
-        break;
-    case OS_CALIBRATION_ACTIVE:
-        DisplayQueue.QueueKey(suk_Oven_Calibration_On);
-        break;
-    default:
-        DisplayQueue.QueueKey(suk_Oven_Stopped);
-        break;
-    }
-
-    if (_heatersOn) {
-        DisplayQueue.QueueKey(suk_Oven_Heaters_On);
-    }
-    else {
-        DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
     }
 }
 

@@ -20,7 +20,7 @@ private:
 
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
-	int _manualTargetTemperature = 0;
+	int _targetTemperature = 0;
 
 	MAX31855 _primaryTemperatureSensor;
 	unsigned long _nextTemperatureUpdate = 0;
@@ -28,7 +28,6 @@ private:
 	double _temperaturePrimary = 15;
 	double _temperatureSecondary = 5;
 	bool _streamTemperatures = false;
-
 	bool _testDirection = true;
 
 	//PID
@@ -50,9 +49,10 @@ private:
 	void FetchTemperatures();
 	unsigned long _nextTemperatureDisplayUpdate = 0;
 
-
+	void SetTargetTemperature(float target);
 	void HandleOvenHeatersWithPID();
 	void HandleReflowSession();
+	void HandleAutoTune();
 public:
 	bool Init();
 	void Run();
@@ -64,6 +64,7 @@ public:
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
 
+	void StartAutoTune();
 	void SendStatus();
 };
 

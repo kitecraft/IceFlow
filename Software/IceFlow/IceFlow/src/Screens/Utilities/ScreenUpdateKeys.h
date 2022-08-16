@@ -16,7 +16,7 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Oven_Stopped,
 	suk_Oven_Manual_On,
 	suk_Oven_Reflow_On,
-	suk_Oven_Calibration_On,
+	suk_Oven_AutoTune_On,
 	suk_Oven_Heaters_On,
 	suk_Oven_Heaters_Off,
 };
