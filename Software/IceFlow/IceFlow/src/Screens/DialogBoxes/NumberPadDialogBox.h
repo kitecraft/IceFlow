@@ -20,7 +20,7 @@
 
 #define NP_NUMBER_OF_BUTTONS 12
 
-#define MANAUAL_HEAT_DIALOG_TITLE "Manual Heat"
+#define MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE "Manual Heat"
 
 class NumberPadDialogBox :
     public DialogBase

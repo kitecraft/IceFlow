@@ -3,6 +3,13 @@
 
 PopUpMenu::PopUpMenu()
 {
+	_tft = nullptr;
+	_sprite = nullptr;
+	_screenReadBuffer = nullptr;
+	_menuOptions = nullptr;
+	_numOptions = 0;
+	_lengthOfLongestOptionText = 0;
+	_open = false;
 }
 
 PopUpMenu::~PopUpMenu()

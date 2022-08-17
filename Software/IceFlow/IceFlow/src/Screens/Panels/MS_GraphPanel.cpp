@@ -10,6 +10,9 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool igno
 	_coordinates = coordinates;
 	_ignoreSecondary = ignoreSecondary;
 	_ignoreTertiary = ignoreTertiary;
+	_primaryTemperatureAutoScaler = nullptr;
+	_secondaryTemperatureAutoScaler = nullptr;
+	_tertiaryTemperatureAutoScaler = nullptr;
 
 	_temperatureLegendHeight = _coordinates.h;
 	_timeLegend_W = _coordinates.w - (TEMPERATURE_LEGEND_WIDTH * 2);
@@ -70,23 +73,19 @@ MS_GraphPanel::~MS_GraphPanel()
 		delete _tertiaryTemperatureAutoScaler;
 	}
 
-	if (_bgSprite[TOP_SIDE] != nullptr) {
-		_bgSprite[TOP_SIDE]->deleteSprite();
-		delete _bgSprite[TOP_SIDE];
-	}
-	if (_bgSprite[BOTTOM_SIDE] != nullptr) {
-		_bgSprite[BOTTOM_SIDE]->deleteSprite();
-		delete _bgSprite[BOTTOM_SIDE];
-	}
+	_bgSprite[TOP_SIDE]->deleteSprite();
+	delete _bgSprite[TOP_SIDE];
 
-	if (_temperatureSprite[TOP_SIDE] != nullptr) {
-		_temperatureSprite[TOP_SIDE]->deleteSprite();
-		delete _temperatureSprite[TOP_SIDE];
-	}
-	if (_temperatureSprite[BOTTOM_SIDE] != nullptr) {
-		_temperatureSprite[TOP_SIDE]->deleteSprite();
-		delete _temperatureSprite[BOTTOM_SIDE];
-	}
+	
+	_bgSprite[BOTTOM_SIDE]->deleteSprite();
+	delete _bgSprite[BOTTOM_SIDE];
+
+	_temperatureSprite[TOP_SIDE]->deleteSprite();
+	delete _temperatureSprite[TOP_SIDE];
+
+	
+	_temperatureSprite[TOP_SIDE]->deleteSprite();
+	delete _temperatureSprite[BOTTOM_SIDE];
 }
 
 void MS_GraphPanel::IgnoreSecondary(bool ignore)

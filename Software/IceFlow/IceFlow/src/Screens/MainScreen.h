@@ -7,7 +7,7 @@
 #include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "Panels/MS_GraphPanel.h"
-#include "DialogBoxes/ManualHeatDlg.h"
+#include "DialogBoxes/TargetTemperatureDlg.h"
 #include "DialogBoxes/MessageBox.h"
 
 #define WIFI_X (320 - 4)
@@ -59,6 +59,16 @@
 #define MS_HEATER_ICON_W 15
 #define MS_HEATER_ICON_H 24
 
+#define MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE "Manual Heat"
+#define AUTOTUNE_TARGET_TEMPERATURE_DIALOG_TITLE "Auto Tune"
+
+enum MS_MESSAGE_BOX_TYPE {
+	MS_NO_MB, 
+	MS_OK_MB,
+	MS_OVER_MAX_TEMP,
+	MS_AUTOTUNE_MB
+};
+
 class MainScreen
 {
 private:
@@ -77,8 +87,9 @@ private:
 	TextBox* _primaryTemperatureTB = nullptr;
 	TextBox* _secondaryTemperatureTB = nullptr;
 
-	ManualHeatDlg* _manualHeatDlg = nullptr;
+	TargetTemperatureDlg* _targetTemperatureDlg = nullptr;
 	MessageBox* _messageBox = nullptr;
+	MS_MESSAGE_BOX_TYPE _activeMessageBox = MS_NO_MB;
 
 	unsigned long _nextGraphUpdate = 0;
 
@@ -96,6 +107,9 @@ private:
 	void DrawHeatersIcon(bool status);
 
 	void ProcessTouch(int x, int y);
+	void HandleMessageBoxTouch(int x, int y);
+	void EndMessageBox();
+	bool HandleOKMessageBox(DialogButtonType buttonPressed);
 
 public:
 	MainScreen(TFT_eSPI* tft);

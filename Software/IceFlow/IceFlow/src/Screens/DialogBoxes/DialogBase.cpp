@@ -7,6 +7,7 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 	_tft = tft;
 	_coordinates = coordinates;
 	_theme = theme;
+	_screenReadBuffer = nullptr;
 
 	_sprite = new TFT_eSprite(_tft);
 	_sprPtr = (uint16_t*)_sprite->createSprite(_coordinates.w, _coordinates.h);
@@ -28,11 +29,8 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 
 DialogBase::~DialogBase()
 {
-	if (_sprite != nullptr) {
-		_sprite->deleteSprite();
-		delete _sprite;
-		_sprite = nullptr;
-	}
+	_sprite->deleteSprite();
+	delete _sprite;
 	
 	ClearBuffer();
 }

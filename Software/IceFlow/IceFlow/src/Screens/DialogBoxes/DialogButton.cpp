@@ -41,9 +41,7 @@ DialogButton::DialogButton(DialogButtonDto config, TFT_eSPI* tft)
 
 DialogButton::~DialogButton()
 {
-	if (_button != nullptr) {
-		delete _button;
-	}
+	delete _button;
 }
 
 void DialogButton::Draw(TFT_eSprite *sprite)

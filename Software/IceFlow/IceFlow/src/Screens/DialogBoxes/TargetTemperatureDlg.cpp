@@ -1,14 +1,16 @@
-#include "ManualHeatDlg.h"
+#include "TargetTemperatureDlg.h"
 
 
-ManualHeatDlg::ManualHeatDlg() : DialogBase()
+TargetTemperatureDlg::TargetTemperatureDlg() : DialogBase()
 {
 
 }
 
-ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft) 
-	:DialogBase(tft, DMCoordinates(0, 0, MANUAL_HEAT_DLG_W, MANUAL_HEAT_DLG_H, MANUAL_HEAT_DLG_X, MANUAL_HEAT_DLG_Y), GlobalTheme, MANAUAL_HEAT_DIALOG_TITLE)
+TargetTemperatureDlg::TargetTemperatureDlg(TFT_eSPI* tft, String title)
+	:DialogBase(tft, DMCoordinates(0, 0, MANUAL_HEAT_DLG_W, MANUAL_HEAT_DLG_H, MANUAL_HEAT_DLG_X, MANUAL_HEAT_DLG_Y), GlobalTheme, title)
 {
+	_numberPadDlg = nullptr;
+
 	_continueButton = new DialogButton(
 		DialogButtonDto(
 			DMCoordinates(MANAUAL_HEAT_CONTINUE_BTN_X, MANAUAL_HEAT_BTN_Y, 0, 0, _coordinates.p_x + MANAUAL_HEAT_CONTINUE_BTN_X, _coordinates.p_y + MANAUAL_HEAT_BTN_Y),
@@ -42,16 +44,7 @@ ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft)
 		MR_DATUM),
 		_tft);
 		
-	/*
-	TextBox::DrawTextBox(_sprite, 
-		TextBoxDto(
-			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H,0,0),
-		GlobalTheme,
-		LARGE_FONT,
-		MC_DATUM,
-		true), 
-		"Manual Heat");
-		*/
+
 	_textBox->Draw(_sprite, _targetTemperature);
 
 	_sprite->setTextColor(_theme.textColor);
@@ -63,23 +56,18 @@ ManualHeatDlg::ManualHeatDlg(TFT_eSPI* tft)
 	_cancelButton->Draw(_sprite);
 }
 
-ManualHeatDlg::~ManualHeatDlg()
+TargetTemperatureDlg::~TargetTemperatureDlg()
 {
-	if (_textBox != nullptr) {
-		delete _textBox;
-	}
-	if (_continueButton != nullptr) {
-		delete _continueButton;
-	}
-	if (_cancelButton != nullptr) {
-		delete _cancelButton;
-	}
+	delete _textBox;
+	delete _continueButton;
+	delete _cancelButton;
+
 	if (_numberPadDlg != nullptr) {
 		delete _numberPadDlg;
 	}
 }
 
-DialogButtonType ManualHeatDlg::Touched(int x, int y)
+DialogButtonType TargetTemperatureDlg::Touched(int x, int y)
 {
 	if (_numberPadDlg != nullptr && _numberPadDlg->Visible()) {
 		if (_numberPadDlg->Touched(x, y))
@@ -99,7 +87,7 @@ DialogButtonType ManualHeatDlg::Touched(int x, int y)
 	return DB_NONE;
 }
 
-void ManualHeatDlg::UpdateValue(int newTemperature)
+void TargetTemperatureDlg::UpdateValue(int newTemperature)
 {
 	if (newTemperature == 0) {
 		return;
@@ -114,7 +102,7 @@ void ManualHeatDlg::UpdateValue(int newTemperature)
 	}
 }
 
-void ManualHeatDlg::OpenNumberPad()
+void TargetTemperatureDlg::OpenNumberPad()
 {
 	if (_numberPadDlg == nullptr) {
 
@@ -126,7 +114,7 @@ void ManualHeatDlg::OpenNumberPad()
 	}
 }
 
-void ManualHeatDlg::CloseNumberPad()
+void TargetTemperatureDlg::CloseNumberPad()
 {
 	_numberPadDlg->Hide();
 	UpdateValue(_numberPadDlg->GetNumber());

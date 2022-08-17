@@ -16,9 +16,7 @@ KeyboardButton::KeyboardButton(TFT_eSPI* tft, DMCoordinates coordinates, Keyboar
 
 KeyboardButton::~KeyboardButton()
 {
-	if (_button == nullptr) {
-		delete _button;
-	}
+	delete _button;
 }
 
 KeyboardButtonType KeyboardButton::Touched(int x, int y)

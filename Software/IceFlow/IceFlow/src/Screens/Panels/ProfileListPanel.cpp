@@ -9,6 +9,9 @@ ProfileListPanel::ProfileListPanel()
 ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 {
 	_tft = tft;
+	_profileList = nullptr;
+	_itemList = nullptr;
+	_scrollButtons = nullptr;
 	_sprite = new TFT_eSprite(tft);
 	_sprPtr = (uint16_t*)_sprite->createSprite(PROFILE_FILE_LISTBOX_W, PROFILE_FILE_LISTBOX_H);
 
@@ -16,25 +19,13 @@ ProfileListPanel::ProfileListPanel(TFT_eSPI* tft)
 	if (_numberProfiles <= 0) {
 		return;
 	}
-	/*
-	Serial.print("\nNumber of profiles: ");
-	Serial.println(_numberProfiles);
-	Serial.print("Item 1: '");
-	Serial.print(_profileList[0]);
-	Serial.println("'");
-	*/
+
 	_itemList = new ProfileListItem[_numberProfiles];
 
 	int slotOnPage = 0;
 	_numPages = 1;
 	for (int i = 0; i < _numberProfiles; i++) {
 		String name = ProfileManager.GetNameOfProfileByFileName(_profileList[i]);
-		/*
-		Serial.print("Name: ");
-		Serial.println(name);
-		Serial.print("Filename: ");
-		Serial.println(_profileList[i]);
-		*/
 		_itemList[i] = ProfileListItem(
 			ProfileListItemDto(
 				DMCoordinates(
@@ -90,10 +81,9 @@ ProfileListPanel::~ProfileListPanel()
 	if (_scrollButtons != nullptr) {
 		delete _scrollButtons;
 	}
-	if (_sprite != nullptr) {
-		_sprite->deleteSprite();
-		delete _sprite;
-	}
+
+	_sprite->deleteSprite();
+	delete _sprite;
 }
 
 void ProfileListPanel::Draw(String selectedProfileFileName)

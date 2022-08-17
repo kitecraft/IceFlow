@@ -19,6 +19,7 @@ Button::Button(ButtonDto config, String label, TFT_eSPI* tft, bool useSprite)
 	_buttonColor = _config.buttonColor;
 	_label = label;
 	_tft = tft;
+	_sprite = nullptr;
 
 	if (useSprite) {
 		_sprite = new TFT_eSprite(_tft);

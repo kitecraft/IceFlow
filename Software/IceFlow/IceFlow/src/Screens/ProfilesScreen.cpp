@@ -6,9 +6,9 @@
 
 ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 {
-	//Serial.println("");
-	//Serial.println("ProfilesScreen: Constuctor start: ");
-	//PrintMemUseage();
+	Serial.println("");
+	Serial.println("ProfilesScreen: Constructor start: ");
+	PrintMemUseage();
 
 	_tft = tft;
 
@@ -77,35 +77,30 @@ ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 
 	_tft->fillScreen(TFT_BLACK);
 	Draw();
-	
+
+	//Serial.println("");
+	//Serial.println("ProfilesScreen: Constructor end: ");
+	//PrintMemUseage();
 }
 
 ProfilesScreen::~ProfilesScreen()
 {
-	if (_exitButton != nullptr) {
-		delete(_exitButton);
-	}
-	if (_editButton != nullptr) {
-		delete(_editButton);
-	}
-	if (_setButton != nullptr) {
-		delete(_setButton);
-	}
-	if (_cancelButton != nullptr) {
-		delete(_cancelButton);
-	}
-	if (_showGridButton != nullptr) {
-		delete(_showGridButton);
-	}
-	if (_profileListPanel != nullptr) {
-		delete(_profileListPanel);
-	}
-	if (_graphPanel != nullptr) {
-		delete(_graphPanel);
-	}
 	//Serial.println("");
-	//Serial.println("ProfilesScreen: Destuctor end: ");
+	//Serial.println("ProfilesScreen: Destructor start: ");
 	//PrintMemUseage();
+
+	delete(_exitButton);
+	delete(_editButton);
+	delete(_setButton);
+	delete(_cancelButton);
+	delete(_showGridButton);
+
+	delete(_profileListPanel);
+	delete(_graphPanel);
+
+	Serial.println("");
+	Serial.println("ProfilesScreen: Destructor end: ");
+	PrintMemUseage();
 }
 
 

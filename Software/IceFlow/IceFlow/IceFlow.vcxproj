@@ -143,7 +143,7 @@
     <ClInclude Include="src\Screens\DialogBoxes\KeyboardButton.h" />
     <ClInclude Include="src\Screens\DialogBoxes\KeyboardButtonType.h" />
     <ClInclude Include="src\Screens\DialogBoxes\KeyboardDialog.h" />
-    <ClInclude Include="src\Screens\DialogBoxes\ManualHeatDlg.h" />
+    <ClInclude Include="src\Screens\DialogBoxes\TargetTemperatureDlg.h" />
     <ClInclude Include="src\Screens\DialogBoxes\MessageBox.h" />
     <ClInclude Include="src\Screens\DialogBoxes\NumberPadDialogBox.h" />
     <ClInclude Include="src\Screens\DialogBoxes\NumPadButton.h" />
@@ -202,7 +202,7 @@
     <ClCompile Include="src\Screens\DialogBoxes\DialogButton.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\KeyboardButton.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\KeyboardDialog.cpp" />
-    <ClCompile Include="src\Screens\DialogBoxes\ManualHeatDlg.cpp" />
+    <ClCompile Include="src\Screens\DialogBoxes\TargetTemperatureDlg.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\MessageBox.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\NumberPadDialogBox.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\NumPadButton.cpp" />
@@ -235,7 +235,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="COM13" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
+      <UserProperties arduino.upload.port="192.168.50.30" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

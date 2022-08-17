@@ -38,9 +38,7 @@ NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
 
 NumberPadDialogBox::~NumberPadDialogBox()
 {
-	if (_textBox != nullptr) {
-		delete _textBox;
-	}
+	delete _textBox;
 
 	for (int i = 0; i < NP_NUMBER_OF_BUTTONS; i++) {
 		delete _buttons[i];

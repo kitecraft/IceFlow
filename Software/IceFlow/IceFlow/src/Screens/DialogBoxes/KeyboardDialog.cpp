@@ -28,9 +28,7 @@ KeyboardDialog::~KeyboardDialog()
 {
 
 	for (int i = 0; i < NUMBER_OF_KEYBOARD_BUTTONS; i++) {
-		if (_kbButtons[i] != nullptr) {
-			delete _kbButtons[i];
-		}
+		delete _kbButtons[i];
 	}
 
 	if (_valueTB != nullptr) {

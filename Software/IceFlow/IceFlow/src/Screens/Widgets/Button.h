@@ -12,6 +12,7 @@ private:
 	uint16_t* _sprPtr = nullptr;
 	bool _visible = true;
 	uint16_t _buttonColor = TFT_BLACK;
+
 public:
 	Button();
 	~Button();

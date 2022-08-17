@@ -8,6 +8,10 @@ GraphAutoScaler::GraphAutoScaler()
 GraphAutoScaler::GraphAutoScaler(int numberOfValuesToTrack)
 {
 	_numberOfValuesToTrack = numberOfValuesToTrack;
+
+	_itemListRoot = nullptr;
+	_itemListEnd = nullptr;
+	_userAccessPointer = nullptr;
 }
 
 GraphAutoScaler::~GraphAutoScaler()

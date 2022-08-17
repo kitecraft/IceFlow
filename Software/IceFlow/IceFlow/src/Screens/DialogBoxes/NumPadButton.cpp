@@ -18,9 +18,7 @@ NumPadButton::NumPadButton(TFT_eSPI* tft, NUM_PAD_BUTTON type, DMCoordinates coo
 
 NumPadButton::~NumPadButton()
 {
-	if (_button != nullptr) {
-		delete _button;
-	}
+	delete _button;
 }
 
 void NumPadButton::Draw(TFT_eSprite* sprite)

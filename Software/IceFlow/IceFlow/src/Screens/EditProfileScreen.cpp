@@ -8,9 +8,13 @@
 
 EditProfileScreen::EditProfileScreen(TFT_eSPI* tft)
 {
-	//Serial.println("");
-	//Serial.println("EditProfileScreen: Constuctor start: ");
-	//PrintMemUseage();
+	Serial.println("");
+	Serial.println("EditProfileScreen: Constructor start: ");
+	PrintMemUseage();
+
+	_messageBox = nullptr;
+	_numberPadDlg = nullptr;
+	_keyboard = nullptr;
 
 	_tft = tft;
 	if (!ProfileManager.GetSavedProfile(&_profile)) {
@@ -30,25 +34,24 @@ EditProfileScreen::EditProfileScreen(TFT_eSPI* tft)
 	Draw();
 	_tft->dmaWait();
 	_tft->endWrite();
+
+
+	//Serial.println("");
+	//Serial.println("EditProfileScreen: Constructor End: ");
+	//PrintMemUseage();
 }
 
 EditProfileScreen::~EditProfileScreen()
 {
-	if (_saveButton != nullptr) {
-		delete _saveButton;
-	}
-	if (_saveAsButton != nullptr) {
-		delete _saveAsButton;
-	}
-	if (_cancelButton != nullptr) {
-		delete _cancelButton;
-	}
-	if (_exitButton != nullptr) {
-		delete _exitButton;
-	}
-	if (_deleteButton != nullptr) {
-		delete _deleteButton;
-	}
+	//Serial.println("");
+	//Serial.println("EditProfileScreen: Destructor start: ");
+	//PrintMemUseage();
+
+	delete _saveButton;
+	delete _saveAsButton;
+	delete _cancelButton;
+	delete _exitButton;
+	delete _deleteButton;
 
 	if (_messageBox != nullptr) {
 		delete _messageBox;
@@ -61,10 +64,12 @@ EditProfileScreen::~EditProfileScreen()
 	}
 
 	for (int i = 0; i < NUMBER_OF_TEXTBOXES; i++) {
-		if (_textBoxes[i] != nullptr) {
-			delete _textBoxes[i];
-		}
+		delete _textBoxes[i];
 	}
+
+	Serial.println("");
+	Serial.println("EditProfileScreen: Destructor End: ");
+	PrintMemUseage();
 }
 
 void EditProfileScreen::HandleTouch(int x, int y)

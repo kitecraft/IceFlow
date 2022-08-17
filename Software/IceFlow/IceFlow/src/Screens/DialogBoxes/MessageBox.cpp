@@ -19,6 +19,8 @@ MessageBox::~MessageBox()
 MessageBox::MessageBox(TFT_eSPI* tft, String title, String message, MESSAGE_BOX_ICON icon, MESSAGE_BOX_BUTTONS buttons)
 	:DialogBase(tft, DMCoordinates(0, 0, MESSAGE_BOX_WIDTH, 150, 20, 20), GlobalTheme, title)
 {
+	_buttonA = nullptr;
+	_buttonB = nullptr;
 
 	_buttonY = _coordinates.h - LARGE_FONT_TEXT_BOX_H - 6;
 	_singleButtonX = (_coordinates.w / 2) - (DIALOG_BUTTON_WIDTH / 2);

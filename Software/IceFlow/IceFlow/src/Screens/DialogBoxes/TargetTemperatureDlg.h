@@ -22,14 +22,14 @@
 #define MANAUAL_HEAT_CANCEL_BTN_X ((MANUAL_HEAT_DLG_W/2) - (DIALOG_BUTTON_WIDTH + 5))
 #define MANAUAL_HEAT_CONTINUE_BTN_X ((MANUAL_HEAT_DLG_W/2) + 5)
 
-#define MANAUAL_HEAT_DIALOG_TITLE "Manual Heat"
 
-class ManualHeatDlg :
+class TargetTemperatureDlg :
 	public DialogBase
 {
 private:
 	int _targetTemperature = 0;
 	TextBox* _textBox = nullptr;
+	String _title = "";
 
 	DialogButton* _continueButton = nullptr;
 	DialogButton* _cancelButton = nullptr;
@@ -41,9 +41,9 @@ private:
 	void UpdateValue(int newTemperature);
 
 public:
-	ManualHeatDlg();
-	ManualHeatDlg(TFT_eSPI* tft);
-	~ManualHeatDlg();
+	TargetTemperatureDlg();
+	TargetTemperatureDlg(TFT_eSPI* tft, String title);
+	~TargetTemperatureDlg();
 
 	DialogButtonType Touched(int x, int y);
 	int GetTargetTemperature() { return _targetTemperature; }

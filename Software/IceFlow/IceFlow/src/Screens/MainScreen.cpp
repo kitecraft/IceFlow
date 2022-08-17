@@ -15,6 +15,9 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	Serial.println("MainScreen: Constuctor start: ");
 	PrintMemUseage();
 	_tft = tft;
+	_targetTemperatureDlg = nullptr;
+	_messageBox = nullptr;
+
 
 	_graphPanel = new MS_GraphPanel(_tft,
 		DMCoordinates(
@@ -27,8 +30,6 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 		false,
 		true
 	);
-	//_graphPanel->IgnoreSecondary(true);
-	//_graphPanel->IgnoreProfile(true);
 
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(TIME_W, TIME_H);
@@ -44,6 +45,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 
 	DMTheme temperatureTheme = GlobalTheme;
 	temperatureTheme.textColor = PRIMARY_TEMPERATURE_COLOR;
+
 	_primaryTemperatureTB = new TextBox(TextBoxDto(
 		DMCoordinates(
 			MS_PRIMARY_TEMPERATURE_TB_X,
@@ -86,39 +88,31 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
 	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
-	Serial.println("Constuctor end: ");
-	PrintMemUseage();
+	//Serial.println("Constuctor end: ");
+	//PrintMemUseage();
 	Serial.println("");
 }
 
 MainScreen::~MainScreen()
 {
-	Serial.println("");
-	Serial.println("MainScreen: Destuctor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("MainScreen: Destuctor start: ");
+	//PrintMemUseage();
 
 	CommandQueue.QueueCommand(CC_STOP_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
 	
+
+	_timeSprite->deleteSprite();
+	delete(_timeSprite);
 	delete(_sideBar);
+	delete(_graphPanel);
 
-	if (_timeSprite != nullptr) {
-		_timeSprite->deleteSprite();
-		delete(_timeSprite);
-	}
-	if (_graphPanel != nullptr) {
-		delete(_graphPanel);
-	}
+	delete(_primaryTemperatureTB);
+	delete(_secondaryTemperatureTB);
 
-	if (_primaryTemperatureTB != nullptr) {
-		delete(_primaryTemperatureTB);
-	}
-	if (_secondaryTemperatureTB != nullptr) {
-		delete(_secondaryTemperatureTB);
-	}
-
-	if (_manualHeatDlg != nullptr) {
-		delete(_manualHeatDlg);
+	if (_targetTemperatureDlg != nullptr) {
+		delete(_targetTemperatureDlg);
 	}
 
 	if (_messageBox != nullptr) {
@@ -180,7 +174,7 @@ void MainScreen::UpdateScreenOnInterval()
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
-		if (_sideBar->IsPopUpOpen() || _manualHeatDlg != nullptr) {
+		if (_sideBar->IsPopUpOpen() || _targetTemperatureDlg != nullptr) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTermperature);
 		}
 		else {
@@ -204,22 +198,17 @@ void MainScreen::HandleTouch(int x, int y)
 
 void MainScreen::ProcessTouch(int x, int y)
 {
-	if (_messageBox != nullptr) {
-		if (_messageBox->Touched(x, y) != DB_NONE) {
-			_messageBox->Hide();
-			delete _messageBox;
-			_messageBox = nullptr;
-			_manualHeatDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
-		}
+
+	// Handle message box if active
+	if (_activeMessageBox != MS_NO_MB) {
+		HandleMessageBoxTouch(x, y);
 		return;
 	}
 
-	if (_manualHeatDlg != nullptr) {
-		DialogButtonType result = _manualHeatDlg->Touched(x, y);
+	if (_targetTemperatureDlg != nullptr) {
+		DialogButtonType result = _targetTemperatureDlg->Touched(x, y);
 		if (result != DB_NONE) {
-			if (ManualHeatDlgClosed(result)) {
-				//_graphPanel->ReDraw();
-			}
+			ManualHeatDlgClosed(result);
 		}
 		return;
 	}
@@ -233,34 +222,51 @@ void MainScreen::ProcessTouch(int x, int y)
 	case SB_START_MANUAL_HEAT:
 		ManualHeatTouched();
 		return;
+	case SB_START_AUTO_TUNE:
+
 	default:
 		break;
 	}
 }
 
+void MainScreen::HandleMessageBoxTouch(int x, int y)
+{
+	DialogButtonType mbRet = _messageBox->Touched(x, y);
+	if (mbRet == DB_NONE) {
+		return;
+	}
+
+	switch (_activeMessageBox) {
+	case MS_OVER_MAX_TEMP:
+		EndMessageBox();
+		_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
+	default:
+		break;
+	}
+
+}
+
+void MainScreen::EndMessageBox()
+{
+	_messageBox->Hide();
+	delete _messageBox;
+	_messageBox = nullptr;
+	_activeMessageBox = MS_NO_MB;
+}
+
+bool MainScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
+{
+	if (buttonPressed != DB_OK) {
+		return false;
+	}
+
+	EndMessageBox();
+	return true;
+}
+
 void MainScreen::DrawScreen()
 {
 	_tft->fillScreen(TFT_BLACK);
-
-	/*
-	_tft->fillRect(0, 0, 20, 240, TFT_YELLOW);
-	_tft->fillRect(20, 0, 20, 240, TFT_GREEN);
-	_tft->fillRect(40, 0, 20, 240, TFT_WHITE);
-	_tft->fillRect(60, 0, 20, 240, TFT_CYAN);
-	_tft->fillRect(80, 0, 20, 240, 0x5AEB);
-	_tft->fillRect(100, 0, 20, 240, 0x9CD3);
-	_tft->fillRect(120, 0, 20, 240, 0x4208);
-	_tft->fillRect(140, 0, 20, 240, 0xCE59);
-	_tft->fillRect(160, 0, 20, 240, 0x738E);
-	_tft->fillRect(180, 0, 20, 240, TFT_PURPLE);
-	_tft->fillRect(200, 0, 20, 240, TFT_DARKGREY);
-	_tft->fillRect(220, 0, 20, 240, TFT_SKYBLUE);
-	_tft->fillRect(240, 0, 20, 240, TFT_BROWN);
-	_tft->fillRect(260, 0, 20, 240, TFT_CASET);
-	_tft->fillRect(280, 0, 20, 240, TFT_DARKGREEN);
-	_tft->fillRect(300, 0, 20, 240, TFT_GREENYELLOW);
-	*/
-
 	_tft->drawSpot(WIFI_X, WIFI_Y, WIFI_SPOT_R, TFT_WHITE, TFT_TRANSPARENT);
 
 	_tft->startWrite();
@@ -365,18 +371,18 @@ void MainScreen::UpdateSecondaryTemp(char* val)
 
 void MainScreen::ManualHeatTouched()
 {
-	if (_manualHeatDlg != nullptr) {
-		delete(_manualHeatDlg);
+	if (_targetTemperatureDlg != nullptr) {
+		delete(_targetTemperatureDlg);
 	}
 
-	_manualHeatDlg = new ManualHeatDlg(_tft);
-	_manualHeatDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
-	_manualHeatDlg->Show();
+	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE);
+	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
+	_targetTemperatureDlg->Show();
 }
 
 bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 {
-	int targetTemp = _manualHeatDlg->GetTargetTemperature();
+	int targetTemp = _targetTemperatureDlg->GetTargetTemperature();
 
 	if (action == DB_Continue) {
 		int highest = GetOvenDoNotExceedTemperature();
@@ -384,6 +390,7 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 			String message = "OVEN SAFETY LIMIT\nTarget can not be higher than '" + String(highest - 10) + " degrees Celcius'";
 			_messageBox = new MessageBox(_tft, "Over Limit", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
 			_messageBox->Show();
+			_activeMessageBox = MS_OVER_MAX_TEMP;
 			return false;
 		}
 
@@ -393,9 +400,9 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 		SaveMaualHeatTargetTemperature(targetTemp);
 	}
 
-	_manualHeatDlg->Hide();
-	delete _manualHeatDlg;
-	_manualHeatDlg = nullptr;
+	_targetTemperatureDlg->Hide();
+	delete _targetTemperatureDlg;
+	_targetTemperatureDlg = nullptr;
 
 	return true;
 }

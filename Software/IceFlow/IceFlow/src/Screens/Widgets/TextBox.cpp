@@ -5,6 +5,7 @@ TextBox::TextBox(TextBoxDto configDto, TFT_eSPI* tft)
 {
 	_tft = tft;
 	_config = configDto;
+	_sprite = nullptr;
 
 	if (_config.useRounded) {
 		_updateX = _config.coordinates.p_x + _config.coordinates.h / 2;
