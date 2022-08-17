@@ -39,7 +39,7 @@ private:
 	double _kp;
 	double _ki;
 	double _kd;
-
+	void DeleteAutoTune();
 	Profile _profile;
 
 	void CheckConvectionFanStatus();

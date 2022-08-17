@@ -69,7 +69,6 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 			Serial.println(option);
 			_popUpMenu.Close();
 			if (option == "AutoTune") {
-				Serial.println("Start the autotune process here");
 				return SB_START_AUTO_TUNE;
 			}
 			return SB_MENU_CLOSED;

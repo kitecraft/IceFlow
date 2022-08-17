@@ -116,6 +116,9 @@ void HandleCommandQueue()
         case CC_REQUEST_OVEN_STATUS:
             OvenManager.SendStatus();
             break;
+        case CC_START_AUTOTUNE:
+            OvenManager.StartAutoTune(atof(data));
+            break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
             Serial.println(data);

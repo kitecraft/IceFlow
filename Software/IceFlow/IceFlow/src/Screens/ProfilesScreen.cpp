@@ -6,9 +6,9 @@
 
 ProfilesScreen::ProfilesScreen(TFT_eSPI* tft)
 {
-	Serial.println("");
-	Serial.println("ProfilesScreen: Constructor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ProfilesScreen: Constructor start: ");
+	//PrintMemUseage();
 
 	_tft = tft;
 

@@ -82,7 +82,7 @@ private:
 	bool _temperatureStreamStarted = false;
 	float _primaryTemperature = 20;
 	float _secondaryTemperature = 20;
-	float _tertiaryTermperature = 20;
+	float _tertiaryTemperature = 20;
 
 	TextBox* _primaryTemperatureTB = nullptr;
 	TextBox* _secondaryTemperatureTB = nullptr;

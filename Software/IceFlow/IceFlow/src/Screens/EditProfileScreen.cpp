@@ -8,9 +8,9 @@
 
 EditProfileScreen::EditProfileScreen(TFT_eSPI* tft)
 {
-	Serial.println("");
-	Serial.println("EditProfileScreen: Constructor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("EditProfileScreen: Constructor start: ");
+	//PrintMemUseage();
 
 	_messageBox = nullptr;
 	_numberPadDlg = nullptr;

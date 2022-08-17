@@ -14,6 +14,8 @@ bool OvenController::Init()
 
     pinMode(STOP_BUTTON, INPUT_PULLUP);
 
+    _autoTune = nullptr;
+
     Serial.println("Initializing sensor A...");
     _primaryTemperatureSensor.selectHSPI();
     _primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
@@ -112,6 +114,10 @@ void OvenController::StopOven()
     DisableOvenHeaters();
     DisableConvectionFan();
     SetTargetTemperature(0);
+    if (_autoTune != nullptr) {
+        delete _autoTune;
+        _autoTune = nullptr;
+    }
     DisplayQueue.QueueKey(suk_Oven_Stopped);
     
 }
@@ -250,23 +256,37 @@ void OvenController::HandleReflowSession()
 void OvenController::StartAutoTune(float targetTemperature, bool engagePIDController)
 {
     Serial.println("Starting PID Auto Tune!");
-    if (_ovenStatus != OS_IDLE || _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
-        Serial.println("Oven must be idle or in mnaul mode to start Auto Tune.");
+    if (_ovenStatus != OS_IDLE && _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
+        Serial.print("Oven must be idle or in mnaul mode to start Auto Tune.\nCurrent State: ");
+        Serial.println(_ovenStatus);
         return;
     }
 
     StopOven();
+
     _ovenStatus = OS_AUTOTUNE_ACTIVE;
+    DeleteAutoTune();
     _autoTune = new AutoTune(targetTemperature);
     if (!engagePIDController) {
         EnableOvenHeaters();
     }
-    
+
+    char val[4];
+    snprintf(val, 4, "%f", targetTemperature);
+    DisplayQueue.QueueKeyAndValue(suk_Oven_AutoTune_On, val);
 }
 
 void OvenController::StartAutoTuneWithPIDsOn(float targetTemperature)
 {
     StartAutoTune(targetTemperature, true);
+}
+
+void OvenController::DeleteAutoTune()
+{
+    if (_autoTune != nullptr) {
+        delete _autoTune;
+        _autoTune = nullptr;
+    }
 }
 
 void OvenController::HandleAutoTune()
@@ -326,7 +346,7 @@ void OvenController::HandleAutoTune()
     if (_autoTune->currentTemp > (_temperaturePrimary + 20))
     {
         StopOven();
-        delete _autoTune;
+        DeleteAutoTune();
         Serial.println("AutoTune: Excceded Max Temperature!!  Bailing out");
         return;
     }
@@ -338,7 +358,7 @@ void OvenController::HandleAutoTune()
     if (((time - _autoTune->t1) + (time - _autoTune->t2)) > (10L * 60L * 1000L * 2L))   // 20 Minutes
     {
         StopOven();
-        delete _autoTune;
+        DeleteAutoTune();
         Serial.println("AutoTune: Exceeded run time limit!!  Bailing out");
         return;
     }
@@ -360,7 +380,7 @@ void OvenController::HandleAutoTune()
         Serial.printf("No overshoot:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
         Serial.println("ALL VALUES ARE EXPERIMENTAL.\nNO WARRANTIES OR GUARANTEES ARE MADE AT ALL.\n\n****DO YOU HAVE A FIRE EXTINGUISHER HANDY?****\n\n");
-        delete _autoTune;
+        DeleteAutoTune();
         return;
     }
 }

@@ -11,9 +11,9 @@
 
 MainScreen::MainScreen(TFT_eSPI* tft)
 {
-	Serial.println("");
-	Serial.println("MainScreen: Constuctor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("MainScreen: Constuctor start: ");
+	//PrintMemUseage();
 	_tft = tft;
 	_targetTemperatureDlg = nullptr;
 	_messageBox = nullptr;
@@ -150,7 +150,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_temperatureStreamStarted = true;
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 	case suk_Oven_Manual_On:
-		_tertiaryTermperature = atof(value);
+		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
 		break;
 	case suk_Oven_Stopped:
@@ -161,6 +161,14 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		break;
 	case suk_Oven_Heaters_Off:
 		DrawHeatersIcon(false);
+		break;
+	case suk_Oven_AutoTune_On:
+		_tertiaryTemperature = atof(value);
+		_graphPanel->IgnoreTertiary(false);
+		break;
+	case suk_Oven_AutoTune_Off:
+		_graphPanel->IgnoreTertiary(true);
+		//display results here
 		break;
 	default:
 		break;
@@ -175,11 +183,11 @@ void MainScreen::UpdateScreenOnInterval()
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
 		if (_sideBar->IsPopUpOpen() || _targetTemperatureDlg != nullptr) {
-			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTermperature);
+			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 		}
 		else {
 			_tft->startWrite();
-			_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTermperature);
+			_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 
 			_tft->dmaWait();
 			_tft->endWrite();
@@ -223,7 +231,8 @@ void MainScreen::ProcessTouch(int x, int y)
 		ManualHeatTouched();
 		return;
 	case SB_START_AUTO_TUNE:
-
+		CommandQueue.QueueCommandAndValue(CC_START_AUTOTUNE, "150");
+		return;
 	default:
 		break;
 	}
