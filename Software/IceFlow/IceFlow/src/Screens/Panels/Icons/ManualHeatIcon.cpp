@@ -57,4 +57,7 @@ void ManualHeatIcon::Draw(TFT_eSprite* sprite)
 	sprite->drawFastHLine(_config.coordinates.x + 10, _config.coordinates.y + 6, _config.coordinates.w - 20, color);
 	sprite->drawFastHLine(_config.coordinates.x + 10, _config.coordinates.y + 5, _config.coordinates.w - 20, color);
 
+	if (!_enabled) {
+		UpdateAsDisabled(sprite);
+	}
 }

@@ -13,6 +13,10 @@ IconBase::IconBase(IconBaseDto config, TFT_eSPI* tft)
 
 bool IconBase::Touched(int x, int y)
 {
+	if (!_enabled) {
+		return false;
+	}
+
 	if (x >= _config.coordinates.p_x &&
 		x <= _config.coordinates.p_x + _config.coordinates.w &&
 		y >= _config.coordinates.p_y &&
@@ -33,4 +37,17 @@ void IconBase::Draw(TFT_eSprite* sprite)
 		_config.coordinates.h - 4,
 		ICON_BASE_ICON_RADIUS,
 		_config.theme.panelLightColor);
+}
+
+void IconBase::UpdateAsDisabled(TFT_eSprite* sprite)
+{
+	for (int row = 0; row < _config.coordinates.h; row++) {
+		for (int column = 0; column < _config.coordinates.w ; column++) {
+			int x = column + _config.coordinates.x;
+			int y = row + _config.coordinates.y;
+			uint16_t color = sprite->readPixel(x, y);
+			uint16_t newColor = _tft->alphaBlend(DISABLED_BLEND_RATIO, color, DISABLED_BLEND_COLOR);
+			sprite->drawPixel(x, y, newColor);
+		}
+	}
 }

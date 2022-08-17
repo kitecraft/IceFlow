@@ -152,6 +152,8 @@ void OvenController::FetchTemperatures()
     FetchPrimaryTemperature();
     FetchSecondaryTemperature();
 
+    
+
     if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
         char val[7];
         snprintf(val, 7, "%.2f", _temperaturePrimary);

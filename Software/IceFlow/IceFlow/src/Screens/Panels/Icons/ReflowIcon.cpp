@@ -67,4 +67,8 @@ void ReflowIcon::Draw(TFT_eSprite* sprite)
 	sprite->drawFastHLine(x + 2, y + 11, 10, _config.theme.panelLightColor);
 	sprite->drawFastHLine(x + 2, y + 12, 10, _config.theme.panelLightColor);
 	sprite->drawFastHLine(x + 2, y + 13, 10, _config.theme.panelLightColor);
+
+	if (!_enabled) {
+		UpdateAsDisabled(sprite);
+	}
 }

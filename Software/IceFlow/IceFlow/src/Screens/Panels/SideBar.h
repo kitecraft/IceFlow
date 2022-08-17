@@ -72,5 +72,7 @@ public:
 	SB_TOUCHED_RETURN Touched(int x, int y);
 	bool IsPopUpOpen() { return _popUpMenu.isOpen(); }
 	void ReDrawPopUP() { _popUpMenu.Redraw(); }
+	void ManualHeatIconEnabled(bool enabled);
+	void ReflowIconEnabled(bool enabled);
 };
 

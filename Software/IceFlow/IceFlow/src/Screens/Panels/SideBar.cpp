@@ -67,6 +67,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 		if (_popUpMenu.Touched(x, y, option)) {
 			Serial.print("Option touched: ");
 			Serial.println(option);
+
 			_popUpMenu.Close();
 			if (option == "AutoTune") {
 				return SB_START_AUTO_TUNE;
@@ -113,7 +114,15 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 		Serial.println("Reflow Icon Touched");
 	}
 
-	
-
 	return SB_NOT_TOUCHED;
+}
+
+void SideBar::ManualHeatIconEnabled(bool enabled)
+{
+	_manualHeatIcon->SetEnabled(enabled); 
+}
+
+void SideBar::ReflowIconEnabled(bool enabled)
+{
+	_reflowIcon->SetEnabled(enabled);
 }

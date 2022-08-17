@@ -155,6 +155,9 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		break;
 	case suk_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
+		_sideBar->ManualHeatIconEnabled(true);
+		_sideBar->ReflowIconEnabled(true);
+		_sideBar->Draw();
 		break;
 	case suk_Oven_Heaters_On:
 		DrawHeatersIcon(true);
@@ -163,8 +166,13 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		DrawHeatersIcon(false);
 		break;
 	case suk_Oven_AutoTune_On:
+		_sideBar->ManualHeatIconEnabled(false);
+		_sideBar->ReflowIconEnabled(false);
+		_sideBar->Draw();
+
 		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
+		
 		break;
 	case suk_Oven_AutoTune_Off:
 		_graphPanel->IgnoreTertiary(true);
@@ -226,12 +234,13 @@ void MainScreen::ProcessTouch(int x, int y)
 	switch (ret) {
 	case SB_MENU_CLOSED:
 		_graphPanel->ReDraw();
-		break;
+		return;
 	case SB_START_MANUAL_HEAT:
 		ManualHeatTouched();
 		return;
 	case SB_START_AUTO_TUNE:
 		CommandQueue.QueueCommandAndValue(CC_START_AUTOTUNE, "150");
+		_graphPanel->ReDraw();
 		return;
 	default:
 		break;
