@@ -167,6 +167,7 @@
     <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListPanel.h" />
     <ClInclude Include="src\Screens\Panels\PS_ProfileGraphPanel.h" />
+    <ClInclude Include="src\Screens\Panels\RFS_Sidebar.h" />
     <ClInclude Include="src\Screens\Panels\ScrollButtons.h" />
     <ClInclude Include="src\Screens\Panels\SideBar.h" />
     <ClInclude Include="src\Screens\ProfilesScreen.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListPanel.cpp" />
     <ClCompile Include="src\Screens\Panels\PS_ProfileGraphPanel.cpp" />
+    <ClCompile Include="src\Screens\Panels\RFS_Sidebar.cpp" />
     <ClCompile Include="src\Screens\Panels\ScrollButtons.cpp" />
     <ClCompile Include="src\Screens\Panels\SideBar.cpp" />
     <ClCompile Include="src\Screens\ProfilesScreen.cpp" />

@@ -3,6 +3,8 @@
 ReflowScreen::ReflowScreen(TFT_eSPI* tft)
 	: BaseScreen(tft)
 {
+	_sidebar = new RFS_Sidebar(_tft);
+
 	DrawScreen();
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
@@ -12,6 +14,8 @@ ReflowScreen::~ReflowScreen()
 {
 	CommandQueue.QueueCommand(CC_STOP_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
+
+	delete _sidebar;
 }
 
 void ReflowScreen::UpdateScreen(int inKey, char* value)
@@ -67,29 +71,9 @@ void ReflowScreen::DrawScreen()
 	_tft->startWrite();
 	BaseScreen::DrawScreen();
 
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(BASE_SIDEBAR_W, 240);
-	sprite.fillSprite(TFT_BLACK);
-
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextColor(GlobalTheme.textColor, TFT_BLACK);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.drawString("Pre-Heat", BASE_SIDEBAR_W, 2);
-
-	sprite.setTextColor(GlobalTheme.panelBorderColor, TFT_BLACK);
-	sprite.drawString("Soak", BASE_SIDEBAR_W, 42);
-
-	sprite.drawString("Ramp", BASE_SIDEBAR_W, 82);
-
-	sprite.drawString("ReFlow", BASE_SIDEBAR_W, 122);
-
-	sprite.drawString("Cooling", BASE_SIDEBAR_W, 162);
-	_tft->pushImageDMA(BASE_SIDEBAR_X, 0, BASE_SIDEBAR_W, 240, sprPtr);
-
+	_sidebar->Draw();
 
 	_tft->dmaWait();
 	_tft->endWrite();
-
-	sprite.deleteSprite();
-
+	
 }

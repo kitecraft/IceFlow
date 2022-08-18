@@ -1,11 +1,12 @@
 #pragma once
 #include "BaseScreen.h"
-
+#include "Panels/RFS_Sidebar.h"
 
 class ReflowScreen : BaseScreen
 {
 private:
 	void ProcessTouch(int x, int y);
+	RFS_Sidebar* _sidebar = nullptr;
 
 	void DrawScreen();
 public:
