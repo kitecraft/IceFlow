@@ -25,5 +25,18 @@ void TemplateScreen::UpdateScreenOnInterval()
 
 void TemplateScreen::HandleTouch(int x, int y)
 {
+	_tft->startWrite();
+	ProcessTouch(x, y);
+	_tft->dmaWait();
+	_tft->endWrite();
+}
+
+void TemplateScreen::ProcessTouch(int x, int y)
+{
+
+}
+
+void ReflowScreen::DrawScreen()
+{
 
 }

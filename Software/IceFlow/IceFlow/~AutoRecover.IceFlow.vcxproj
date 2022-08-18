@@ -137,6 +137,7 @@
     <ClInclude Include="src\OvenController\OvenEnums.h" />
     <ClInclude Include="src\ProfileManager\Profile.h" />
     <ClInclude Include="src\ProfileManager\ProfileManager.h" />
+    <ClInclude Include="src\Screens\BaseScreen.h" />
     <ClInclude Include="src\Screens\DialogBoxes\DialogBase.h" />
     <ClInclude Include="src\Screens\DialogBoxes\DialogButton.h" />
     <ClInclude Include="src\Screens\DialogBoxes\DialogButtonDto.h" />
@@ -161,7 +162,7 @@
     <ClInclude Include="src\Screens\Panels\Icons\ProfileIcon.h" />
     <ClInclude Include="src\Screens\Panels\Icons\ReflowIcon.h" />
     <ClInclude Include="src\Screens\Panels\Icons\SettingsIcon.h" />
-    <ClInclude Include="src\Screens\Panels\MS_GraphPanel.h" />
+    <ClInclude Include="src\Screens\Panels\GraphPanel.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListItem.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListPanel.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="src\Screens\Panels\ScrollButtons.h" />
     <ClInclude Include="src\Screens\Panels\SideBar.h" />
     <ClInclude Include="src\Screens\ProfilesScreen.h" />
+    <ClInclude Include="src\Screens\ReflowScreen.h" />
     <ClInclude Include="src\Screens\Utilities\DMCoordinates.h" />
     <ClInclude Include="src\Screens\Utilities\DMTheme.h" />
     <ClInclude Include="src\Screens\Utilities\InitializeScreens.h" />
@@ -198,6 +200,7 @@
     <ClCompile Include="src\DisplayManager\src\DisplayQueue\DisplayManagerQueue.cpp" />
     <ClCompile Include="src\OvenController\OvenController.cpp" />
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp" />
+    <ClCompile Include="src\Screens\BaseScreen.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\DialogBase.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\DialogButton.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\KeyboardButton.cpp" />
@@ -215,13 +218,14 @@
     <ClCompile Include="src\Screens\Panels\Icons\ProfileIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\ReflowIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\SettingsIcon.cpp" />
-    <ClCompile Include="src\Screens\Panels\MS_GraphPanel.cpp" />
+    <ClCompile Include="src\Screens\Panels\GraphPanel.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListPanel.cpp" />
     <ClCompile Include="src\Screens\Panels\PS_ProfileGraphPanel.cpp" />
     <ClCompile Include="src\Screens\Panels\ScrollButtons.cpp" />
     <ClCompile Include="src\Screens\Panels\SideBar.cpp" />
     <ClCompile Include="src\Screens\ProfilesScreen.cpp" />
+    <ClCompile Include="src\Screens\ReflowScreen.cpp" />
     <ClCompile Include="src\Screens\Widgets\Button.cpp" />
     <ClCompile Include="src\Screens\Widgets\MenuOption.cpp" />
     <ClCompile Include="src\Screens\Widgets\PopUpMenu.cpp" />

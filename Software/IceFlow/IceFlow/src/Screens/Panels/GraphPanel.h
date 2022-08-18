@@ -22,7 +22,7 @@
 #define TIME_LEGEND_TEXT_COLOR 0x919f
 
 
-class MS_GraphPanel
+class GraphPanel
 {
 private:
 	TFT_eSPI* _tft;
@@ -73,9 +73,9 @@ private:
 	void CalculateNewMaxMins();
 
 public:
-	MS_GraphPanel();
-	MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary = false, bool ignoreTertiary = false);
-	~MS_GraphPanel();
+	GraphPanel();
+	GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary = false, bool ignoreTertiary = false);
+	~GraphPanel();
 	void IgnoreSecondary(bool ignore);
 	void IgnoreTertiary(bool ignore);
 

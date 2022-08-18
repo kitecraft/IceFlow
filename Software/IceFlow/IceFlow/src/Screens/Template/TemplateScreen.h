@@ -8,6 +8,8 @@ class TemplateScreen
 private:
 	TFT_eSPI* _tft;
 
+	void DrawScreen();
+	void ProcessTouch(int x, int y);
 public:
 	TemplateScreen(TFT_eSPI* tft);
 	~TemplateScreen();

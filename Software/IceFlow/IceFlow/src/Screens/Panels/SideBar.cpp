@@ -38,10 +38,10 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 
 SideBar::~SideBar()
 {
-	delete(_settingsIcon);
-	delete(_profileIcon);
-	delete(_manualHeatIcon);
-	delete(_reflowIcon);
+	delete _settingsIcon;
+	delete _profileIcon;
+	delete _manualHeatIcon;
+	delete _reflowIcon;
 }
 
 void SideBar::Draw()
@@ -112,6 +112,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 	else if (_reflowIcon->Touched(x, y)) {
 		Serial.println("Reflow Icon Touched");
+		DisplayQueue.QueueScreenChange(SN_REFLOW_SCREEN);
 	}
 
 	return SB_NOT_TOUCHED;

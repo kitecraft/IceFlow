@@ -195,7 +195,7 @@
     <ClInclude Include="src\OvenController\OvenEnums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Screens\Panels\MS_GraphPanel.h">
+    <ClInclude Include="src\Screens\Panels\GraphPanel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Screens\Panels\GraphAutoScaler.h">
@@ -244,6 +244,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OvenController\AutoTune.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Screens\ReflowScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -317,7 +320,7 @@
     <ClCompile Include="src\OvenController\OvenController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Screens\Panels\MS_GraphPanel.cpp">
+    <ClCompile Include="src\Screens\Panels\GraphPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\Panels\GraphAutoScaler.cpp">
@@ -354,6 +357,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Screens\DialogBoxes\KeyboardButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\ReflowScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

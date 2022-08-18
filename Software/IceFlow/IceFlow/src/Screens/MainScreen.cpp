@@ -3,7 +3,6 @@
 #include "Utilities/ScreenUpdateKeys.h"
 #include "Utilities/DMTheme.h"
 #include "Widgets/Box.h"
-#include "../ProfileManager/ProfileManager.h"
 #include "../DisplayManager/Utilities/CommandQueue.h"
 #include "../Utilities/ControlCommands.h"
 #include "../Utilities/MemUseage.h"
@@ -19,7 +18,7 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	_messageBox = nullptr;
 
 
-	_graphPanel = new MS_GraphPanel(_tft,
+	_graphPanel = new GraphPanel(_tft,
 		DMCoordinates(
 			0,
 			0,
@@ -86,7 +85,6 @@ MainScreen::MainScreen(TFT_eSPI* tft)
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
-	_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
 	//Serial.println("Constuctor end: ");
 	//PrintMemUseage();
@@ -149,6 +147,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_TemperatureStreamStarted:
 		_temperatureStreamStarted = true;
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+		break;
 	case suk_Oven_Manual_On:
 		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
@@ -157,6 +156,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_graphPanel->IgnoreTertiary(true);
 		_sideBar->ManualHeatIconEnabled(true);
 		_sideBar->ReflowIconEnabled(true);
+
 		_sideBar->Draw();
 		break;
 	case suk_Oven_Heaters_On:
@@ -289,6 +289,7 @@ void MainScreen::DrawScreen()
 
 	_tft->startWrite();
 	_sideBar->Draw();
+
 	DrawHeader();
 	DrawFooter();
 	DrawHeatersIcon(false);
@@ -339,6 +340,7 @@ void MainScreen::DrawHeader()
 	_tft->dmaWait();
 	sprite.deleteSprite();
 }
+
 void MainScreen::DrawFooter()
 {
 	TFT_eSprite sprite(_tft);

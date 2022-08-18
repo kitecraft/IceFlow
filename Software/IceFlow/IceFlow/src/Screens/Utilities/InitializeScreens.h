@@ -8,6 +8,7 @@
 #include "../MainScreen.h"
 #include "../ProfilesScreen.h"
 #include "../EditProfileScreen.h"
+#include "../ReflowScreen.h"
 
 static void LoadScreensIntoDM()
 {
@@ -52,6 +53,17 @@ static void LoadScreensIntoDM()
 			nullptr,
 			nullptr,
 			HandleTouch_EditProfileScreen
+		)
+	);
+
+	Display.AddScreen(
+		SN_REFLOW_SCREEN,
+		ScreenContainer(
+			Create_ReflowScreen,
+			Destroy_ReflowScreen,
+			Update_ReflowScreen,
+			Update_ReflowScreen_OnInterval,
+			HandleTouch_ReflowScreen
 		)
 	);
 }

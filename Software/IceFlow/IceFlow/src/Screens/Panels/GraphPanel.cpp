@@ -1,10 +1,10 @@
-#include "MS_GraphPanel.h"
+#include "GraphPanel.h"
 
-MS_GraphPanel::MS_GraphPanel()
+GraphPanel::GraphPanel()
 {
 }
 
-MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary, bool ignoreTertiary)
+GraphPanel::GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool ignoreSecondary, bool ignoreTertiary)
 {
 	_tft = tft;
 	_coordinates = coordinates;
@@ -61,7 +61,7 @@ MS_GraphPanel::MS_GraphPanel(TFT_eSPI* tft, DMCoordinates coordinates, bool igno
 	_tertiaryTemperatureAutoScaler = new GraphAutoScaler(_temperatureSprite_W);
 }
 
-MS_GraphPanel::~MS_GraphPanel()
+GraphPanel::~GraphPanel()
 {
 	if (_primaryTemperatureAutoScaler != nullptr) {
 		delete _primaryTemperatureAutoScaler;
@@ -88,7 +88,7 @@ MS_GraphPanel::~MS_GraphPanel()
 	delete _temperatureSprite[BOTTOM_SIDE];
 }
 
-void MS_GraphPanel::IgnoreSecondary(bool ignore)
+void GraphPanel::IgnoreSecondary(bool ignore)
 { 
 	_ignoreSecondary = ignore; 
 	if (_ignoreSecondary) {
@@ -97,7 +97,7 @@ void MS_GraphPanel::IgnoreSecondary(bool ignore)
 	_redrawRequired = true;
 }
 
-void MS_GraphPanel::IgnoreTertiary(bool ignore)
+void GraphPanel::IgnoreTertiary(bool ignore)
 {
 	_ignoreTertiary = ignore;
 	if (_ignoreTertiary) {
@@ -106,7 +106,7 @@ void MS_GraphPanel::IgnoreTertiary(bool ignore)
 	_redrawRequired = true;
 }
 
-void MS_GraphPanel::CalculateNewMaxMins()
+void GraphPanel::CalculateNewMaxMins()
 {
 	float max = _primaryTemperatureAutoScaler->GetMax();
 	float min = _primaryTemperatureAutoScaler->GetMin();
@@ -156,7 +156,7 @@ void MS_GraphPanel::CalculateNewMaxMins()
 	}
 }
 
-void MS_GraphPanel::Draw()
+void GraphPanel::Draw()
 {
 	_maximumTemperature = 10 + TEMPERATURE_DRAW_BUFFER_LARGE;
 	_minimumTemperature = TEMPERATURE_DRAW_BUFFER_SMALL;
@@ -166,14 +166,14 @@ void MS_GraphPanel::Draw()
 	DrawGraph();
 }
 
-void MS_GraphPanel::ReDraw()
+void GraphPanel::ReDraw()
 {
 	ReDrawTemperatureSprites();
 	DrawTemperatureLegends();
 	DrawTimeLegend();
 }
 
-void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
+void GraphPanel::Update(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
 {
 	bool secondaryRecalculated = false;
 	bool tertiaryReclculated = false;
@@ -257,7 +257,7 @@ void MS_GraphPanel::Update(float primaryTemperature, float secondaryTemperature,
 	DrawGraphGrid(BOTTOM_SIDE);
 }
 
-void MS_GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
+void GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTemperature, float tertiaryTemperature)
 {
 	_primaryTemperatureAutoScaler->AddItem(primaryTemperature);
 	if (!_ignoreSecondary) {
@@ -268,7 +268,7 @@ void MS_GraphPanel::UpdateValuesOnly(float primaryTemperature, float secondaryTe
 	}
 }
 
-void MS_GraphPanel::DrawTemperatureLegends()
+void GraphPanel::DrawTemperatureLegends()
 {
 	//Serial.printf("_minimumTemperature = %f", _minimumTemperature);
 	TFT_eSprite sprite(_tft);
@@ -312,7 +312,7 @@ void MS_GraphPanel::DrawTemperatureLegends()
 	sprite.deleteSprite();
 }
 
-void MS_GraphPanel::DrawTimeLegend()
+void GraphPanel::DrawTimeLegend()
 {
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(_timeLegend_W, TIME_LEGEND_HEIGHT);
@@ -341,7 +341,7 @@ void MS_GraphPanel::DrawTimeLegend()
 	sprite.deleteSprite();
 }
 
-void MS_GraphPanel::DrawGraph()
+void GraphPanel::DrawGraph()
 {
 	DrawGraphGrid(TOP_SIDE);
 	_tft->pushImageDMA(_bgSprite_X, _bgSpriteTop_Y, _bgSprite_W, _bgSpriteTop_H, _bgSprPtr[TOP_SIDE]);
@@ -399,7 +399,7 @@ void MS_GraphPanel::DrawGraph()
 	*/
 }
 
-void MS_GraphPanel::DrawGraphGrid(int slot)
+void GraphPanel::DrawGraphGrid(int slot)
 {
 	_bgSprite[slot]->fillSprite(TFT_BLACK);
 
@@ -416,7 +416,7 @@ void MS_GraphPanel::DrawGraphGrid(int slot)
 	}
 }
 
-void MS_GraphPanel::ReDrawTemperatureSprites()
+void GraphPanel::ReDrawTemperatureSprites()
 {
 	_temperatureSprite[TOP_SIDE]->fillSprite(TFT_TRANSPARENT);
 	_temperatureSprite[BOTTOM_SIDE]->fillSprite(TFT_TRANSPARENT);

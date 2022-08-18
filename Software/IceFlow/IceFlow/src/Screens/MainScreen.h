@@ -6,7 +6,7 @@
 #include "Panels/SideBar.h"
 #include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
-#include "Panels/MS_GraphPanel.h"
+#include "Panels/GraphPanel.h"
 #include "DialogBoxes/TargetTemperatureDlg.h"
 #include "DialogBoxes/MessageBox.h"
 
@@ -77,7 +77,7 @@ private:
 	SideBar* _sideBar = nullptr;
 	Profile _currentProfile;
 
-	MS_GraphPanel* _graphPanel = nullptr;
+	GraphPanel* _graphPanel = nullptr;
 
 	bool _temperatureStreamStarted = false;
 	float _primaryTemperature = 20;

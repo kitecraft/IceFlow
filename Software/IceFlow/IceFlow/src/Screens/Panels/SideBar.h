@@ -49,8 +49,6 @@ enum ICONID {
 	ManualHeatIconID,
 };
 
-
-
 class SideBar
 {
 private:
