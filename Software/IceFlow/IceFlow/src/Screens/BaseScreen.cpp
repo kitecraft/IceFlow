@@ -94,18 +94,11 @@ bool BaseScreen::UpdateScreen(SCREEN_UPDATE_KEYS key, char* value)
 		_temperatureStreamStarted = true;
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 		break;
-	case suk_Oven_Stopped:
-		//DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
-		break;
 	case suk_Oven_Heaters_On:
 		DrawHeatersIcon(true);
 		break;
 	case suk_Oven_Heaters_Off:
 		DrawHeatersIcon(false);
-		break;
-	case suk_Oven_Manual_On:
-		_tertiaryTemperature = atof(value);
-		_graphPanel->IgnoreTertiary(false);
 		break;
 	default:
 		return false;
@@ -113,7 +106,7 @@ bool BaseScreen::UpdateScreen(SCREEN_UPDATE_KEYS key, char* value)
 	}
 	return true;
 }
-
+/*
 void BaseScreen::UpdateScreenOnInterval()
 {
 	if (_temperatureStreamStarted && _nextGraphUpdate < millis()) {
@@ -121,7 +114,7 @@ void BaseScreen::UpdateScreenOnInterval()
 		_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 	}
 }
-
+*/
 void BaseScreen::DrawScreen()
 {
 	_tft->fillScreen(TFT_BLACK);

@@ -26,6 +26,8 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 	}
 
 	switch (key) {
+	case suk_Oven_Stopped:
+		break;
 
 	default:
 		break;
@@ -33,44 +35,19 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 
 	_tft->dmaWait();
 	_tft->endWrite();
-
-	/*
-	switch (key) {
-	case suk_PrimaryTemperature:
-		UpdatePrimaryTemp(value);
-		break;
-	case suk_SecondaryTemperature:
-		UpdateSecondaryTemp(value);
-		break;
-	case suk_TemperatureStreamStarted:
-		_temperatureStreamStarted = true;
-		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
-		break;
-	case suk_Oven_Stopped:
-		DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
-		break;
-	case suk_Oven_Heaters_On:
-		DrawHeatersIcon(true);
-		break;
-	case suk_Oven_Heaters_Off:
-		DrawHeatersIcon(false);
-		break;
-	default:
-		break;
-	}
-	*/
-
 }
 
 void ReflowScreen::UpdateScreenOnInterval()
 {
-	_tft->startWrite();
-	BaseScreen::UpdateScreenOnInterval();
+	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
+		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
+		_tft->startWrite();
+		_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 
-	_tft->dmaWait();
-	_tft->endWrite();
+		_tft->dmaWait();
+		_tft->endWrite();
+	}
 }
-
 
 void ReflowScreen::HandleTouch(int x, int y)
 {

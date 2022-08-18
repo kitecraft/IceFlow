@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 #include "../IceFlow_Config.h"
+#include "Utilities/Screens_Config.h"
 #include "Widgets/TextBox.h"
 #include "../ProfileManager/ProfileManager.h"
 #include "Panels/GraphPanel.h"
@@ -81,7 +82,7 @@ protected:
 	void DrawScreen();
 	void DrawHeader();
 	void DrawFooter();
-	void UpdateScreenOnInterval();
+	//void UpdateScreenOnInterval();
 
 	void UpdatePrimaryTemp(char* val);
 	void UpdateSecondaryTemp(char* val);
