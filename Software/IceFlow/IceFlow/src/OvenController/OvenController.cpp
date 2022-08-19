@@ -15,6 +15,7 @@ bool OvenController::Init()
     pinMode(STOP_BUTTON, INPUT_PULLUP);
 
     _autoTune = nullptr;
+    _reflow = new Reflow();
 
     Serial.println("Initializing sensor A...");
     _primaryTemperatureSensor.selectHSPI();
@@ -144,17 +145,37 @@ void OvenController::FetchPrimaryTemperature()
 
 void OvenController::FetchSecondaryTemperature()
 {
-    _temperatureSecondary = 10;
+    _temperatureSecondary = _temperaturePrimary - 10;
 }
 
 void OvenController::FetchTemperatures()
 {
-    FetchPrimaryTemperature();
-    FetchSecondaryTemperature();
+    //FetchPrimaryTemperature();
+    //FetchSecondaryTemperature();
 
-    
+    if (_heatersOn) {
+        _temperaturePrimary += 0.001;
+        _temperatureSecondary += 0.001;
+    }
+    else {
+        _temperaturePrimary -= 0.001;
+        _temperatureSecondary -= 0.001;
+
+        if (_temperaturePrimary < 15) {
+            _temperaturePrimary = 15;
+        }
+        if (_temperatureSecondary < 5) {
+            _temperatureSecondary = 5;
+        }
+    }
 
     if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
+        SendPrimaryTemperatureToDisplay();
+        SendSecondaryTemperatureToDisplay();
+        _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
+
+
+        /*
         char val[7];
         snprintf(val, 7, "%.2f", _temperaturePrimary);
         DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
@@ -163,6 +184,7 @@ void OvenController::FetchTemperatures()
         snprintf(val, 7, "%.2f", _temperaturePrimary - 5);
         DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
         _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
+        */
     }
 
     /*
@@ -219,7 +241,6 @@ void OvenController::SetTargetTemperature(float target)
 {
     _targetTemperature = target;
     _pidController->Setpoint(_targetTemperature);
-
 }
 
 void OvenController::StartManualHeat(int targetTemperature)
@@ -235,27 +256,70 @@ void OvenController::StartManualHeat(int targetTemperature)
     DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
 }
 
-void OvenController::StartReflowSession(String profileFileName)
-{
-    /*
-    if (!g_profileManager.GetProfile(profileFileName, &_profile)) {
-        return;
-    }
-    */
-
-    DisplayQueue.QueueKey(suk_Oven_Reflow_On);
-}
-
-void OvenController::HandleReflowSession()
+void OvenController::StartReflowSession()
 {
     if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
         Serial.print("Oven must be below: ");
         Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN);
         Serial.println(" degrees Celcius before Reflow can begin");
+        return;
     }
+
+    _ovenStatus = OS_REFLOW_ACTIVE;
+    DisplayQueue.QueueKey(suk_Oven_Reflow_On);
+    _reflow->Start();
 }
 
-void OvenController::StartAutoTune(float targetTemperature, bool engagePIDController)
+void OvenController::HandleReflowSession()
+{
+    //Serial.println("HandleReflowSession Start");
+    int newTarget = 40;
+    ReflowProcessReturn ret = _reflow->Process(_temperaturePrimary, newTarget);
+
+    //Serial.print("HandleReflowSession GOT:");
+    //Serial.println(ret);
+    if (ret != RPR_OK) {
+        Serial.print("HandleReflowSession Exiting here:");
+        StopOven();
+        return;
+    }
+
+
+    //Serial.print("\nHandleReflowSession:  Current target");
+    //Serial.println(_targetTemperature);
+
+    //Serial.println("HandleReflowSession:  Setting target");
+    if (newTarget != _targetTemperature) {
+        //Serial.print("HandleReflowSession:  Target set to: ");
+        //Serial.println(newTarget);
+        SetTargetTemperature(newTarget);
+        SendTargetTemperatureToDisplay();
+    }
+    HandleOvenHeatersWithPID();
+}
+
+void OvenController::SendPrimaryTemperatureToDisplay()
+{
+    char val[7];
+    snprintf(val, 7, "%.2f", _temperaturePrimary);
+    DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
+}
+
+void OvenController::SendSecondaryTemperatureToDisplay()
+{
+    char val[7];
+    snprintf(val, 7, "%.2f", _temperatureSecondary);
+    DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
+}
+
+void OvenController::SendTargetTemperatureToDisplay()
+{
+    char val[4];
+    snprintf(val, 4, "%i", _targetTemperature);
+    DisplayQueue.QueueKeyAndValue(suk_TertiaryTemperature, val);
+}
+
+void OvenController::StartAutoTune(float targetTemperature)
 {
     Serial.println("Starting PID Auto Tune!");
     if (_ovenStatus != OS_IDLE && _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
@@ -269,18 +333,11 @@ void OvenController::StartAutoTune(float targetTemperature, bool engagePIDContro
     _ovenStatus = OS_AUTOTUNE_ACTIVE;
     DeleteAutoTune();
     _autoTune = new AutoTune(targetTemperature);
-    if (!engagePIDController) {
-        EnableOvenHeaters();
-    }
+    EnableOvenHeaters();
 
     char val[4];
     snprintf(val, 4, "%f", targetTemperature);
     DisplayQueue.QueueKeyAndValue(suk_Oven_AutoTune_On, val);
-}
-
-void OvenController::StartAutoTuneWithPIDsOn(float targetTemperature)
-{
-    StartAutoTune(targetTemperature, true);
 }
 
 void OvenController::DeleteAutoTune()
@@ -293,9 +350,7 @@ void OvenController::DeleteAutoTune()
 
 void OvenController::HandleAutoTune()
 {
-    if (_autoTune->engageCurrentPIDController) {
-        HandleOvenHeatersWithPID();
-    }
+    HandleOvenHeatersWithPID();
 
     _autoTune->currentTemp = _temperaturePrimary;
     unsigned long time = millis();
@@ -306,9 +361,8 @@ void OvenController::HandleAutoTune()
         if (time - _autoTune->t2 > 2500)
         {
             _autoTune->heating = false;
-            if (!_autoTune->engageCurrentPIDController) {
-                DisableOvenHeaters();
-            }
+            DisableOvenHeaters();
+
             _autoTune->t1 = time;
             _autoTune->t_high = _autoTune->t1 - _autoTune->t2;
             _autoTune->maxTemp = _temperaturePrimary;
@@ -338,9 +392,8 @@ void OvenController::HandleAutoTune()
                 }
             }
 
-            if (!_autoTune->engageCurrentPIDController) {
-                DisableOvenHeaters();
-            }
+            DisableOvenHeaters();
+
             _autoTune->cycles++;
             _autoTune->minTemp = _temperaturePrimary;
         }

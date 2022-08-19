@@ -119,6 +119,9 @@ void HandleCommandQueue()
         case CC_START_AUTOTUNE:
             OvenManager.StartAutoTune(atof(data));
             break;
+        case CC_START_REFLOW:
+            OvenManager.StartReflowSession();
+            break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
             Serial.println(data);

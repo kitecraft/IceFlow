@@ -6,7 +6,6 @@ class AutoTune
 {
 public:
     float targetTemperature = 150;
-    bool engageCurrentPIDController = false;
 
     float currentTemp = 0;
     int cycles = 0;

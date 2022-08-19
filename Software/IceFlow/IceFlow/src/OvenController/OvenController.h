@@ -7,13 +7,14 @@
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
 #include "AutoTune.h"
+#include "Reflow.h"
 #include "MAX31855.h"
 
 class OvenController
 {
 private:
 	TaskHandle_t _taskHandle = nullptr;
-
+	Reflow* _reflow = nullptr;
 	OvenStatus _ovenStatus = OS_IDLE;
 	REFLOW_PHASE _reflowPhase = RP_NOT_ACTIVE;
 
@@ -40,6 +41,7 @@ private:
 	double _ki;
 	double _kd;
 	void DeleteAutoTune();
+
 	Profile _profile;
 
 	void CheckConvectionFanStatus();
@@ -57,19 +59,22 @@ private:
 	void HandleReflowSession();
 	void HandleAutoTune();
 
+	void SendPrimaryTemperatureToDisplay();
+	void SendSecondaryTemperatureToDisplay();
+	void SendTargetTemperatureToDisplay();
+
 public:
 	bool Init();
 	void Run();
 
 	void StopOven();
 
-	void StartReflowSession(String profileFileName);
+	void StartReflowSession();
 	void StartManualHeat(int targetTemperature);
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }
 
-	void StartAutoTune(float targetTemperature, bool engagePIDController = false);
-	void StartAutoTuneWithPIDsOn(float targetTemperature);
+	void StartAutoTune(float targetTemperature);
 	void SendStatus();
 };
 

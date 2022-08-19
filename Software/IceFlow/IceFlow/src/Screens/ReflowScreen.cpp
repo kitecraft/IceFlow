@@ -1,13 +1,18 @@
 #include "ReflowScreen.h"
+#include "Utilities/ScreenNames.h"
+#include "../DisplayManager/Utilities/DisplayQueue.h"
 
 ReflowScreen::ReflowScreen(TFT_eSPI* tft)
 	: BaseScreen(tft)
 {
-	_sidebar = new RFS_Sidebar(_tft);
+	_sidebar = new RFS_Sidebar(_tft, &_currentProfile);
 
 	DrawScreen();
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
+
+	//delay(10); //give the oven controller a chance to start the reflow controller
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
+	CommandQueue.QueueCommand(CC_START_REFLOW);
 }
 
 ReflowScreen::~ReflowScreen()
@@ -31,6 +36,10 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 
 	switch (key) {
 	case suk_Oven_Stopped:
+		//DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		break;
+	case suk_Oven_Reflow_On:
+		_graphPanel->IgnoreTertiary(false);
 		break;
 
 	default:
@@ -43,6 +52,7 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 
 void ReflowScreen::UpdateScreenOnInterval()
 {
+
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 		_tft->startWrite();

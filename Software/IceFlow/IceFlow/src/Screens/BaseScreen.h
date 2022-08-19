@@ -74,7 +74,7 @@ protected:
 	bool _temperatureStreamStarted = false;
 	float _primaryTemperature = 20;
 	float _secondaryTemperature = 20;
-	float _tertiaryTemperature = 20;
+	float _tertiaryTemperature = 50;
 
 	TextBox* _primaryTemperatureTB = nullptr;
 	TextBox* _secondaryTemperatureTB = nullptr;
@@ -86,6 +86,7 @@ protected:
 
 	void UpdatePrimaryTemp(char* val);
 	void UpdateSecondaryTemp(char* val);
+	void UpdateTertiaryTemp(char* val);
 
 	void DrawHeatersIcon(bool status);
 	

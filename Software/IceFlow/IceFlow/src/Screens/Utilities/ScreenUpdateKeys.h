@@ -12,6 +12,7 @@ enum SCREEN_UPDATE_KEYS {
 	suk_DateTime,
 	suk_PrimaryTemperature,
 	suk_SecondaryTemperature,
+	suk_TertiaryTemperature,
 	suk_TemperatureStreamStarted,
 	suk_Oven_Stopped,
 	suk_Oven_Manual_On,
@@ -20,4 +21,6 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Oven_AutoTune_Off,
 	suk_Oven_Heaters_On,
 	suk_Oven_Heaters_Off,
+	suk_Reflow_StageComplete_PreHeat,
+	suk_Reflow_PreHeat_Runtime,
 };

@@ -1,0 +1,11 @@
+#pragma once
+
+enum REFLOW_STAGE {
+	RS_NOT_ACTIVE = -2,
+	RS_PRE_PREHEAT,
+	RS_PREHEAT,
+	RS_SOAK,
+	RS_RAMP,
+	RS_REFLOW,
+	RS_COOLING
+};

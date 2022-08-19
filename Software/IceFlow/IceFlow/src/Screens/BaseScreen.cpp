@@ -14,7 +14,7 @@ BaseScreen::BaseScreen(TFT_eSPI* tft)
 	_temperatureStreamStarted = false;
 	_primaryTemperature = 20;
 	_secondaryTemperature = 20;
-	_tertiaryTemperature = 20;
+	_tertiaryTemperature = 50;
 
 	_graphPanel = new GraphPanel(_tft,
 		DMCoordinates(
@@ -27,7 +27,6 @@ BaseScreen::BaseScreen(TFT_eSPI* tft)
 		false,
 		true
 	);
-
 
 	if (!ProfileManager.GetSavedProfile(&_currentProfile)) {
 		Serial.println("Failed to load Profile");
@@ -88,6 +87,9 @@ bool BaseScreen::UpdateScreen(SCREEN_UPDATE_KEYS key, char* value)
 		break;
 	case suk_SecondaryTemperature:
 		UpdateSecondaryTemp(value);
+		break;
+	case suk_TertiaryTemperature:
+		UpdateTertiaryTemp(value);
 		break;
 	case suk_TemperatureStreamStarted:
 		_graphPanel->ReDraw();
@@ -206,6 +208,13 @@ void BaseScreen::UpdateSecondaryTemp(char* val)
 	snprintf(value, 9, "%s C", val);
 	_secondaryTemperatureTB->Update(value);
 	_secondaryTemperature = atof(val);
+}
+
+void BaseScreen::UpdateTertiaryTemp(char* val)
+{
+	char value[9];
+	snprintf(value, 9, "%s C", val);
+	_tertiaryTemperature = atof(val);
 }
 
 void BaseScreen::DrawHeatersIcon(bool status)

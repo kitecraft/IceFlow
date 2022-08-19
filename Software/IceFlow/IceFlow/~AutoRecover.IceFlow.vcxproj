@@ -135,6 +135,8 @@
     <ClInclude Include="src\OvenController\AutoTune.h" />
     <ClInclude Include="src\OvenController\OvenController.h" />
     <ClInclude Include="src\OvenController\OvenEnums.h" />
+    <ClInclude Include="src\OvenController\Reflow.h" />
+    <ClInclude Include="src\OvenController\ReflowStage.h" />
     <ClInclude Include="src\ProfileManager\Profile.h" />
     <ClInclude Include="src\ProfileManager\ProfileManager.h" />
     <ClInclude Include="src\Screens\BaseScreen.h" />
@@ -200,6 +202,7 @@
     <ClCompile Include="src\DisplayManager\src\CommandQueue\CommandManagerQueue.cpp" />
     <ClCompile Include="src\DisplayManager\src\DisplayQueue\DisplayManagerQueue.cpp" />
     <ClCompile Include="src\OvenController\OvenController.cpp" />
+    <ClCompile Include="src\OvenController\Reflow.cpp" />
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp" />
     <ClCompile Include="src\Screens\BaseScreen.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\DialogBase.cpp" />
@@ -241,7 +244,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.upload.port="192.168.50.30" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
+      <UserProperties arduino.upload.port="COM13" config.Debug.customdebug_esp32_esp32_debugger_type="universal" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>
