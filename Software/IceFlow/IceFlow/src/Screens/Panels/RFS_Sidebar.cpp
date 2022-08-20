@@ -10,11 +10,27 @@ RFS_Sidebar::RFS_Sidebar(TFT_eSPI* tft, Profile* profile)
 {
 	_tft = tft;
 	_profile = profile;
+	_targetTextBox = new TextBox(TextBoxDto(
+		DMCoordinates(
+			RFS_TARGET_TEXT_BOX_X,
+			RFS_TARGET_TEXT_BOX_Y,
+			RFS_TARGET_TEXT_BOX_W,
+			RFS_TARGET_TEXT_BOX_H,
+			RFS_SIDEBAR_X + RFS_TARGET_TEXT_BOX_X,
+			RFS_TARGET_TEXT_BOX_Y
+		),
+		GlobalTheme,
+		SMALL_FONT,
+		MR_DATUM,
+		false,
+		true,
+		GlobalTheme.panelLightColor),
+		_tft);
 }
 
 RFS_Sidebar::~RFS_Sidebar()
 {
-
+	delete _targetTextBox;
 }
 
 void RFS_Sidebar::Draw()
@@ -23,7 +39,9 @@ void RFS_Sidebar::Draw()
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W, RFS_SIDEBAR_H);
 	sprite.fillSprite(TFT_BLACK);
 
-	DrawRoundedBox(&sprite, DMCoordinates(0, 0, RFS_SIDEBAR_W, RFS_SIDEBAR_H, 0, 0), 12, GlobalTheme);
+	DrawRoundedBox(&sprite, DMCoordinates(0, 0, RFS_SIDEBAR_W, RFS_SIDEBAR_STAGE_H, 0, 0), 12, GlobalTheme);
+	DrawRoundedBox(&sprite, DMCoordinates(RFS_TARGET_BOX_X, RFS_TARGET_BOX_Y, RFS_TARGET_BOX_W, RFS_TARGET_BOX_H, 0, 0), 12, GlobalTheme);
+	_targetTextBox->Draw(&sprite, "      ");
 
 	sprite.setFreeFont(SMALL_FONT);
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
@@ -37,6 +55,8 @@ void RFS_Sidebar::Draw()
 	sprite.drawFastHLine(3, 34, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 	sprite.drawFastHLine(3, 37, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 	sprite.drawFastHLine(3, 38, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
+
+	sprite.drawString("Target", RFS_SIDEBAR_W / 2, RFS_TARGET_BOX_Y + 5);
 
 	int x = RFS_SIDEBAR_W - 4;
 	sprite.setTextDatum(TR_DATUM);
@@ -202,4 +222,9 @@ void RFS_Sidebar::UpdateCoolingTime(int time)
 void RFS_Sidebar::EndCoolingStage()
 {
 
+}
+
+void RFS_Sidebar::UpdateTarget(String text)
+{
+	_targetTextBox->Update(text);
 }

@@ -48,11 +48,13 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 		_nextSideBarUpdate = 0;
 		_startTime = _currentProfile.pre_heat_soak_time;
 		_sidebar->UpdateSoakTime(_startTime);
+		_sidebar->UpdateTarget(String(_currentProfile.pre_heat_soak_time) + " sec");
 		break;
 	case suk_Reflow_StageComplete_Soak:
 		_startTime = millis();
 		_sidebar->UpdateSoakTime(round(atof(value)));
 		_sidebar->EndSoakStage();
+		_sidebar->UpdateTarget(String(_currentProfile.reflow_target_temperature) + " C");
 		_reflowStage = RS_RAMP;
 		break;
 	case suk_Reflow_StageComplete_Ramp:
@@ -62,16 +64,21 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 		_nextSideBarUpdate = 0;
 		_startTime = _currentProfile.reflow_soak_time;
 		_sidebar->UpdateReflowTime(_startTime);
+		_sidebar->UpdateTarget(String(_currentProfile.reflow_soak_time) + " sec");
 		break;
 	case suk_Reflow_StageComplete_Reflow:
 		_startTime = millis();
 		_sidebar->UpdateReflowTime(round(atof(value)));
 		_sidebar->EndReflowStage();
 		_reflowStage = RS_COOLING;
+		_sidebar->UpdateTarget(String(_currentProfile.cooling_ramp_down_speed) + " C/sec");
 		break;
-	case suk_Reflow_Complete:
+	case suk_Reflow_StageComplete_Cooling:
 		_sidebar->UpdateCoolingTime(round(atof(value)));
 		_reflowStage = RS_COMPLETE;
+		_sidebar->UpdateTarget("");
+		break;
+	case suk_Reflow_Complete:
 		break;
 	default:
 		break;
@@ -162,4 +169,5 @@ void ReflowScreen::StartPreHeat()
 	_nextSideBarUpdate = 0;
 	_startTime = millis();
 	_reflowStage = RS_PREHEAT;
+	_sidebar->UpdateTarget(String(_currentProfile.pre_heat_target_temperature) + " C");
 }

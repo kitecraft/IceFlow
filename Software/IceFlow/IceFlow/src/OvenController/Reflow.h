@@ -16,7 +16,8 @@ class Reflow
 private:
 	Profile _profile;
 	REFLOW_STAGE _stage = RS_NOT_ACTIVE;
-	unsigned long _startTime = 0;
+	unsigned long _stageStartTime = 0;
+	unsigned long _reflowActivityStartTime = 0;
 	int _startTemperature;
 	int _currentTemperature = 0;
 	int _targetTemperature = 0;
@@ -28,6 +29,7 @@ private:
 	float _degreesPerSecond = 0;
 
 	ReflowProcessReturn _processReturn = RPR_OK;
+
 	void ProcessPreHeat();
 	void ProcessSoak();
 	void ProcessRamp();

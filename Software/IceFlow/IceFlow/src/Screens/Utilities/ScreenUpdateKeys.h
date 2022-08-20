@@ -26,5 +26,6 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Reflow_StageComplete_Soak,
 	suk_Reflow_StageComplete_Ramp,
 	suk_Reflow_StageComplete_Reflow,
+	suk_Reflow_StageComplete_Cooling,
 	suk_Reflow_Complete
 };
