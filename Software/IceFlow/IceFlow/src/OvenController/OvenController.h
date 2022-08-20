@@ -68,6 +68,7 @@ public:
 	void Run();
 
 	void StopOven();
+	void EmergencyStopOven();
 
 	void StartReflowSession();
 	void StartManualHeat(int targetTemperature);

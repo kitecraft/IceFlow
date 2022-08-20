@@ -88,6 +88,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_graphPanel->IgnoreTertiary(false);
 		break;
 	case suk_Oven_Stopped:
+	case suk_Emergency_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
 		_sideBar->ManualHeatIconEnabled(true);
 		_sideBar->ReflowIconEnabled(true);

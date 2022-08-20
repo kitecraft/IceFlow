@@ -14,7 +14,7 @@ BaseScreen::BaseScreen(TFT_eSPI* tft)
 	_temperatureStreamStarted = false;
 	_primaryTemperature = 20;
 	_secondaryTemperature = 20;
-	_tertiaryTemperature = 50;
+	_tertiaryTemperature = 20;
 
 	_graphPanel = new GraphPanel(_tft,
 		DMCoordinates(

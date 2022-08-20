@@ -1,13 +1,18 @@
 #pragma once
 #include "BaseScreen.h"
 #include "Panels/RFS_Sidebar.h"
+#include "../OvenController/ReflowStage.h"
 
 class ReflowScreen : BaseScreen
 {
 private:
 	void ProcessTouch(int x, int y);
 	RFS_Sidebar* _sidebar = nullptr;
+	REFLOW_STAGE _reflowStage = RS_NOT_ACTIVE;
+	unsigned long _nextSideBarUpdate = 0;
+	unsigned long _startTime = 0;
 
+	void StartPreHeat();
 	void DrawScreen();
 public:
 	ReflowScreen(TFT_eSPI* tft);

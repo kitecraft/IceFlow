@@ -25,7 +25,7 @@ static void IRAM_ATTR OTAThread(void*)
             }
             CommandQueue.QueueCommand(CC_START_OTA);
             Serial.println("\n\n---STARTING OTA FIRMWARE UPDATE---");
-            delay(1000);
+            //delay(1000);
             SPIFFS.end();
             })
 

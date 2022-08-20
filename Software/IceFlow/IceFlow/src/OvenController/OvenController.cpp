@@ -54,16 +54,38 @@ bool OvenController::Init()
 
 void OvenController::CheckConvectionFanStatus()
 {
+    if (_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+        return;
+    }
+
+    if (_ovenStatus != OS_IDLE && _convectionFanOn) {
+        return;
+    }
+
+    if (_ovenStatus != OS_IDLE && !_convectionFanOn) {
+        EnableConvectionFan();
+        return;
+    }
+
+    if(_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN){
+        EnableConvectionFan();
+        return;
+    }
+
+    if (_ovenStatus == OS_IDLE && _convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+        DisableConvectionFan();
+        return;
+    }
+
+    /*
     //If the oven and fan are both on, return
     if (_heatersOn && _convectionFanOn) {
         return;
     }
-
     //If the oven is on, but the fan isn't, turn the fan on
     else if (_heatersOn && !_convectionFanOn) {
         EnableConvectionFan();
     }
-
     //If the oven is off, and the fan is on, turn if off if the temperature is below threshold
     //and not in manual mode
     else if (!_heatersOn && (_convectionFanOn && (_temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN)))
@@ -75,6 +97,7 @@ void OvenController::CheckConvectionFanStatus()
         EnableConvectionFan();
         return;
     }
+    */
 }
 
 void OvenController::EnableConvectionFan()
@@ -121,6 +144,22 @@ void OvenController::StopOven()
     }
     DisplayQueue.QueueKey(suk_Oven_Stopped);
     
+}
+
+void OvenController::EmergencyStopOven()
+{
+    _ovenStatus = OS_IDLE;
+    _reflowPhase = RP_NOT_ACTIVE;
+
+    DisableOvenHeaters();
+    DisableConvectionFan();
+    SetTargetTemperature(0);
+    if (_autoTune != nullptr) {
+        delete _autoTune;
+        _autoTune = nullptr;
+    }
+    DisplayQueue.QueueKey(suk_Emergency_Oven_Stopped);
+
 }
 
 void OvenController::FetchPrimaryTemperature()
@@ -267,13 +306,16 @@ void OvenController::StartReflowSession()
 
     _ovenStatus = OS_REFLOW_ACTIVE;
     DisplayQueue.QueueKey(suk_Oven_Reflow_On);
-    _reflow->Start();
+    _reflow->Start(_temperaturePrimary);
+    int startT = _reflow->GetStartingTemperature();
+    SetTargetTemperature(startT);
+    SendTargetTemperatureToDisplay();
 }
 
 void OvenController::HandleReflowSession()
 {
     //Serial.println("HandleReflowSession Start");
-    int newTarget = 40;
+    int newTarget;
     ReflowProcessReturn ret = _reflow->Process(_temperaturePrimary, newTarget);
 
     //Serial.print("HandleReflowSession GOT:");
@@ -446,7 +488,7 @@ void OvenController::Run()
 
         if (digitalRead(STOP_BUTTON) == LOW) {
             if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
-                StopOven();
+                EmergencyStopOven();
                 _lastButtonPress = millis();
             }
         }
