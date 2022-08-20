@@ -8,6 +8,7 @@ ReflowScreen::ReflowScreen(TFT_eSPI* tft)
 	CommandQueue.QueueCommand(CC_START_REFLOW);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	_sidebar = new RFS_Sidebar(_tft, &_currentProfile);
+	_messageBox = nullptr;
 
 	DrawScreen();
 
@@ -21,6 +22,7 @@ ReflowScreen::~ReflowScreen()
 	CommandQueue.QueueCommand(CC_STOP_TIME_UPDATES);
 
 	delete _sidebar;
+	EndMessageBox();
 }
 
 void ReflowScreen::UpdateScreen(int inKey, char* value)
@@ -76,9 +78,10 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 	case suk_Reflow_StageComplete_Cooling:
 		_sidebar->UpdateCoolingTime(round(atof(value)));
 		_reflowStage = RS_COMPLETE;
-		_sidebar->UpdateTarget("");
+		_sidebar->UpdateTarget("Fin.");
 		break;
 	case suk_Reflow_Complete:
+		PopUpReflowCompleteMB(value);
 		break;
 	default:
 		break;
@@ -93,7 +96,12 @@ void ReflowScreen::UpdateScreenOnInterval()
 	_tft->startWrite();
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
-		_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
+		if (_activeMessageBox == RFS_NO_MB) {
+			_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
+		}
+		else {
+			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
+		}
 	}
 
 	switch (_reflowStage) {
@@ -148,7 +156,77 @@ void ReflowScreen::HandleTouch(int x, int y)
 
 void ReflowScreen::ProcessTouch(int x, int y)
 {
+	if (_activeMessageBox != RFS_NO_MB) {
+		HandleMessageBoxTouch(x, y);
+		return;
+	}
 
+	if (_sidebar->CancelTouched(x, y)) {
+		String message = "Are you sure you want to cancel this reflow session?";
+		_messageBox = new MessageBox(_tft, "Cancel Reflow?", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox->Show();
+		_activeMessageBox = RFS_CANCEL_MB;
+	}
+}
+
+void ReflowScreen::HandleMessageBoxTouch(int x, int y)
+{
+	DialogButtonType mbRet = _messageBox->Touched(x, y);
+	if (mbRet == DB_NONE) {
+		return;
+	}
+
+	switch (_activeMessageBox) {
+	case RFS_CANCEL_MB:
+		if (mbRet == DB_Continue) {
+			CommandQueue.QueueCommand(CC_STOP_OVEN);
+			DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		}
+		break;
+	case RFS_COMPLETE_MB:
+		CommandQueue.QueueCommand(CC_STOP_OVEN);
+		DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		break;
+	default:
+		break;
+	}
+
+	EndMessageBox();
+}
+
+void ReflowScreen::PopUpReflowCompleteMB(char* runTime)
+{
+	int fullRunTime = round(atof(runTime));
+	int minutes = fullRunTime / 60.0;
+	int seconds = fullRunTime - (minutes*60);
+
+	
+	String message = "Run time: " + String(minutes) + ":";
+	if (seconds < 10) {
+		message += "0" + String(seconds);
+	}
+	else {
+		message += String(seconds);
+	}
+	message += "\nOven and/or PCB may still be hot. Handle with care.\nThank you for using IceFlow.";
+	_messageBox = new MessageBox(_tft,
+		"Reflow Complete.",
+		message,
+		MESSAGE_BOX_INFORMATION,
+		MESSAGE_BOX_OK
+	);
+	_messageBox->Show();
+	_activeMessageBox = RFS_COMPLETE_MB;
+}
+
+void ReflowScreen::EndMessageBox()
+{
+	if (_messageBox != nullptr) {
+		_messageBox->Hide();
+		delete _messageBox;
+		_messageBox = nullptr;
+	}
+	_activeMessageBox = RFS_NO_MB;
 }
 
 void ReflowScreen::DrawScreen()

@@ -131,7 +131,7 @@ void Reflow::ProcessPreHeat()
 void Reflow::ProcessSoak()
 {
 	_processReturn = RPR_OK;
-	if (_stageCountDown <= 0 && _currentTemperature >= _profile.pre_heat_soak_end_temperature) {
+	if (_stageCountDown <= 0 && _currentTemperature >= _profile.pre_heat_soak_end_temperature - 1) {
 		_stageRunTimes[RS_SOAK] = millis() - _stageStartTime;
 		char val[7];
 		snprintf(val, 7, "%f", _stageRunTimes[RS_SOAK] / 1000.0);
@@ -198,7 +198,7 @@ void Reflow::ProcessRamp()
 void Reflow::ProcessReflow()
 {
 	_processReturn = RPR_OK;
-	if (_stageCountDown <= 0) {
+	if (_stageCountDown <= 0 && _currentTemperature < _profile.reflow_target_temperature + 2) {
 		_stageRunTimes[RS_REFLOW] = millis() - _stageStartTime;
 		char val[7];
 		snprintf(val, 7, "%f", _stageRunTimes[RS_REFLOW] / 1000.0);

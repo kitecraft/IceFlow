@@ -198,7 +198,6 @@ void MainScreen::HandleMessageBoxTouch(int x, int y)
 	default:
 		break;
 	}
-
 }
 
 void MainScreen::EndMessageBox()

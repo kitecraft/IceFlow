@@ -2,6 +2,13 @@
 #include "BaseScreen.h"
 #include "Panels/RFS_Sidebar.h"
 #include "../OvenController/ReflowStage.h"
+#include "DialogBoxes/MessageBox.h"
+
+enum RFS_MESSAGE_BOX_TYPE {
+	RFS_NO_MB,
+	RFS_CANCEL_MB,
+	RFS_COMPLETE_MB
+};
 
 class ReflowScreen : BaseScreen
 {
@@ -11,6 +18,14 @@ private:
 	REFLOW_STAGE _reflowStage = RS_NOT_ACTIVE;
 	unsigned long _nextSideBarUpdate = 0;
 	unsigned long _startTime = 0;
+
+
+	MessageBox* _messageBox = nullptr;
+	RFS_MESSAGE_BOX_TYPE _activeMessageBox = RFS_NO_MB;
+
+	void PopUpReflowCompleteMB(char* runTime);
+	void HandleMessageBoxTouch(int x, int y);
+	void EndMessageBox();
 
 	void StartPreHeat();
 	void DrawScreen();

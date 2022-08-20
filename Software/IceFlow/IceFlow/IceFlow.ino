@@ -122,6 +122,9 @@ void HandleCommandQueue()
         case CC_START_REFLOW:
             OvenManager.StartReflowSession();
             break;
+        case CC_STOP_OVEN:
+            OvenManager.StopOven();
+            break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);
             Serial.println(data);

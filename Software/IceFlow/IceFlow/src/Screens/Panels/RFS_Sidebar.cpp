@@ -26,11 +26,28 @@ RFS_Sidebar::RFS_Sidebar(TFT_eSPI* tft, Profile* profile)
 		true,
 		GlobalTheme.panelLightColor),
 		_tft);
+
+	_cancelButton = new Button(
+		ButtonDto(
+			DMCoordinates(
+				RFS_CANCEL_BUTTON_X,
+				RFS_CANCEL_BUTTON_Y,
+				RFS_CANCEL_BUTTON_W,
+				RFS_CANCEL_BUTTON_H,
+				RFS_SIDEBAR_X + RFS_CANCEL_BUTTON_X,
+				RFS_CANCEL_BUTTON_Y),
+			GlobalTheme,
+			SMALL_FONT,
+			BUTTON_COLOR),
+		"Cancel",
+		_tft);
+
 }
 
 RFS_Sidebar::~RFS_Sidebar()
 {
 	delete _targetTextBox;
+	delete _cancelButton;
 }
 
 void RFS_Sidebar::Draw()
@@ -42,6 +59,7 @@ void RFS_Sidebar::Draw()
 	DrawRoundedBox(&sprite, DMCoordinates(0, 0, RFS_SIDEBAR_W, RFS_SIDEBAR_STAGE_H, 0, 0), 12, GlobalTheme);
 	DrawRoundedBox(&sprite, DMCoordinates(RFS_TARGET_BOX_X, RFS_TARGET_BOX_Y, RFS_TARGET_BOX_W, RFS_TARGET_BOX_H, 0, 0), 12, GlobalTheme);
 	_targetTextBox->Draw(&sprite, "      ");
+	_cancelButton->Draw(&sprite);
 
 	sprite.setFreeFont(SMALL_FONT);
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
@@ -63,32 +81,32 @@ void RFS_Sidebar::Draw()
 
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
 	String message = String(_profile->pre_heat_target_temperature) + " C";
-	sprite.drawString("Pre-Heat", x, 40);
-	sprite.drawString(message, x, 52);
+	sprite.drawString("Pre-Heat", x, RFS_LABEL_PREHEAT);
+	sprite.drawString(message, x, RFS_LABEL_PREHEAT + RFS_MSG_OFFSET);
 	sprite.drawFastHLine(3, 64, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 
 	sprite.setTextColor(TFT_DARKGREY, GlobalTheme.panelLightColor);
 	message = String(_profile->pre_heat_soak_time) + " sec";
-	sprite.drawString("Soak", x, 67);
-	sprite.drawString(message, x, 79);
+	sprite.drawString("Soak", x, RFS_LABEL_SOAK);
+	sprite.drawString(message, x, RFS_LABEL_SOAK + RFS_MSG_OFFSET);
 	sprite.drawFastHLine(3, 91, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 
 
 	message = String(_profile->reflow_target_temperature) + " C";
-	sprite.drawString("Ramp", x, 94);
-	sprite.drawString(message, x, 106);
+	sprite.drawString("Ramp", x,RFS_LABEL_RAMP);
+	sprite.drawString(message, x, RFS_LABEL_RAMP + RFS_MSG_OFFSET);
 	sprite.drawFastHLine(3, 118, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 
 
 	message = String(_profile->reflow_soak_time) + " sec";
-	sprite.drawString("ReFlow", x, 121);
-	sprite.drawString(message, x, 133);
+	sprite.drawString("ReFlow", x, RFS_LABEL_REFLOW);
+	sprite.drawString(message, x, RFS_LABEL_REFLOW + RFS_MSG_OFFSET);
 	sprite.drawFastHLine(3, 145, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 
 
 	message = String(_profile->cooling_ramp_down_speed) + " C/sec";
-	sprite.drawString("Cooling", x, 148);
-	sprite.drawString(message, x, 160);
+	sprite.drawString("Cooling", x, RFS_LABEL_COOLING);
+	sprite.drawString(message, x, RFS_LABEL_COOLING + RFS_MSG_OFFSET);
 
 	_tft->pushImageDMA(RFS_SIDEBAR_X, RFS_SIDEBAR_Y, RFS_SIDEBAR_W, RFS_SIDEBAR_H, sprPtr);
 
@@ -106,7 +124,7 @@ void RFS_Sidebar::UpdateTime(int time, int yValue)
 	sprite.setTextDatum(TR_DATUM);
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
 
-	String message = String(String(time) + " secs");
+	String message = String(String(time) + " sec");
 	sprite.drawString(message, RFS_SIDEBAR_W - 7, 0);
 	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, yValue, RFS_SIDEBAR_W - 6, SMALL_FONT_TEXT_H, sprPtr);
 
@@ -114,109 +132,73 @@ void RFS_Sidebar::UpdateTime(int time, int yValue)
 	sprite.deleteSprite();
 }
 
+void RFS_Sidebar::StartNewStage(String label, String message, int yOffset)
+{
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
+
+	sprite.fillSprite(GlobalTheme.panelLightColor);
+	sprite.setFreeFont(SMALL_FONT);
+	sprite.setTextDatum(TR_DATUM);
+	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
+
+	sprite.drawString(label, RFS_SIDEBAR_W - 6, 0);
+	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
+
+	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, yOffset, RFS_SIDEBAR_W - 6, 23, sprPtr);
+
+	_tft->dmaWait();
+	sprite.deleteSprite();
+
+}
+
 void RFS_Sidebar::UpdatePreHeatTime(int time)
 {
-	UpdateTime(time, 52);
+	UpdateTime(time, RFS_LABEL_PREHEAT + RFS_MSG_OFFSET);
 }
 
 void RFS_Sidebar::EndPreHeatStage()
 {
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
-
-	sprite.fillSprite(GlobalTheme.panelLightColor);
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
-
-	String message = String(_profile->pre_heat_soak_time) + " secs";
-	sprite.drawString("Soak", RFS_SIDEBAR_W - 6, 0);
-	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
-
-	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, 67, RFS_SIDEBAR_W - 6, 23, sprPtr);
-
-	_tft->dmaWait();
-	sprite.deleteSprite();
+	String message = String(_profile->pre_heat_soak_time) + " sec";
+	StartNewStage("Soak", message, RFS_LABEL_SOAK);
 }
 
 void RFS_Sidebar::UpdateSoakTime(int time)
 {
-	UpdateTime(time, 79);
+	UpdateTime(time, RFS_LABEL_SOAK + RFS_MSG_OFFSET);
 }
 
 void RFS_Sidebar::EndSoakStage()
 {
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
-
-	sprite.fillSprite(GlobalTheme.panelLightColor);
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
-
-	String message = String("0 secs");
-	sprite.drawString("Ramp", RFS_SIDEBAR_W - 6, 0);
-	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
-
-	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, 94, RFS_SIDEBAR_W - 6, 23, sprPtr);
-
-	_tft->dmaWait();
-	sprite.deleteSprite();
+	String message = String("0 sec");
+	StartNewStage("Ramp", message, RFS_LABEL_RAMP);
 }
 
 void RFS_Sidebar::UpdateRampTime(int time)
 {
-	UpdateTime(time, 106);
+	UpdateTime(time, RFS_LABEL_RAMP + RFS_MSG_OFFSET);
 }
 
 void RFS_Sidebar::EndRampStage()
 {
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
-
-	sprite.fillSprite(GlobalTheme.panelLightColor);
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
-
-	String message = String(_profile->reflow_soak_time) + " secs";
-	sprite.drawString("Reflow", RFS_SIDEBAR_W - 6, 0);
-	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
-
-	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, 121, RFS_SIDEBAR_W - 6, 23, sprPtr);
-
-	_tft->dmaWait();
-	sprite.deleteSprite();
+	String message = String(_profile->reflow_soak_time) + " sec";
+	StartNewStage("Reflow", message, RFS_LABEL_REFLOW);
 }
 
 void RFS_Sidebar::UpdateReflowTime(int time)
 {
-	UpdateTime(time, 133);
+	UpdateTime(time, RFS_LABEL_REFLOW + RFS_MSG_OFFSET);
 }
 
 void RFS_Sidebar::EndReflowStage()
 {
-	TFT_eSprite sprite(_tft);
-	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
-
-	sprite.fillSprite(GlobalTheme.panelLightColor);
-	sprite.setFreeFont(SMALL_FONT);
-	sprite.setTextDatum(TR_DATUM);
-	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
-
-	String message = "0 secs";
-	sprite.drawString("Cooling", RFS_SIDEBAR_W - 6, 0);
-	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
-
-	_tft->pushImageDMA(320 - RFS_SIDEBAR_W + 3, 148, RFS_SIDEBAR_W - 6, 23, sprPtr);
-
-	_tft->dmaWait();
-	sprite.deleteSprite();
+	String message = "0 sec";
+	StartNewStage("Cooling", message, RFS_LABEL_COOLING);
 }
 
 void RFS_Sidebar::UpdateCoolingTime(int time)
 {
-	UpdateTime(time, 160);
+	UpdateTime(time, RFS_LABEL_COOLING + RFS_MSG_OFFSET);
 }
 
 void RFS_Sidebar::EndCoolingStage()

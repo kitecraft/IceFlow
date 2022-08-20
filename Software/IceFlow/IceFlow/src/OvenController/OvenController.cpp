@@ -148,18 +148,8 @@ void OvenController::StopOven()
 
 void OvenController::EmergencyStopOven()
 {
-    _ovenStatus = OS_IDLE;
-    _reflowPhase = RP_NOT_ACTIVE;
-
-    DisableOvenHeaters();
-    DisableConvectionFan();
-    SetTargetTemperature(0);
-    if (_autoTune != nullptr) {
-        delete _autoTune;
-        _autoTune = nullptr;
-    }
+    StopOven();
     DisplayQueue.QueueKey(suk_Emergency_Oven_Stopped);
-
 }
 
 void OvenController::FetchPrimaryTemperature()
