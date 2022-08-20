@@ -111,8 +111,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 		return SB_START_MANUAL_HEAT;
 	}
 	else if (_reflowIcon->Touched(x, y)) {
-		Serial.println("Reflow Icon Touched");
-		DisplayQueue.QueueScreenChange(SN_REFLOW_SCREEN);
+		return SB_START_REFLOW;
 	}
 
 	return SB_NOT_TOUCHED;

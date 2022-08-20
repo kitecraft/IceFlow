@@ -227,6 +227,7 @@ void ReflowScreen::EndMessageBox()
 		_messageBox = nullptr;
 	}
 	_activeMessageBox = RFS_NO_MB;
+	_graphPanel->ReDraw();
 }
 
 void ReflowScreen::DrawScreen()

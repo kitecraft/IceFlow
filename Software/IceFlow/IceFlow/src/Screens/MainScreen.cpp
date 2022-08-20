@@ -4,6 +4,8 @@
 #include "Widgets/Box.h"
 #include "../Utilities/MemUseage.h"
 #include "../Utilities/PreferencesManager.h"
+#include "Utilities/ScreenNames.h"
+#include "../DisplayManager/Utilities/DisplayQueue.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 {
@@ -12,6 +14,7 @@ MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 	//PrintMemUseage();
 	_targetTemperatureDlg = nullptr;
 	_messageBox = nullptr;
+	_activeMessageBox = MS_NO_MB;
 
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(BASE_TIME_W, BASE_TIME_H);
@@ -127,7 +130,9 @@ void MainScreen::UpdateScreenOnInterval()
 	if (_temperatureStreamStarted && (_nextGraphUpdate < millis())) {
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
-		if (_sideBar->IsPopUpOpen() || _targetTemperatureDlg != nullptr) {
+		if (_sideBar->IsPopUpOpen() ||
+			_targetTemperatureDlg != nullptr ||
+			_activeMessageBox != MS_NO_MB) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 		}
 		else {
@@ -179,6 +184,9 @@ void MainScreen::ProcessTouch(int x, int y)
 		CommandQueue.QueueCommandAndValue(CC_START_AUTOTUNE, "150");
 		_graphPanel->ReDraw();
 		return;
+	case SB_START_REFLOW:
+		ReflowTouched();
+		break;
 	default:
 		break;
 	}
@@ -195,6 +203,14 @@ void MainScreen::HandleMessageBoxTouch(int x, int y)
 	case MS_OVER_MAX_TEMP:
 		EndMessageBox();
 		_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
+	case MS_START_REFLOW_TEMP_ERROR_MB:
+		EndMessageBox();
+		break;
+	case MS_START_REFLOW_MB:
+		if (mbRet == DB_Continue) {
+			DisplayQueue.QueueScreenChange(SN_REFLOW_SCREEN);
+		}
+		EndMessageBox();
 	default:
 		break;
 	}
@@ -205,7 +221,12 @@ void MainScreen::EndMessageBox()
 	_messageBox->Hide();
 	delete _messageBox;
 	_messageBox = nullptr;
+	if (_targetTemperatureDlg == nullptr) {
+		_graphPanel->ReDraw();
+	}
+
 	_activeMessageBox = MS_NO_MB;
+	
 }
 
 bool MainScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
@@ -242,6 +263,22 @@ void MainScreen::DisplayTime()
 	_timeSprite->pushSprite(BASE_TIME_X, BASE_TIME_Y);
 }
 
+void MainScreen::ReflowTouched()
+{
+	if (_primaryTemperature > MINIUM_OVEN_TEMPERATURE_REFLOW_START) {
+		String message = "Oven temperature must be below '" + String(MINIUM_OVEN_TEMPERATURE_REFLOW_START) + " degrees Celcius' to begin a Reflow session";
+		_messageBox = new MessageBox(_tft, "Over Minimum", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+		_messageBox->Show();
+		_activeMessageBox = MS_START_REFLOW_TEMP_ERROR_MB;
+		return;
+	}
+	
+	String message = "Start a Reflow sesion with '" + _currentProfile.name + "' ?";
+	_messageBox = new MessageBox(_tft, "Start Reflow", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+	_messageBox->Show();
+	_activeMessageBox = MS_START_REFLOW_MB;
+}
+
 void MainScreen::ManualHeatTouched()
 {
 	if (_targetTemperatureDlg != nullptr) {
@@ -276,7 +313,7 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 	_targetTemperatureDlg->Hide();
 	delete _targetTemperatureDlg;
 	_targetTemperatureDlg = nullptr;
-
+	_graphPanel->ReDraw();
 	return true;
 }
 

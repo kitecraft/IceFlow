@@ -70,7 +70,7 @@ public:
 	void StopOven();
 	void EmergencyStopOven();
 
-	void StartReflowSession();
+	bool StartReflowSession();
 	void StartManualHeat(int targetTemperature);
 	void StartTemperatureStream() { _streamTemperatures = true; DisplayQueue.QueueKey(suk_TemperatureStreamStarted); }
 	void StopTemperatureStream() { _streamTemperatures = false; }

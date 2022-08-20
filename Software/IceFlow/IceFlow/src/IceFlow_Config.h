@@ -23,6 +23,8 @@
 //how often to send the tempeature to the displaymanager
 #define TEMPERATURE_DISPLAY_REFRESH_RATE 100
 
+#define MINIUM_OVEN_TEMPERATURE_REFLOW_START 50
+
 //Thermocouplers
 #define THERMOCOUPLER_CLK 14
 #define THERMOCOUPLER_DO 12

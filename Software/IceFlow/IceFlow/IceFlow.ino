@@ -120,7 +120,9 @@ void HandleCommandQueue()
             OvenManager.StartAutoTune(atof(data));
             break;
         case CC_START_REFLOW:
-            OvenManager.StartReflowSession();
+            if (!OvenManager.StartReflowSession()) {
+                OvenManager.EmergencyStopOven();
+            };
             break;
         case CC_STOP_OVEN:
             OvenManager.StopOven();

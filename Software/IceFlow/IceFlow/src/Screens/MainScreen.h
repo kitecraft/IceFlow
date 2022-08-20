@@ -13,7 +13,9 @@ enum MS_MESSAGE_BOX_TYPE {
 	MS_NO_MB, 
 	MS_OK_MB,
 	MS_OVER_MAX_TEMP,
-	MS_AUTOTUNE_MB
+	MS_AUTOTUNE_MB,
+	MS_START_REFLOW_MB,
+	MS_START_REFLOW_TEMP_ERROR_MB
 };
 
 class MainScreen : BaseScreen
@@ -21,8 +23,6 @@ class MainScreen : BaseScreen
 private:
 	TFT_eSprite* _timeSprite = nullptr;
 	SideBar* _sideBar = nullptr;
-	Profile _currentProfile;
-
 
 	TargetTemperatureDlg* _targetTemperatureDlg = nullptr;
 	MessageBox* _messageBox = nullptr;
@@ -30,6 +30,8 @@ private:
 
 	void DrawScreen();
 	void DisplayTime();
+
+	void ReflowTouched();
 
 	void ManualHeatTouched();
 	bool ManualHeatDlgClosed(DialogButtonType action);

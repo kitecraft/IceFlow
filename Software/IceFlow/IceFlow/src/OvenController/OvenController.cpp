@@ -285,13 +285,13 @@ void OvenController::StartManualHeat(int targetTemperature)
     DisplayQueue.QueueKeyAndValue(suk_Oven_Manual_On, val);
 }
 
-void OvenController::StartReflowSession()
+bool OvenController::StartReflowSession()
 {
     if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
         Serial.print("Oven must be below: ");
         Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN);
         Serial.println(" degrees Celcius before Reflow can begin");
-        return;
+        return false;
     }
 
     _ovenStatus = OS_REFLOW_ACTIVE;
@@ -300,6 +300,7 @@ void OvenController::StartReflowSession()
     int startT = _reflow->GetStartingTemperature();
     SetTargetTemperature(startT);
     SendTargetTemperatureToDisplay();
+    return true;
 }
 
 void OvenController::HandleReflowSession()
