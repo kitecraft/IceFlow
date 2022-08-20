@@ -314,30 +314,25 @@ void OvenController::StartReflowSession()
 
 void OvenController::HandleReflowSession()
 {
-    //Serial.println("HandleReflowSession Start");
     int newTarget;
     ReflowProcessReturn ret = _reflow->Process(_temperaturePrimary, newTarget);
 
-    //Serial.print("HandleReflowSession GOT:");
-    //Serial.println(ret);
-    if (ret != RPR_OK) {
+    switch (ret) {
+    case RPR_COMPLETE:
+        StopOven();
+        break;
+    case RPR_ERROR:
         Serial.print("HandleReflowSession Exiting here:");
         StopOven();
-        return;
+        break;
+    case RPR_OK:
+        if (newTarget != _targetTemperature) {
+            SetTargetTemperature(newTarget);
+            SendTargetTemperatureToDisplay();
+        }
+        HandleOvenHeatersWithPID();
+        break;
     }
-
-
-    //Serial.print("\nHandleReflowSession:  Current target");
-    //Serial.println(_targetTemperature);
-
-    //Serial.println("HandleReflowSession:  Setting target");
-    if (newTarget != _targetTemperature) {
-        //Serial.print("HandleReflowSession:  Target set to: ");
-        //Serial.println(newTarget);
-        SetTargetTemperature(newTarget);
-        SendTargetTemperatureToDisplay();
-    }
-    HandleOvenHeatersWithPID();
 }
 
 void OvenController::SendPrimaryTemperatureToDisplay()

@@ -12,8 +12,31 @@ Reflow::~Reflow()
 
 }
 
+void Reflow::Init()
+{
+	_stage = RS_NOT_ACTIVE;
+	_startTime = 0;
+	_startTemperature;
+	_currentTemperature = 0;
+	_targetTemperature = 0;
+
+	_stageRunTimes[0] = 0;
+	_stageRunTimes[1] = 0;
+	_stageRunTimes[2] = 0;
+	_stageRunTimes[3] = 0;
+	_stageRunTimes[4] = 0;
+	_stageCountDown = 0;
+	_preHeatStageTime = 0;
+	_lastTemperatureChange = 0;
+	_degreesPerSecond = 0;
+
+	_processReturn = RPR_OK;
+}
+
 bool Reflow::Start(int currentTemperature)
 {
+	Init();
+
 	if (!ProfileManager.GetSavedProfile(&_profile)) {
 		Serial.println("Failed to load Profile");
 	}
@@ -26,7 +49,7 @@ bool Reflow::Start(int currentTemperature)
 	_targetTemperature = _startTemperature;
 
 	_startTime = millis();
-	_stageTime = 0;
+	_preHeatStageTime = 0;
 	_lastTemperatureChange = 0;
 	return true;
 }
@@ -34,7 +57,6 @@ bool Reflow::Start(int currentTemperature)
 bool Reflow::Stop()
 {
 	_stage = RS_NOT_ACTIVE;
-	_active = false;
 	return true;
 }
 
@@ -71,22 +93,18 @@ void Reflow::ProcessPreHeat()
 {
 	_processReturn = RPR_OK;
 	if (_currentTemperature >= _profile.pre_heat_target_temperature) {
-		Serial.println("STARTING SOAK!");
 		_stageRunTimes[RS_PREHEAT] = millis() - _startTime;
-		DisplayQueue.QueueKey(suk_Reflow_StageComplete_PreHeat);
+		float x = _stageRunTimes[RS_PREHEAT] / 1000.0;
+		char val[7];
+		snprintf(val, 7, "%f", x);
+		DisplayQueue.QueueKeyAndValue(suk_Reflow_StageComplete_PreHeat, val);
 
-		char val[4];
-		snprintf(val, 4, "%i", _stageRunTimes[RS_PREHEAT]/1000);
-		DisplayQueue.QueueKeyAndValue(suk_Reflow_PreHeat_Runtime, val);
 		_stage = RS_SOAK;
-
-
-		_stageTime = _profile.pre_heat_soak_time;
-		_degreesPerSecond = (float)(_profile.pre_heat_soak_end_temperature - _profile.pre_heat_target_temperature) / (float)_stageTime;
-		_targetTemperature = _startTemperature;
-
+		_stageCountDown = _profile.pre_heat_soak_time;
+		_degreesPerSecond = (float)(_profile.pre_heat_soak_end_temperature - _profile.pre_heat_target_temperature) / (float)_stageCountDown;
+		_preHeatStageTime = millis();
 		_startTime = millis();
-		_lastTemperatureChange = 0;
+		_lastTemperatureChange = millis();
 
 		ProcessSoak();
 		return;
@@ -98,11 +116,11 @@ void Reflow::ProcessPreHeat()
 		return;
 	}
 
-	if (_stageTime == 0) {
-		_stageTime = millis();
+	if (_preHeatStageTime == 0) {
+		_preHeatStageTime = millis();
 	}
 	
-	 _targetTemperature = round((((float)(millis() - _stageTime) / 1000.0) * _degreesPerSecond) + _startTemperature);
+	 _targetTemperature = round((((float)(millis() - _preHeatStageTime) / 1000.0) * _degreesPerSecond) + _startTemperature);
 	if (_targetTemperature > _profile.pre_heat_target_temperature) {
 		_targetTemperature = _profile.pre_heat_target_temperature;
 	}
@@ -112,51 +130,56 @@ void Reflow::ProcessPreHeat()
 void Reflow::ProcessSoak()
 {
 	_processReturn = RPR_OK;
-	if (_stageTime <= 0 && _currentTemperature >= _profile.pre_heat_soak_end_temperature) {
-		_stageRunTimes[RS_SOAK] = _profile.pre_heat_soak_time;;
-		DisplayQueue.QueueKey(suk_Reflow_StageComplete_Soak);
+	if (_stageCountDown <= 0 && _currentTemperature >= _profile.pre_heat_soak_end_temperature) {
+		_stageRunTimes[RS_SOAK] = millis() - _startTime;
+		float x = _stageRunTimes[RS_SOAK] / 1000.0;
+		char val[7];
+		snprintf(val, 7, "%f", x);
+		DisplayQueue.QueueKeyAndValue(suk_Reflow_StageComplete_Soak, val);
 
 		_stage = RS_RAMP;
-		_stageTime = 0;
 		_degreesPerSecond = (float)(_profile.reflow_target_temperature - _profile.pre_heat_soak_end_temperature) / (float)_profile.reflow_ramp_time;
 		_startTime = millis();
+		_lastTemperatureChange = millis();
 		return;
 	}
 
-	if (millis() - _lastTemperatureChange < 1000 ||
-		_targetTemperature == _profile.pre_heat_soak_end_temperature) {
+
+	if (millis() - _lastTemperatureChange < 1000){
 		return;
 	}
-	_stageTime--;
+	_lastTemperatureChange = millis();
 
-	_targetTemperature = round(((_profile.pre_heat_soak_time - _stageTime) * _degreesPerSecond) + _profile.pre_heat_target_temperature);
+
+	_targetTemperature = round(((float)(_profile.pre_heat_soak_time - _stageCountDown) * _degreesPerSecond) + (float)_profile.pre_heat_target_temperature);
 	if (_targetTemperature > _profile.pre_heat_soak_end_temperature) {
 		_targetTemperature = _profile.pre_heat_soak_end_temperature;
 	}
-	_lastTemperatureChange = millis();
+
+	_stageCountDown--;
+	if (_stageCountDown < 0) {
+		_stageCountDown = 0;
+	}
 }
 
 void Reflow::ProcessRamp()
 {
 	_processReturn = RPR_OK;
 	if (_currentTemperature >= _profile.reflow_target_temperature) {
-		Serial.println("STARTING REFLOW!");
 		_stageRunTimes[RS_RAMP] = millis() - _startTime;
-		DisplayQueue.QueueKey(suk_Reflow_StageComplete_Ramp);
+		float x = _stageRunTimes[RS_RAMP] / 1000.0;
+		char val[7];
+		snprintf(val, 7, "%f", x);
+		DisplayQueue.QueueKeyAndValue(suk_Reflow_StageComplete_Ramp,val);
 
-		char val[4];
-		snprintf(val, 4, "%i", _stageRunTimes[RS_RAMP] / 1000);
-		DisplayQueue.QueueKeyAndValue(suk_Reflow_Ramp_Runtime, val);
 		_stage = RS_REFLOW;
 
-
-		_stageTime = _profile.reflow_soak_time;
+		_stageCountDown = _profile.reflow_soak_time;
 		_degreesPerSecond = 0;
 		_targetTemperature = _profile.reflow_target_temperature;
 
 		_startTime = millis();
-		_lastTemperatureChange = 0;
-
+		_lastTemperatureChange = millis();
 
 		return;
 	}
@@ -176,12 +199,14 @@ void Reflow::ProcessRamp()
 void Reflow::ProcessReflow()
 {
 	_processReturn = RPR_OK;
-	if (_stageTime <= 0) {
-		_stageRunTimes[RS_REFLOW] = _profile.reflow_soak_time;
-		DisplayQueue.QueueKey(suk_Reflow_StageComplete_Reflow);
+	if (_stageCountDown <= 0) {
+		_stageRunTimes[RS_REFLOW] = millis() - _startTime;
+		float x = _stageRunTimes[RS_REFLOW] / 1000.0;
+		char val[7];
+		snprintf(val, 7, "%f", x);
+		DisplayQueue.QueueKeyAndValue(suk_Reflow_StageComplete_Reflow,val);
 
 		_stage = RS_COOLING;
-		_stageTime = 0;
 		_degreesPerSecond = _profile.cooling_ramp_down_speed;
 		_startTime = millis();
 		_lastTemperatureChange = 0;
@@ -192,7 +217,7 @@ void Reflow::ProcessReflow()
 	if (millis() - _lastTemperatureChange < 1000) {
 		return;
 	}
-	_stageTime--;
+	_stageCountDown--;
 	_lastTemperatureChange = millis();
 }
 
@@ -200,13 +225,16 @@ void Reflow::ProcessCooling()
 {
 	_processReturn = RPR_OK;
 	if (_currentTemperature <= 50) {
-		_stageRunTimes[RS_COOLING] = _profile.reflow_soak_time;
-		DisplayQueue.QueueKey(suk_Reflow_Complete);
+		_stageRunTimes[RS_COOLING] = millis() - _startTime;
+		float x = _stageRunTimes[RS_COOLING] / 1000.0;
+		char val[7];
+		snprintf(val, 7, "%f", x);
+		DisplayQueue.QueueKeyAndValue(suk_Reflow_Complete, val);
+
 		_targetTemperature = 10;
-
 		_stage = RS_COMPLETE;
+		_processReturn = RPR_COMPLETE;
 	}
-
 
 	if (millis() - _lastTemperatureChange < 1000) {
 		return;

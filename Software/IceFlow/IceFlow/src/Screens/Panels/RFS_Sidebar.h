@@ -24,19 +24,19 @@ public:
 	~RFS_Sidebar();
 
 	void UpdatePreHeatTime(int time);
-	void EndPreHeat();
+	void EndPreHeatStage();
 
 	void UpdateSoakTime(int time);
-	void EndSoak();
+	void EndSoakStage();
 
 	void UpdateRampTime(int time);
-	void EndRamp();
+	void EndRampStage();
 
 	void UpdateReflowTime(int time);
-	void EndReflow();
+	void EndReflowStage();
 
 	void UpdateCoolingTime(int time);
-	void EndCooling();
+	void EndCoolingStage();
 
 	void Draw();
 };

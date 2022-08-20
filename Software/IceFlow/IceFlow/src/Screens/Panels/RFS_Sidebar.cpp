@@ -99,7 +99,7 @@ void RFS_Sidebar::UpdatePreHeatTime(int time)
 	UpdateTime(time, 52);
 }
 
-void RFS_Sidebar::EndPreHeat()
+void RFS_Sidebar::EndPreHeatStage()
 {
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
@@ -124,10 +124,8 @@ void RFS_Sidebar::UpdateSoakTime(int time)
 	UpdateTime(time, 79);
 }
 
-void RFS_Sidebar::EndSoak()
+void RFS_Sidebar::EndSoakStage()
 {
-	UpdateTime(0, 79);
-
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
 
@@ -151,7 +149,7 @@ void RFS_Sidebar::UpdateRampTime(int time)
 	UpdateTime(time, 106);
 }
 
-void RFS_Sidebar::EndRamp()
+void RFS_Sidebar::EndRampStage()
 {
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
@@ -176,10 +174,8 @@ void RFS_Sidebar::UpdateReflowTime(int time)
 	UpdateTime(time, 133);
 }
 
-void RFS_Sidebar::EndReflow()
+void RFS_Sidebar::EndReflowStage()
 {
-	UpdateTime(0, 133);
-
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(RFS_SIDEBAR_W - 6, 23);
 
@@ -188,7 +184,7 @@ void RFS_Sidebar::EndReflow()
 	sprite.setTextDatum(TR_DATUM);
 	sprite.setTextColor(GlobalTheme.textColor, GlobalTheme.panelLightColor);
 
-	String message = String(_profile->reflow_soak_time) + " secs";
+	String message = "0 secs";
 	sprite.drawString("Cooling", RFS_SIDEBAR_W - 6, 0);
 	sprite.drawString(message, RFS_SIDEBAR_W - 6, 12);
 
@@ -203,7 +199,7 @@ void RFS_Sidebar::UpdateCoolingTime(int time)
 	UpdateTime(time, 160);
 }
 
-void RFS_Sidebar::EndCooling()
+void RFS_Sidebar::EndCoolingStage()
 {
 
 }

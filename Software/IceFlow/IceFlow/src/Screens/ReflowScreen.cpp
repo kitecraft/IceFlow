@@ -42,36 +42,35 @@ void ReflowScreen::UpdateScreen(int inKey, char* value)
 		StartPreHeat();
 		break;
 	case suk_Reflow_StageComplete_PreHeat:
+		_sidebar->UpdatePreHeatTime(round(atof(value)));
 		_reflowStage = RS_SOAK;
-		_sidebar->EndPreHeat();
+		_sidebar->EndPreHeatStage();
 		_nextSideBarUpdate = 0;
 		_startTime = _currentProfile.pre_heat_soak_time;
 		_sidebar->UpdateSoakTime(_startTime);
 		break;
-	case suk_Reflow_PreHeat_Runtime:
-		_sidebar->UpdatePreHeatTime(atoi(value));
-		break;
 	case suk_Reflow_StageComplete_Soak:
-		_reflowStage = RS_RAMP;
 		_startTime = millis();
-		_sidebar->EndSoak();
+		_sidebar->UpdateSoakTime(round(atof(value)));
+		_sidebar->EndSoakStage();
+		_reflowStage = RS_RAMP;
 		break;
 	case suk_Reflow_StageComplete_Ramp:
-		_sidebar->EndRamp();
+		_sidebar->UpdateRampTime(round(atof(value)));
+		_sidebar->EndRampStage();
 		_reflowStage = RS_REFLOW;
 		_nextSideBarUpdate = 0;
 		_startTime = _currentProfile.reflow_soak_time;
 		_sidebar->UpdateReflowTime(_startTime);
 		break;
-	case suk_Reflow_Ramp_Runtime:
-		_sidebar->UpdateRampTime(atoi(value));
-		break;
 	case suk_Reflow_StageComplete_Reflow:
-		_reflowStage = RS_COOLING;
 		_startTime = millis();
-		_sidebar->EndReflow();
+		_sidebar->UpdateReflowTime(round(atof(value)));
+		_sidebar->EndReflowStage();
+		_reflowStage = RS_COOLING;
 		break;
 	case suk_Reflow_Complete:
+		_sidebar->UpdateCoolingTime(round(atof(value)));
 		_reflowStage = RS_COMPLETE;
 		break;
 	default:

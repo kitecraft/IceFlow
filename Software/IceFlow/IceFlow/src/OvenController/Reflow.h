@@ -7,6 +7,7 @@
 
 enum ReflowProcessReturn {
 	RPR_OK = 0,
+	RPR_COMPLETE,
 	RPR_ERROR
 };
 
@@ -14,7 +15,6 @@ class Reflow
 {
 private:
 	Profile _profile;
-	bool _active = false;
 	REFLOW_STAGE _stage = RS_NOT_ACTIVE;
 	unsigned long _startTime = 0;
 	int _startTemperature;
@@ -22,7 +22,8 @@ private:
 	int _targetTemperature = 0;
 
 	unsigned long _stageRunTimes[5];
-	unsigned long _stageTime = 0;
+	int _stageCountDown = 0;
+	unsigned long _preHeatStageTime = 0;
 	unsigned long _lastTemperatureChange = 0;
 	float _degreesPerSecond = 0;
 
@@ -32,11 +33,12 @@ private:
 	void ProcessRamp();
 	void ProcessReflow();
 	void ProcessCooling();
+
+	void Init();
 public:
 	Reflow();
 	~Reflow();
 
-	bool IsActive() { return _active; }
 	bool Start(int currentTemperature);
 	bool Stop();
 	ReflowProcessReturn Process(float currentTemperature, int& targetTemperature);
