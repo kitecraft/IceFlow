@@ -138,10 +138,7 @@ void OvenController::StopOven()
     DisableOvenHeaters();
     DisableConvectionFan();
     SetTargetTemperature(0);
-    if (_autoTune != nullptr) {
-        delete _autoTune;
-        _autoTune = nullptr;
-    }
+    DeleteAutoTune();
     DisplayQueue.QueueKey(suk_Oven_Stopped);
     
 }
@@ -359,7 +356,6 @@ void OvenController::StartAutoTune(float targetTemperature)
     StopOven();
 
     _ovenStatus = OS_AUTOTUNE_ACTIVE;
-    DeleteAutoTune();
     _autoTune = new AutoTune(targetTemperature);
     EnableOvenHeaters();
 
@@ -378,8 +374,6 @@ void OvenController::DeleteAutoTune()
 
 void OvenController::HandleAutoTune()
 {
-    HandleOvenHeatersWithPID();
-
     _autoTune->currentTemp = _temperaturePrimary;
     unsigned long time = millis();
     _autoTune->maxTemp = max(_autoTune->maxTemp, _autoTune->currentTemp);
