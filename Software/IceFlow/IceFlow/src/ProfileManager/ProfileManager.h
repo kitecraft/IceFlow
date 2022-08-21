@@ -2,11 +2,8 @@
 #include <Arduino.h>
 #include "../Utilities/IceFS.h"
 #include "Profile.h"
+#include "../IceFlow_Config.h"
 
-
-#define PROFILE_SPIFFS_FILE_DIRECTORY "/p/"
-#define MAXIMUM_PROFILE_FILE_NAME_LENGTH 8
-#define PROFILE_FILENAME_EXTENSION ".json"
 
 class IceFlowProfileManager
 {

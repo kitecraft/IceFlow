@@ -8,12 +8,11 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 	_coordinates = coordinates;
 	_theme = theme;
 	_screenReadBuffer = nullptr;
+	_visible = false;
 
 	_sprite = new TFT_eSprite(_tft);
 	_sprPtr = (uint16_t*)_sprite->createSprite(_coordinates.w, _coordinates.h);
 
-
-	//_sprite->fillSprite(_theme.panelDarkColor);
 	_sprite->fillSprite(_theme.panelLightColor);
 
 	DrawSquaredBox(_sprite, coordinates, theme, true);
@@ -45,6 +44,9 @@ void DialogBase::ClearBuffer()
 
 void DialogBase::Show()
 {
+	if (_visible) {
+		return;
+	}
 	ClearBuffer();
 	_screenReadBuffer = (uint16_t*)ps_calloc(_coordinates.w * _coordinates.h, sizeof(uint16_t));
 	_tft->readRect(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _screenReadBuffer);
@@ -55,6 +57,9 @@ void DialogBase::Show()
 
 void DialogBase::Hide()
 {
+	if (!_visible) {
+		return;
+	}
 	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _screenReadBuffer);
 	_tft->dmaWait();
 	_visible = false;

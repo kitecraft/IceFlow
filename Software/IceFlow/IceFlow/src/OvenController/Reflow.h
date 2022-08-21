@@ -42,7 +42,7 @@ public:
 	~Reflow();
 
 	bool Start(int currentTemperature);
-	bool Stop();
+	void Stop();
 	ReflowProcessReturn Process(float currentTemperature, int& targetTemperature);
 	int GetStartingTemperature() { return _startTemperature; }
 };

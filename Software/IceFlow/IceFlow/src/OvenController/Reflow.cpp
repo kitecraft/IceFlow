@@ -40,8 +40,8 @@ bool Reflow::Start(int currentTemperature)
 
 	if (!ProfileManager.GetSavedProfile(&_profile)) {
 		Serial.println("Failed to load Profile");
+		return false;
 	}
-
 
 	_stage = RS_PREHEAT;
 	_currentTemperature = currentTemperature;
@@ -56,10 +56,9 @@ bool Reflow::Start(int currentTemperature)
 	return true;
 }
 
-bool Reflow::Stop()
+void Reflow::Stop()
 {
-	_stage = RS_NOT_ACTIVE;
-	return true;
+	Init();
 }
 
 ReflowProcessReturn Reflow::Process(float currentTemperature, int& targetTemperature)

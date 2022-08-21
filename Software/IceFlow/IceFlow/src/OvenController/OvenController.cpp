@@ -76,28 +76,6 @@ void OvenController::CheckConvectionFanStatus()
         DisableConvectionFan();
         return;
     }
-
-    /*
-    //If the oven and fan are both on, return
-    if (_heatersOn && _convectionFanOn) {
-        return;
-    }
-    //If the oven is on, but the fan isn't, turn the fan on
-    else if (_heatersOn && !_convectionFanOn) {
-        EnableConvectionFan();
-    }
-    //If the oven is off, and the fan is on, turn if off if the temperature is below threshold
-    //and not in manual mode
-    else if (!_heatersOn && (_convectionFanOn && (_temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN)))
-    {
-        DisableConvectionFan();
-        _convectionFanOn = false;
-    }
-    else if (!_heatersOn && !_convectionFanOn && (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN)) {
-        EnableConvectionFan();
-        return;
-    }
-    */
 }
 
 void OvenController::EnableConvectionFan()
@@ -120,7 +98,6 @@ void OvenController::EnableOvenHeaters()
     }
     _heatersOn = true;
     DisplayQueue.QueueKey(suk_Oven_Heaters_On);
-    
 }
 
 void OvenController::DisableOvenHeaters()
@@ -133,12 +110,12 @@ void OvenController::DisableOvenHeaters()
 void OvenController::StopOven()
 {
     _ovenStatus = OS_IDLE;
-    _reflowPhase = RP_NOT_ACTIVE;
 
     DisableOvenHeaters();
     DisableConvectionFan();
     SetTargetTemperature(0);
     DeleteAutoTune();
+    _reflow->Stop();
     DisplayQueue.QueueKey(suk_Oven_Stopped);
     
 }
@@ -179,6 +156,10 @@ void OvenController::FetchTemperatures()
     //FetchPrimaryTemperature();
     //FetchSecondaryTemperature();
 
+
+    /*
+    * Tempory heat/cooling 'algorithm' for testing/development
+    */
     if (_heatersOn) {
         _temperaturePrimary += 0.001;
         _temperatureSecondary += 0.001;
@@ -194,61 +175,15 @@ void OvenController::FetchTemperatures()
             _temperatureSecondary = 5;
         }
     }
+    /*
+    * End of test/dev heat/cool code'/'stuff
+    */
 
     if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
         SendPrimaryTemperatureToDisplay();
         SendSecondaryTemperatureToDisplay();
         _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
-
-
-        /*
-        char val[7];
-        snprintf(val, 7, "%.2f", _temperaturePrimary);
-        DisplayQueue.QueueKeyAndValue(suk_PrimaryTemperature, val);
-
-        //snprintf(val, 7, "%.2f", _temperatureSecondary);
-        snprintf(val, 7, "%.2f", _temperaturePrimary - 5);
-        DisplayQueue.QueueKeyAndValue(suk_SecondaryTemperature, val);
-        _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
-        */
     }
-
-    /*
-    if (_temperaturePrimary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
-        _temperaturePrimary <= OVEN_MINIUMUM_TEMPERATURE_PANIC ||
-        _temperatureSecondary >= OVEN_MAXIMUM_TEMPERATURE_PANIC ||
-        _temperatureSecondary <= OVEN_MINIUMUM_TEMPERATURE_PANIC) {
-        _ovenStatus = OS_BADNESS;
-    }
-
-
-    //if (_testDirection) {
-    if(_heatersOn) {
-        _temperaturePrimary += 0.001;
-        _temperatureSecondary += 0.001;
-        //if (_temperaturePrimary >= 245) {
-        //    _testDirection = false;
-        //}
-
-    }
-    else {
-        _temperaturePrimary -= 0.001;
-        _temperatureSecondary -= 0.001;
-        //if (_temperatureSecondary <= 1) {
-        //    _testDirection = true;
-        //}
-        
-        if (_temperaturePrimary < 15) {
-            _temperaturePrimary = 15;
-        }
-        if (_temperatureSecondary < 5) {
-            _temperatureSecondary = 5;
-        }
-    }
-    */
-
-
-
 }
 
 void OvenController::HandleOvenHeatersWithPID()
@@ -293,7 +228,9 @@ bool OvenController::StartReflowSession()
 
     _ovenStatus = OS_REFLOW_ACTIVE;
     DisplayQueue.QueueKey(suk_Oven_Reflow_On);
-    _reflow->Start(_temperaturePrimary);
+    if (!_reflow->Start(_temperaturePrimary)) {
+        return false;
+    }
     int startT = _reflow->GetStartingTemperature();
     SetTargetTemperature(startT);
     SendTargetTemperatureToDisplay();

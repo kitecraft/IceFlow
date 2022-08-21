@@ -135,6 +135,7 @@
     <ClInclude Include="src\OvenController\AutoTune.h" />
     <ClInclude Include="src\OvenController\OvenController.h" />
     <ClInclude Include="src\OvenController\OvenEnums.h" />
+    <ClInclude Include="src\OvenController\PidData.h" />
     <ClInclude Include="src\OvenController\Reflow.h" />
     <ClInclude Include="src\OvenController\ReflowStage.h" />
     <ClInclude Include="src\ProfileManager\Profile.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="src\DisplayManager\src\CommandQueue\CommandManagerQueue.cpp" />
     <ClCompile Include="src\DisplayManager\src\DisplayQueue\DisplayManagerQueue.cpp" />
     <ClCompile Include="src\OvenController\OvenController.cpp" />
+    <ClCompile Include="src\OvenController\PidData.cpp" />
     <ClCompile Include="src\OvenController\Reflow.cpp" />
     <ClCompile Include="src\ProfileManager\ProfileManager.cpp" />
     <ClCompile Include="src\Screens\BaseScreen.cpp" />

@@ -16,7 +16,6 @@ private:
 	TaskHandle_t _taskHandle = nullptr;
 	Reflow* _reflow = nullptr;
 	OvenStatus _ovenStatus = OS_IDLE;
-	REFLOW_PHASE _reflowPhase = RP_NOT_ACTIVE;
 
 	unsigned long _lastButtonPress = 0;
 
