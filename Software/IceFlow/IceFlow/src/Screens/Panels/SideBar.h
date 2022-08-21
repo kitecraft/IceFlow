@@ -7,6 +7,7 @@
 #include "Icons/ProfileIcon.h"
 #include "Icons/ManualHeatIcon.h"
 #include "Icons/ReflowIcon.h"
+#include "Icons/StopIcon.h"
 
 #define SIDEBAR_NUMBER_ICONS 5
 
@@ -34,6 +35,7 @@
 //#define SETTINGS_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*3)
 
 //5th
+#define STOP_ICON_Y ((ICON_HEIGHT + ICON_V_PADDING)*4)
 
 enum SB_TOUCHED_RETURN {
 	SB_TOUCHED = 0,
@@ -42,6 +44,7 @@ enum SB_TOUCHED_RETURN {
 	SB_START_MANUAL_HEAT,
 	SB_START_AUTO_TUNE,
 	SB_START_REFLOW,
+	SB_STOP
 };
 
 enum ICONID {
@@ -59,6 +62,7 @@ private:
 	ProfileIcon* _profileIcon = nullptr;
 	ManualHeatIcon* _manualHeatIcon = nullptr;
 	ReflowIcon* _reflowIcon = nullptr;
+	StopIcon* _stopIcon = nullptr;
 
 	PopUpMenu _popUpMenu;
 	ICONID _activeIcon = NO_ICONID;
@@ -73,5 +77,6 @@ public:
 	void ReDrawPopUP() { _popUpMenu.Redraw(); }
 	void ManualHeatIconEnabled(bool enabled);
 	void ReflowIconEnabled(bool enabled);
+	void StopIconEnabled(bool enabled);
 };
 

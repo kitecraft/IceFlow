@@ -34,6 +34,13 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 			DMCoordinates(ICON_X, REFLOW_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + REFLOW_ICON_Y),
 			GlobalTheme),
 		_tft);
+	_stopIcon = new StopIcon(
+		IconBaseDto(
+			DMCoordinates(ICON_X, STOP_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + STOP_ICON_Y),
+			GlobalTheme),
+		_tft);
+
+	_stopIcon->SetEnabled(false);
 }
 
 SideBar::~SideBar()
@@ -42,6 +49,7 @@ SideBar::~SideBar()
 	delete _profileIcon;
 	delete _manualHeatIcon;
 	delete _reflowIcon;
+	delete _stopIcon;
 }
 
 void SideBar::Draw()
@@ -54,6 +62,7 @@ void SideBar::Draw()
 	_profileIcon->Draw(&sprite);
 	_manualHeatIcon->Draw(&sprite);
 	_reflowIcon->Draw(&sprite);
+	_stopIcon->Draw(&sprite);
 
 	_tft->pushImageDMA(_coordinates.x, _coordinates.y, _coordinates.w, _coordinates.h, sprPtr);
 	_tft->dmaWait();
@@ -113,6 +122,9 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	else if (_reflowIcon->Touched(x, y)) {
 		return SB_START_REFLOW;
 	}
+	else if (_stopIcon->Touched(x, y)) {
+		return SB_STOP;
+	}
 
 	return SB_NOT_TOUCHED;
 }
@@ -125,4 +137,9 @@ void SideBar::ManualHeatIconEnabled(bool enabled)
 void SideBar::ReflowIconEnabled(bool enabled)
 {
 	_reflowIcon->SetEnabled(enabled);
+}
+
+void SideBar::StopIconEnabled(bool enabled)
+{
+	_stopIcon->SetEnabled(enabled);
 }

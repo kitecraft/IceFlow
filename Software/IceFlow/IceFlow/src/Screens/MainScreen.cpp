@@ -89,13 +89,15 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_Oven_Manual_On:
 		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
+		_sideBar->StopIconEnabled(true);
+		_sideBar->Draw();
 		break;
 	case suk_Oven_Stopped:
 	case suk_Emergency_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
 		_sideBar->ManualHeatIconEnabled(true);
 		_sideBar->ReflowIconEnabled(true);
-
+		_sideBar->StopIconEnabled(false);
 		_sideBar->Draw();
 		break;
 	case suk_Oven_Heaters_On:
@@ -107,6 +109,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_Oven_AutoTune_On:
 		_sideBar->ManualHeatIconEnabled(false);
 		_sideBar->ReflowIconEnabled(false);
+		_sideBar->StopIconEnabled(true);
 		_sideBar->Draw();
 
 		_tertiaryTemperature = atof(value);
@@ -115,6 +118,10 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		break;
 	case suk_Oven_AutoTune_Off:
 		_graphPanel->IgnoreTertiary(true);
+		_sideBar->ManualHeatIconEnabled(true);
+		_sideBar->ReflowIconEnabled(true);
+		_sideBar->StopIconEnabled(false);
+		_sideBar->Draw();
 		//display results here
 		break;
 	default:
@@ -186,6 +193,9 @@ void MainScreen::ProcessTouch(int x, int y)
 		return;
 	case SB_START_REFLOW:
 		ReflowTouched();
+		break;
+	case SB_STOP:
+		CommandQueue.QueueCommand(CC_STOP_OVEN);
 		break;
 	default:
 		break;

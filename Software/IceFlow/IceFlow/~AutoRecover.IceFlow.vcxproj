@@ -165,6 +165,7 @@
     <ClInclude Include="src\Screens\Panels\Icons\ReflowIcon.h" />
     <ClInclude Include="src\Screens\Panels\Icons\SettingsIcon.h" />
     <ClInclude Include="src\Screens\Panels\GraphPanel.h" />
+    <ClInclude Include="src\Screens\Panels\Icons\StopIcon.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListItem.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListItemDto.h" />
     <ClInclude Include="src\Screens\Panels\ProfileListPanel.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="src\Screens\Panels\Icons\ReflowIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\Icons\SettingsIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\GraphPanel.cpp" />
+    <ClCompile Include="src\Screens\Panels\Icons\StopIcon.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListItem.cpp" />
     <ClCompile Include="src\Screens\Panels\ProfileListPanel.cpp" />
     <ClCompile Include="src\Screens\Panels\PS_ProfileGraphPanel.cpp" />

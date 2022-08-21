@@ -17,7 +17,6 @@ void ReflowIcon::Draw(TFT_eSprite* sprite)
 {
 	IconBase::Draw(sprite);
 
-
 	sprite->fillSmoothRoundRect(_config.coordinates.x + 4, _config.coordinates.y + 4, _config.coordinates.w - 8, _config.coordinates.h - 8, 5, _config.theme.panelDarkColor);
 	
 	sprite->drawFastVLine(_config.coordinates.x + 8, _config.coordinates.y + 7, _config.coordinates.h - 14, _config.theme.panelLightColor);

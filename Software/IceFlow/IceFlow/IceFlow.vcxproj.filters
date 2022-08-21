@@ -261,6 +261,9 @@
     <ClInclude Include="src\OvenController\Reflow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Screens\Panels\Icons\StopIcon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\DisplayManager\DisplayManager.cpp">
@@ -381,6 +384,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\OvenController\Reflow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Screens\Panels\Icons\StopIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
