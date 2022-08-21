@@ -400,22 +400,21 @@ void OvenController::HandleAutoTune()
             if (_autoTune->cycles > 0)
             {
 
-                Serial.printf("maxTemp: %i  minTemp: %i\n", _autoTune->maxTemp, _autoTune->minTemp);
+                Serial.printf("maxTemp: %f  minTemp: %f\n", _autoTune->maxTemp, _autoTune->minTemp);
                 if (_autoTune->cycles > 2)
                 {
                     // Parameter according Ziegler¡§CNichols method: http://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
                     _autoTune->Ku = (4.0 * _autoTune->d) / (3.14159 * (_autoTune->maxTemp - _autoTune->minTemp));
                     _autoTune->Tu = ((float)(_autoTune->t_low + _autoTune->t_high) / 1000.0);
-                    Serial.printf("Ku: %i  Tu: %i\n", _autoTune->Ku, _autoTune->Tu);
+                    Serial.printf("Ku: %f  Tu: %f\n", _autoTune->Ku, _autoTune->Tu);
                     _autoTune->Kp = 0.6 * _autoTune->Ku;
                     _autoTune->Ki = 2 * _autoTune->Kp / _autoTune->Tu;
                     _autoTune->Kd = _autoTune->Kp * _autoTune->Tu * 0.125;
-                    Serial.printf("Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+                    Serial.printf("Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
                 }
             }
 
-            DisableOvenHeaters();
-
+            EnableOvenHeaters();
             _autoTune->cycles++;
             _autoTune->minTemp = _temperaturePrimary;
         }
@@ -441,23 +440,23 @@ void OvenController::HandleAutoTune()
     }
     if (_autoTune->cycles > 5)
     {
-        StopOven();
+        DisableOvenHeaters();
         Serial.println("AutoTune: FINSIHED!");
-        Serial.printf("Results are:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+        Serial.printf("Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
         _autoTune->Kp = 0.33* _autoTune->Ku;
         _autoTune->Ki = _autoTune->Kp/ _autoTune->Tu;
         _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
-        Serial.printf("Some overshoot:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+        Serial.printf("Some overshoot:   Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
 
         _autoTune->Kp = 0.2* _autoTune->Ku;
         _autoTune->Ki = 2* _autoTune->Kp/ _autoTune->Tu;
         _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
-        Serial.printf("No overshoot:   Kp: %i  Ki: %i  Kd %i\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+        Serial.printf("No overshoot:   Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
         Serial.println("ALL VALUES ARE EXPERIMENTAL.\nNO WARRANTIES OR GUARANTEES ARE MADE AT ALL.\n\n****DO YOU HAVE A FIRE EXTINGUISHER HANDY?****\n\n");
-        DeleteAutoTune();
+        StopOven();
         return;
     }
 }
