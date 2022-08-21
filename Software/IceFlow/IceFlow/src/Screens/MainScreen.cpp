@@ -13,6 +13,7 @@ MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 	//Serial.println("MainScreen: Constuctor start: ");
 	//PrintMemUseage();
 	_targetTemperatureDlg = nullptr;
+	_activeTargetTempDLG = MSTDLG_NONE;
 	_messageBox = nullptr;
 	_activeMessageBox = MS_NO_MB;
 
@@ -48,10 +49,7 @@ MainScreen::~MainScreen()
 	_timeSprite->deleteSprite();
 	delete(_timeSprite);
 	delete(_sideBar);
-
-	if (_targetTemperatureDlg != nullptr) {
-		delete(_targetTemperatureDlg);
-	}
+	EndTargetTempDlg();
 
 	if (_messageBox != nullptr) {
 		delete _messageBox;
@@ -95,6 +93,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_Oven_Stopped:
 	case suk_Emergency_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
+		_sideBar->SettingsIconEnabled(true);
 		_sideBar->ManualHeatIconEnabled(true);
 		_sideBar->ReflowIconEnabled(true);
 		_sideBar->StopIconEnabled(false);
@@ -107,6 +106,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		DrawHeatersIcon(false);
 		break;
 	case suk_Oven_AutoTune_On:
+		_sideBar->SettingsIconEnabled(false);
 		_sideBar->ManualHeatIconEnabled(false);
 		_sideBar->ReflowIconEnabled(false);
 		_sideBar->StopIconEnabled(true);
@@ -118,6 +118,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		break;
 	case suk_Oven_AutoTune_Off:
 		_graphPanel->IgnoreTertiary(true);
+		_sideBar->SettingsIconEnabled(true);
 		_sideBar->ManualHeatIconEnabled(true);
 		_sideBar->ReflowIconEnabled(true);
 		_sideBar->StopIconEnabled(false);
@@ -138,7 +139,7 @@ void MainScreen::UpdateScreenOnInterval()
 		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
 
 		if (_sideBar->IsPopUpOpen() ||
-			_targetTemperatureDlg != nullptr ||
+			_activeTargetTempDLG != MSTDLG_NONE ||
 			_activeMessageBox != MS_NO_MB) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 		}
@@ -166,14 +167,13 @@ void MainScreen::HandleTouch(int x, int y)
 
 void MainScreen::ProcessTouch(int x, int y)
 {
-
 	// Handle message box if active
 	if (_activeMessageBox != MS_NO_MB) {
 		HandleMessageBoxTouch(x, y);
 		return;
 	}
 
-	if (_targetTemperatureDlg != nullptr) {
+	if(_activeTargetTempDLG != MSTDLG_NONE){
 		DialogButtonType result = _targetTemperatureDlg->Touched(x, y);
 		if (result != DB_NONE) {
 			ManualHeatDlgClosed(result);
@@ -191,8 +191,7 @@ void MainScreen::ProcessTouch(int x, int y)
 		ManualHeatTouched();
 		return;
 	case SB_START_AUTO_TUNE:
-		CommandQueue.QueueCommandAndValue(CC_START_AUTOTUNE, "150");
-		_graphPanel->ReDraw();
+		AutoTuneTouched();
 		return;
 	case SB_START_REFLOW:
 		ReflowTouched();
@@ -231,15 +230,17 @@ void MainScreen::HandleMessageBoxTouch(int x, int y)
 
 void MainScreen::EndMessageBox()
 {
-	_messageBox->Hide();
-	delete _messageBox;
-	_messageBox = nullptr;
-	if (_targetTemperatureDlg == nullptr) {
+	if (_messageBox != nullptr) {
+		_messageBox->Hide();
+		delete _messageBox;
+		_messageBox = nullptr;
+	}
+
+	if(_activeTargetTempDLG == MSTDLG_NONE){
 		_graphPanel->ReDraw();
 	}
 
 	_activeMessageBox = MS_NO_MB;
-	
 }
 
 bool MainScreen::HandleOKMessageBox(DialogButtonType buttonPressed)
@@ -292,15 +293,24 @@ void MainScreen::ReflowTouched()
 	_activeMessageBox = MS_START_REFLOW_MB;
 }
 
+void MainScreen::AutoTuneTouched()
+{
+	EndTargetTempDlg();
+
+	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, AUTOTUNE_TARGET_TEMPERATURE_DIALOG_TITLE);
+	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
+	_targetTemperatureDlg->Show();
+	_activeTargetTempDLG = MSTDLG_AUTO_TUNE;
+}
+
 void MainScreen::ManualHeatTouched()
 {
-	if (_targetTemperatureDlg != nullptr) {
-		delete(_targetTemperatureDlg);
-	}
+	EndTargetTempDlg();
 
 	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE);
 	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
 	_targetTemperatureDlg->Show();
+	_activeTargetTempDLG = MSTDLG_MANUAL_HEAT;
 }
 
 bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
@@ -319,15 +329,30 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 
 		char val[4];
 		snprintf(val, 7, "%i", targetTemp);
-		CommandQueue.QueueCommandAndValue(CC_START_MANUAL_HEAT, val);
-		SaveMaualHeatTargetTemperature(targetTemp);
+		if (_activeTargetTempDLG == MSTDLG_MANUAL_HEAT) {
+			CommandQueue.QueueCommandAndValue(CC_START_MANUAL_HEAT, val);
+			SaveMaualHeatTargetTemperature(targetTemp);
+		}
+		else if (_activeTargetTempDLG == MSTDLG_AUTO_TUNE) {
+			CommandQueue.QueueCommandAndValue(CC_START_AUTOTUNE, val);
+		}
+		
 	}
 
-	_targetTemperatureDlg->Hide();
-	delete _targetTemperatureDlg;
-	_targetTemperatureDlg = nullptr;
+	EndTargetTempDlg();
 	_graphPanel->ReDraw();
 	return true;
+}
+
+void MainScreen::EndTargetTempDlg()
+{
+	if (_targetTemperatureDlg != nullptr) {
+		_targetTemperatureDlg->Hide();
+		delete _targetTemperatureDlg;
+		_targetTemperatureDlg = nullptr;
+
+	}
+	_activeTargetTempDLG = MSTDLG_NONE;
 }
 
 void MainScreen::DrawHeatersIcon(bool status)

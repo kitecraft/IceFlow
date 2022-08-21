@@ -13,9 +13,15 @@ enum MS_MESSAGE_BOX_TYPE {
 	MS_NO_MB, 
 	MS_OK_MB,
 	MS_OVER_MAX_TEMP,
-	MS_AUTOTUNE_MB,
+	//MS_AUTOTUNE_MB,
 	MS_START_REFLOW_MB,
 	MS_START_REFLOW_TEMP_ERROR_MB
+};
+
+enum MS_TARGET_TEMP_DLG {
+	MSTDLG_NONE,
+	MSTDLG_MANUAL_HEAT,
+	MSTDLG_AUTO_TUNE,
 };
 
 class MainScreen : BaseScreen
@@ -25,6 +31,7 @@ private:
 	SideBar* _sideBar = nullptr;
 
 	TargetTemperatureDlg* _targetTemperatureDlg = nullptr;
+	MS_TARGET_TEMP_DLG _activeTargetTempDLG = MSTDLG_NONE;
 	MessageBox* _messageBox = nullptr;
 	MS_MESSAGE_BOX_TYPE _activeMessageBox = MS_NO_MB;
 
@@ -35,6 +42,9 @@ private:
 
 	void ManualHeatTouched();
 	bool ManualHeatDlgClosed(DialogButtonType action);
+	void EndTargetTempDlg();
+
+	void AutoTuneTouched();
 
 	void DrawHeatersIcon(bool status);
 

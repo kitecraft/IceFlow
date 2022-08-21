@@ -26,4 +26,8 @@ void SettingsIcon::Draw(TFT_eSprite* sprite)
 	sprite->fillSmoothRoundRect(longX, mid - offsetY, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
 	sprite->fillSmoothRoundRect(longX, mid, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
 	sprite->fillSmoothRoundRect(longX, mid + offsetY, LINE_LONG, LINE_RADIUS, LINE_HEIGHT, _config.theme.panelDarkColor, _config.theme.panelLightColor);
+
+	if (!_enabled) {
+		UpdateAsDisabled(sprite);
+	}
 }

@@ -359,8 +359,8 @@ void OvenController::StartAutoTune(float targetTemperature)
     _autoTune = new AutoTune(targetTemperature);
     EnableOvenHeaters();
 
-    char val[4];
-    snprintf(val, 4, "%f", targetTemperature);
+    char val[7];
+    snprintf(val, 7, "%f", targetTemperature);
     DisplayQueue.QueueKeyAndValue(suk_Oven_AutoTune_On, val);
 }
 
@@ -500,6 +500,7 @@ void OvenController::Run()
 
 void OvenController::SendStatus()
 {
+    char val[7];
     switch (_ovenStatus) {
     case OS_IDLE:
         DisplayQueue.QueueKey(suk_Oven_Stopped);
@@ -513,7 +514,8 @@ void OvenController::SendStatus()
         DisplayQueue.QueueKey(suk_Oven_Reflow_On);
         break;
     case OS_AUTOTUNE_ACTIVE:
-        DisplayQueue.QueueKey(suk_Oven_AutoTune_On);
+        snprintf(val, 7, "%f", _autoTune->targetTemperature);
+        DisplayQueue.QueueKeyAndValue(suk_Oven_AutoTune_On, val);
         break;
     default:
         DisplayQueue.QueueKey(suk_Oven_Stopped);

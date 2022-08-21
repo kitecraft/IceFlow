@@ -143,3 +143,8 @@ void SideBar::StopIconEnabled(bool enabled)
 {
 	_stopIcon->SetEnabled(enabled);
 }
+
+void SideBar::SettingsIconEnabled(bool enabled)
+{
+	_settingsIcon->SetEnabled(enabled);
+}
