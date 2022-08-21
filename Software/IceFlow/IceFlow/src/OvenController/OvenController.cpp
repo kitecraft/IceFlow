@@ -348,7 +348,7 @@ void OvenController::StartAutoTune(float targetTemperature)
 {
     Serial.println("Starting PID Auto Tune!");
     if (_ovenStatus != OS_IDLE && _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
-        Serial.print("Oven must be idle or in mnaul mode to start Auto Tune.\nCurrent State: ");
+        Serial.print("Oven must be idle or in manaul mode to start Auto Tune.\nCurrent State: ");
         Serial.println(_ovenStatus);
         return;
     }
