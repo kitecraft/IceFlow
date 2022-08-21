@@ -149,6 +149,9 @@ void ReflowScreen::UpdateScreenOnInterval()
 void ReflowScreen::HandleTouch(int x, int y)
 {
 	_tft->startWrite();
+	if (BaseScreen::HandleTouch(x, y)) {
+		return;
+	}
 	ProcessTouch(x, y);
 	_tft->dmaWait();
 	_tft->endWrite();

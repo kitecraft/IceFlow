@@ -56,6 +56,9 @@ private:
 	bool _ignoreTertiary = false;
 	bool _redrawRequired = false;
 
+	bool _secondaryVisible = true;
+	bool _tertiaryVisible = true;
+
 	GraphAutoScaler* _primaryTemperatureAutoScaler = nullptr;
 	GraphAutoScaler* _secondaryTemperatureAutoScaler = nullptr;
 	GraphAutoScaler* _tertiaryTemperatureAutoScaler = nullptr;
@@ -83,5 +86,10 @@ public:
 	void ReDraw();
 	void Update(float primaryTemperature, float secondaryTemperature = 0, float tertiaryTemperature = 0);
 	void UpdateValuesOnly(float primaryTemperature, float secondaryTemperature = 0, float tertiaryTemperature = 0);
+
+	void SecondaryVisible(bool visible);
+	void TertiaryVisible(bool visible);
+	void ToggleSecondaryVisible();
+	void ToggleTertiaryVisible();
 };
 

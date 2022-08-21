@@ -94,6 +94,9 @@ void GraphPanel::IgnoreSecondary(bool ignore)
 	if (_ignoreSecondary) {
 		_secondaryTemperatureAutoScaler->Clear();
 	}
+	else {
+		SecondaryVisible(true);
+	}
 	_redrawRequired = true;
 }
 
@@ -103,6 +106,9 @@ void GraphPanel::IgnoreTertiary(bool ignore)
 	if (_ignoreTertiary) {
 		_tertiaryTemperatureAutoScaler->Clear();
 	}
+	else {
+		TertiaryVisible(true);
+	}
 	_redrawRequired = true;
 }
 
@@ -111,7 +117,7 @@ void GraphPanel::CalculateNewMaxMins()
 	float max = _primaryTemperatureAutoScaler->GetMax();
 	float min = _primaryTemperatureAutoScaler->GetMin();
 
-	if (!_ignoreSecondary) {
+	if (!_ignoreSecondary && _secondaryVisible) {
 		float secMax = _secondaryTemperatureAutoScaler->GetMax();
 		float secMin = _secondaryTemperatureAutoScaler->GetMin();
 		if (secMax > max) {
@@ -121,7 +127,7 @@ void GraphPanel::CalculateNewMaxMins()
 			min = secMin;
 		}
 	}
-	if (!_ignoreTertiary) {
+	if (!_ignoreTertiary && _tertiaryVisible) {
 		float terMax = _tertiaryTemperatureAutoScaler->GetMax();
 		float terMin = _tertiaryTemperatureAutoScaler->GetMin();
 		if (terMax > max) {
@@ -179,12 +185,19 @@ void GraphPanel::Update(float primaryTemperature, float secondaryTemperature, fl
 	bool tertiaryReclculated = false;
 
 	bool primaryRecalculated = _primaryTemperatureAutoScaler->AddItem(primaryTemperature);
+
 	if (!_ignoreSecondary) {
 		secondaryRecalculated = _secondaryTemperatureAutoScaler->AddItem(secondaryTemperature);
+		if (!_secondaryVisible) {
+			secondaryRecalculated = false;
+		}
 	}
 
 	if (!_ignoreTertiary) {
 		tertiaryReclculated = _tertiaryTemperatureAutoScaler->AddItem(tertiaryTemperature);
+		if (!_tertiaryVisible) {
+			tertiaryReclculated = false;
+		}
 	}
 
 	if (primaryRecalculated || secondaryRecalculated || tertiaryReclculated || _redrawRequired) {
@@ -204,7 +217,7 @@ void GraphPanel::Update(float primaryTemperature, float secondaryTemperature, fl
 		_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
 		_temperatureSprite[BOTTOM_SIDE]->drawFastVLine(_temperatureSprite_W - 1, 0, _temperatureSprite_H, TFT_TRANSPARENT);
 
-		if (!_ignoreTertiary) {
+		if (!_ignoreTertiary && _tertiaryVisible) {
 			_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
 				_temperatureSprite_H - round((tertiaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
 				2,
@@ -218,7 +231,7 @@ void GraphPanel::Update(float primaryTemperature, float secondaryTemperature, fl
 			);
 		}
 
-		if (!_ignoreSecondary) {
+		if (!_ignoreSecondary && _secondaryVisible) {
 			_temperatureSprite[TOP_SIDE]->drawFastVLine(_temperatureSprite_W - 1,
 				_temperatureSprite_H - round((secondaryTemperature - _minimumTemperature) * _currentScaleDegreesPerPixel),
 				2,
@@ -292,7 +305,6 @@ void GraphPanel::DrawTemperatureLegends()
 
 	uint16_t* buffer = (uint16_t*)ps_malloc(2*(TEMPERATURE_LEGEND_WIDTH * _temperatureLegendHeight) + 1);
 	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr, buffer);
-	//_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, TEMPERATURE_LEGEND_WIDTH, _temperatureLegendHeight, sprPtr);
 
 	//Right side
 	sprite.fillSprite(TFT_BLACK);
@@ -348,55 +360,6 @@ void GraphPanel::DrawGraph()
 
 	DrawGraphGrid(BOTTOM_SIDE);
 	_tft->pushImageDMA(_bgSprite_X, _bgSpriteBottom_Y, _bgSprite_W, _bgSpriteBottom_H, _bgSprPtr[BOTTOM_SIDE]);
-
-	/*
-	_temperatureSprite[TOP_SIDE]->fillSprite(TFT_TRANSPARENT);
-	_temperatureSprite[BOTTOM_SIDE]->fillSprite(TFT_TRANSPARENT);
-	_temperatureSprite[TOP_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 25, TFT_PINK);
-	_temperatureSprite[TOP_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 5, TFT_TRANSPARENT);
-
-	_temperatureSprite[TOP_SIDE]->pushToSprite(_bgSprite[TOP_SIDE], 1, 1, TFT_TRANSPARENT);
-
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteTop_Y, _bgSprite_W, _bgSpriteTop_H, _bgSprPtr[TOP_SIDE]);
-
-
-
-	_temperatureSprite[BOTTOM_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 25, TFT_PINK);
-	_temperatureSprite[BOTTOM_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 5, TFT_TRANSPARENT);
-
-	_temperatureSprite[BOTTOM_SIDE]->pushToSprite(_bgSprite[BOTTOM_SIDE], 1, _bgSpriteTop_H, TFT_TRANSPARENT);
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteBottom_Y, _bgSprite_W, _bgSpriteBottom_H, _bgSprPtr[BOTTOM_SIDE]);
-
-	*/
-
-	/*
-	_bgSprite[TOP_SIDE]->fillSprite(TFT_BLACK);
-	_bgSprite[TOP_SIDE]->drawRect(0, 0, _bgSprite_W, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-
-	_bgSprite[TOP_SIDE]->drawLine(0, 0, _bgSprite_W, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-	_bgSprite[TOP_SIDE]->drawLine(_bgSprite_W, 0, 0, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-	_temperatureSprite[TOP_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 25, TFT_PINK);
-	_temperatureSprite[TOP_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 5, TFT_TRANSPARENT);
-	
-	_temperatureSprite[TOP_SIDE]->pushToSprite(_bgSprite[TOP_SIDE], 1, 1, TFT_TRANSPARENT);
-
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteTop_Y, _bgSprite_W, _bgSpriteTop_H, _bgSprPtr[TOP_SIDE]);
-
-
-	_bgSprite[BOTTOM_SIDE]->fillSprite(TFT_BLACK);
-	_bgSprite[BOTTOM_SIDE]->drawRect(0, 0, _bgSprite_W, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-
-	_bgSprite[BOTTOM_SIDE]->drawLine(0, 0, _bgSprite_W, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-	_bgSprite[BOTTOM_SIDE]->drawLine(_bgSprite_W, 0, 0, _bgSprite_H - 1, GlobalTheme.panelBorderColor);
-
-	_temperatureSprite[BOTTOM_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 25, TFT_PINK);
-	_temperatureSprite[BOTTOM_SIDE]->fillCircle(_temperatureSprite_W / 2, _temperatureSprite_H / 2, 5, TFT_TRANSPARENT);
-	
-	_temperatureSprite[BOTTOM_SIDE]->pushToSprite(_bgSprite[BOTTOM_SIDE], 1, _bgSpriteTop_H, TFT_TRANSPARENT);
-
-	_tft->pushImageDMA(_bgSprite_X, _bgSpriteBottom_Y, _bgSprite_W, _bgSpriteBottom_H, _bgSprPtr[BOTTOM_SIDE]);
-	_tft->dmaWait();
-	*/
 }
 
 void GraphPanel::DrawGraphGrid(int slot)
@@ -423,7 +386,7 @@ void GraphPanel::ReDrawTemperatureSprites()
 
 	_currentScaleDegreesPerPixel = _temperatureSprite_H / (_maximumTemperature - _minimumTemperature);
 
-	if (!_ignoreTertiary) {
+	if (!_ignoreTertiary && _tertiaryVisible) {
 		int column = _temperatureSprite_W - 1;
 		float curr = _tertiaryTemperatureAutoScaler->GetNewest();
 		if ((int)curr != GAS_NO_VALUE) {
@@ -464,7 +427,7 @@ void GraphPanel::ReDrawTemperatureSprites()
 		}
 	}
 	
-	if (!_ignoreSecondary) {
+	if (!_ignoreSecondary && _secondaryVisible) {
 		int column = _temperatureSprite_W - 1;
 		float curr = _secondaryTemperatureAutoScaler->GetNewest();
 		if ((int)curr != GAS_NO_VALUE) {
@@ -542,4 +505,34 @@ void GraphPanel::ReDrawTemperatureSprites()
 		);
 		curr = _primaryTemperatureAutoScaler->GetNext();
 	}
+}
+
+void GraphPanel::SecondaryVisible(bool visible)
+{
+	bool oldState = _secondaryVisible;
+	_secondaryVisible = visible;
+	if (oldState != _secondaryVisible) {
+		_redrawRequired = true;
+	}
+}
+
+void GraphPanel::TertiaryVisible(bool visible)
+{
+	bool oldState = _tertiaryVisible;
+	_tertiaryVisible = visible;
+	if (oldState != _tertiaryVisible) {
+		_redrawRequired = true;
+	}
+}
+
+void GraphPanel::ToggleSecondaryVisible()
+{
+	bool newState = _secondaryVisible ? false : true;
+	SecondaryVisible(newState);
+}
+
+void GraphPanel::ToggleTertiaryVisible()
+{
+	bool newState = _tertiaryVisible ? false : true;
+	TertiaryVisible(newState);
 }

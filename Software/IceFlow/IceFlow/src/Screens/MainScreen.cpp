@@ -156,6 +156,9 @@ void MainScreen::UpdateScreenOnInterval()
 void MainScreen::HandleTouch(int x, int y)
 {
 	_tft->startWrite();
+	if (BaseScreen::HandleTouch(x, y)) {
+		return;
+	}
 	ProcessTouch(x, y);
 	_tft->dmaWait();
 	_tft->endWrite();

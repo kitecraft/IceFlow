@@ -108,15 +108,21 @@ bool BaseScreen::UpdateScreen(SCREEN_UPDATE_KEYS key, char* value)
 	}
 	return true;
 }
-/*
-void BaseScreen::UpdateScreenOnInterval()
+
+bool BaseScreen::HandleTouch(int x, int y)
 {
-	if (_temperatureStreamStarted && _nextGraphUpdate < millis()) {
-		_nextGraphUpdate = millis() + UPDATE_GRAPH_RATE;
-		_graphPanel->Update(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
+	if (_primaryTemperatureTB->Touched(x, y)) {
+		_graphPanel->ToggleTertiaryVisible();
+		return true;
 	}
+	if (_secondaryTemperatureTB->Touched(x, y)) {
+		_graphPanel->ToggleSecondaryVisible();
+		return true;
+	}
+
+	return false;
 }
-*/
+
 void BaseScreen::DrawScreen()
 {
 	_tft->fillScreen(TFT_BLACK);

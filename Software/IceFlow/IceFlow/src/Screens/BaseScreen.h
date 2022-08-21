@@ -82,7 +82,6 @@ protected:
 	void DrawScreen();
 	void DrawHeader();
 	void DrawFooter();
-	//void UpdateScreenOnInterval();
 
 	void UpdatePrimaryTemp(char* val);
 	void UpdateSecondaryTemp(char* val);
@@ -91,6 +90,8 @@ protected:
 	void DrawHeatersIcon(bool status);
 	
 	bool UpdateScreen(SCREEN_UPDATE_KEYS key, char* value);
+
+	bool HandleTouch(int x, int y);
 
 public:
 	BaseScreen(TFT_eSPI* tft);
