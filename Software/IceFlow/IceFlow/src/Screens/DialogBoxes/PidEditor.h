@@ -4,6 +4,7 @@
 #include "../Widgets/TextBox.h"
 #include "../../OvenController/PidData.h"
 #include "../Widgets/Button.h"
+#include "NumberPadDialogBox.h"
 
 #define PID_DLG_TITLE "PID Editor"
 
@@ -41,7 +42,7 @@
 #define PID_DLG_PANEL_Y_OFFSET_MID (PID_DLG_PANEL_Y_OFFSET_CURRENT + PID_DLG_PANEL_Y_OFFSET)
 #define PID_DLG_PANEL_Y_OFFSET_LOW (PID_DLG_PANEL_Y_OFFSET_CURRENT + (PID_DLG_PANEL_Y_OFFSET*2))
 #define PID_DLG_PANEL_Y_OFFSET_HIGH (PID_DLG_PANEL_Y_OFFSET_CURRENT + (PID_DLG_PANEL_Y_OFFSET*3))
-#define PID_DLG_PANEL_SET_BUTTON_Y_OFFSET 7
+#define PID_DLG_PANEL_SET_BUTTON_Y_OFFSET 6
 #define PID_DLG_PANEL_TEXTBOX_Y_OFFSET 7
 
 #define PID_DLG_ACTION_BUTTON_W 65
@@ -50,6 +51,13 @@
 #define PID_DLG_CANCEL_BUTTON_X 73
 #define PID_DLG_BTN_CLOSE_X (PID_DLG_W - (DIALOG_BUTTON_WIDTH + 5))
 #define PID_DLG_BTN_Y (PID_DLG_H - (DIALOG_BUTTON_HEIGHT + 6))
+
+enum PIDED_ACTIVE_TEXT_BOX {
+	PIDED_NONE,
+	PIDED_KP,
+	PIDED_KI,
+	PIDED_KD
+};
 
 class PidEditor :
     public DialogBase
@@ -72,6 +80,9 @@ private:
 	Button* _cancelButton = nullptr;
 	Button* _saveButton = nullptr;
 
+	NumberPadDialogBox* _numberPad = nullptr;
+	PIDED_ACTIVE_TEXT_BOX _activeTB = PIDED_NONE;
+
 	void DrawPIDValuesPanel(int yOffset, String title, uint16_t borderColor);
 	void ShowHideButtons();
 	void Draw();
@@ -79,6 +90,8 @@ private:
 	void ResetCurrentValuesToOrig();
 	void SetCurrentValues(float kp, float ki, float kd);
 	void SaveCurrentValues();
+
+	void OpenNumberPad(PIDED_ACTIVE_TEXT_BOX textBox, float initialValue);
 
 	void Redraw();
 

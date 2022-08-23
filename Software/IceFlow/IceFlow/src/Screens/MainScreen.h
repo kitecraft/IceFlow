@@ -60,8 +60,6 @@ private:
 	void DisableAllSideBarIconsEnableStop();
 	void ResetSideBarIcons();
 
-	void HandleAutoTuneComplete();
-
 public:
 	MainScreen(TFT_eSPI* tft);
 	~MainScreen();

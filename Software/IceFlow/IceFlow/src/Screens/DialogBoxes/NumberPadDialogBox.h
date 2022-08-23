@@ -18,7 +18,7 @@
 
 #define NP_NUMBER_BUTTON_Y (NP_NUMBER_BOX_TB_Y + NP_NUMBER_BOX_TB_H)
 
-#define NP_NUMBER_OF_BUTTONS 12
+#define NP_NUMBER_OF_BUTTONS 13
 
 #define MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE "Manual Heat"
 
@@ -26,23 +26,24 @@ class NumberPadDialogBox :
     public DialogBase
 {
 private:
-	int _number;
+	String _number;
 	TextBox* _textBox = nullptr;
 	bool _textBoxSelected = true;
+	bool _useDecimal = false;
 
 	NumPadButton* _buttons[NP_NUMBER_OF_BUTTONS] = { nullptr };
 
 	void DrawButtons();
 	void HandleButtonPress(NUM_PAD_BUTTON button);
 
-	void UpdateValue(int newTemperature);
+	void UpdateValue(String  newValue);
 	void BackSpaceValue();
 public:
     NumberPadDialogBox();
-	NumberPadDialogBox(TFT_eSPI* tft, String title);
+	NumberPadDialogBox(TFT_eSPI* tft, String title, bool useDecimal = false);
 	~NumberPadDialogBox();
-	void SetNumber(int number) { UpdateValue(number); }
-	int GetNumber() { return _number; }
+	void SetNumber(String  number) { UpdateValue(number); }
+	float GetNumber() { return _number.toFloat(); }
 
 	bool Touched(int x, int y);
 };

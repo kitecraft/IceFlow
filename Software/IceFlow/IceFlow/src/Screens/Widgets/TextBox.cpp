@@ -140,6 +140,11 @@ void TextBox::Draw(TFT_eSprite* sprite, const int number, bool useDark)
 	Draw(sprite, String(number), useDark);
 }
 
+void TextBox::Draw(TFT_eSprite* sprite, const float number, bool useDark)
+{
+	Draw(sprite, String(number), useDark);
+}
+
 void TextBox::Draw(TFT_eSprite* sprite, String text, uint16_t bgColor)
 {
 	uint16_t origBGColor = _config.theme.panelLightColor;
@@ -182,6 +187,11 @@ void TextBox::Update(String text, uint16_t bgColor)
 }
 
 void TextBox::Update(const int number, bool useDark)
+{
+	Update(String(number), useDark);
+}
+
+void TextBox::Update(const float number, bool useDark)
 {
 	Update(String(number), useDark);
 }

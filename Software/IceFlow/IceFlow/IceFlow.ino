@@ -47,9 +47,9 @@ void setup() {
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
 
-    SavePidKP(3.00);
-    SavePidKI(3.00);
-    SavePidKD(1.2);
+    //SavePidKP(3.00);
+    //SavePidKI(3.00);
+    //SavePidKD(1.2);
     //Init the oven
     OvenManager.Init();
 

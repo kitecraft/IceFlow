@@ -74,6 +74,9 @@ void NumPadButton::SetLabel(NUM_PAD_BUTTON type)
 	case NPB_ENTER:
 		_label = "->";
 		break;
+	case NPB_DECIMAL:
+		_label = ".";
+		break;
 	default:
 		_label = "NN";
 		break;

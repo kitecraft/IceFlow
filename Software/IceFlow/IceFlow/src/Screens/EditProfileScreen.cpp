@@ -729,7 +729,7 @@ void EditProfileScreen::OpenNumberPad(TextBoxName textBoxName)
 		_activeTextBox = textBoxName;
 		
 		_numberPadDlg = new NumberPadDialogBox(_tft, "Target");
-		_numberPadDlg->SetNumber(_textBoxes[textBoxName]->GetText().toInt());
+		_numberPadDlg->SetNumber(_textBoxes[textBoxName]->GetText());
 		_numberPadDlg->Show();
 	}
 }

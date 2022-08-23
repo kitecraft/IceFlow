@@ -5,9 +5,11 @@ NumberPadDialogBox::NumberPadDialogBox() : DialogBase()
 
 }
 
-NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
+NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title, bool useDecimal)
 	:DialogBase(tft, DMCoordinates(0, 0, NumberPad_DLG_W, NumberPad_DLG_H, NumberPad_DLG_X, NumberPad_DLG_Y), GlobalTheme, title)
 {
+	_useDecimal = useDecimal;
+
 	_textBox = new TextBox(TextBoxDto(
 		DMCoordinates(
 			NP_NUMBER_BOX_TB_X,
@@ -21,18 +23,8 @@ NumberPadDialogBox::NumberPadDialogBox(TFT_eSPI* tft, String title)
 		LARGE_FONT,
 		MR_DATUM),
 		_tft);
-	UpdateValue(0);
 
-	/*
-	TextBox::DrawTextBox(_sprite,
-		TextBoxDto(
-			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H, 0, 0),
-			GlobalTheme,
-			LARGE_FONT,
-			MC_DATUM,
-			true),
-		"Target");
-	*/
+	UpdateValue("0");
 	DrawButtons();
 }
 
@@ -73,7 +65,7 @@ bool NumberPadDialogBox::Touched(int x, int y)
 			return true;
 			break;
 		case NPB_BSP:
-			if (_number == 0) {
+			if (_number == "0") {
 				return true;
 			}
 			BackSpaceValue();
@@ -89,29 +81,46 @@ bool NumberPadDialogBox::Touched(int x, int y)
 
 void NumberPadDialogBox::HandleButtonPress(NUM_PAD_BUTTON button)
 {
-	if (_textBoxSelected || _number == 0) {
-		UpdateValue((int)button);
+	if (_textBoxSelected || _number == "0") {
+		UpdateValue(String(button));
 	}
 	else {
-		char tmp[4];
-		snprintf(tmp, 4, "%i%i", _number, (int)button);
-		UpdateValue(atoi(tmp));
+		if (button == NPB_DECIMAL) {
+			if (_number.indexOf(".") != -1) {
+				return;
+			}
+			UpdateValue(_number + ".");
+		}
+		else {
+			UpdateValue(_number + String(button));
+		}
+		
+			
+		//char tmp[7];
+		//snprintf(tmp, 7, "%f%i", _number, (int)button);
+		//UpdateValue(atof(tmp));
 	}
 }
 
 void NumberPadDialogBox::BackSpaceValue()
 {
+	String tmp = _number;
 	if (_textBoxSelected) {
-		UpdateValue(0);
+		tmp = "0";
+	}
+	else if (tmp.isEmpty()) {
+		tmp = "0";
 	}
 	else {
-		String tmp(_number);
 		tmp.remove(tmp.length() - 1);
-		UpdateValue(tmp.toInt());
+		if (tmp.isEmpty()) {
+			tmp = "0";
+		}
 	}
+	UpdateValue(tmp);
 }
 
-void NumberPadDialogBox::UpdateValue(int newValue)
+void NumberPadDialogBox::UpdateValue(String newValue)
 {
 	_number = newValue;
 	if (_visible) {
@@ -142,8 +151,21 @@ void NumberPadDialogBox::DrawButtons()
 
 	int y = NP_NUMBER_BUTTON_Y + (3 * NP_NUMBER_BUTTON_HEIGHT);
 	int x = 0;
-	_buttons[NPB_BSP] = new NumPadButton(_tft, NPB_BSP, DMCoordinates(x, y, NP_NUMBER_BUTTON_WIDTH, NP_NUMBER_BUTTON_HEIGHT, _coordinates.p_x + x, _coordinates.p_y + y));
-	_buttons[NPB_BSP]->Draw(_sprite);
+	if (!_useDecimal) {
+		_buttons[NPB_BSP] = new NumPadButton(_tft, NPB_BSP, DMCoordinates(x, y, NP_NUMBER_BUTTON_WIDTH, NP_NUMBER_BUTTON_HEIGHT, _coordinates.p_x + x, _coordinates.p_y + y));
+		_buttons[NPB_BSP]->Draw(_sprite);
+
+		_buttons[NPB_DECIMAL] = new NumPadButton(_tft, NPB_DECIMAL, DMCoordinates(0, 0, 0, 0, 0, 0));
+		_buttons[NPB_DECIMAL]->Visible(false);
+	}
+	else {
+		_buttons[NPB_BSP] = new NumPadButton(_tft, NPB_BSP, DMCoordinates(x, y, NP_NUMBER_BUTTON_WIDTH, NP_NUMBER_BUTTON_HEIGHT/2, _coordinates.p_x + x, _coordinates.p_y + y));
+		_buttons[NPB_BSP]->Draw(_sprite);
+
+		_buttons[NPB_DECIMAL] = new NumPadButton(_tft, NPB_DECIMAL, DMCoordinates(x, y + NP_NUMBER_BUTTON_HEIGHT / 2, NP_NUMBER_BUTTON_WIDTH, NP_NUMBER_BUTTON_HEIGHT / 2, _coordinates.p_x + x, _coordinates.p_y + y + NP_NUMBER_BUTTON_HEIGHT / 2));
+		_buttons[NPB_DECIMAL]->Draw(_sprite);
+	}
+	
 
 	x = NP_NUMBER_BUTTON_WIDTH;
 	_buttons[NPB_ZERO] = new NumPadButton(_tft, NPB_ZERO, DMCoordinates(x, y, NP_NUMBER_BUTTON_WIDTH, NP_NUMBER_BUTTON_HEIGHT, _coordinates.p_x + x, _coordinates.p_y + y));

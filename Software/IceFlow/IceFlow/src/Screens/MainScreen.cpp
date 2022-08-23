@@ -120,7 +120,6 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_graphPanel->IgnoreTertiary(true);
 		ResetSideBarIcons();
 		_sideBar->Draw();
-		HandleAutoTuneComplete();
 		//display results here
 		_pidEditor = new PidEditor(_tft);
 		_pidEditor->Show();
@@ -312,15 +311,15 @@ void MainScreen::AutoTuneTouched()
 {
 	EndTargetTempDlg();
 
-	_pidEditor = new PidEditor(_tft);
-	_pidEditor->Show();
-	_pidEditorActive = true;
-	/*
+	//_pidEditor = new PidEditor(_tft);
+	//_pidEditor->Show();
+	//_pidEditorActive = true;
+	
 	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, AUTOTUNE_TARGET_TEMPERATURE_DIALOG_TITLE);
 	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
 	_targetTemperatureDlg->Show();
 	_activeTargetTempDLG = MSTDLG_AUTO_TUNE;
-	*/
+	
 }
 
 void MainScreen::ManualHeatTouched()
@@ -411,9 +410,4 @@ void MainScreen::DisableAllSideBarIconsEnableStop()
 	_sideBar->ManualHeatIconEnabled(false);
 	_sideBar->ReflowIconEnabled(false);
 	_sideBar->StopIconEnabled(true);
-}
-
-void MainScreen::HandleAutoTuneComplete()
-{
-
 }

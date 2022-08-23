@@ -16,6 +16,10 @@ PidEditor::~PidEditor()
 	delete _setMidPID;
 	delete _setLowPID;
 	delete _setHighPID;
+
+	if (_numberPad != nullptr) {
+		delete _numberPad;
+	}
 }
 
 PidEditor::PidEditor(TFT_eSPI* tft)
@@ -24,7 +28,10 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 	_pidData.GetData();
 	_origKp = GetPidKP();
 	_origKi = GetPidKI();
-	_origKd = GetPidKD();
+	_origKd = GetPidKD(); 
+	
+	_numberPad = nullptr;
+	_activeTB = PIDED_NONE;
 
 	_closeButton = new DialogButton(
 		DialogButtonDto(
@@ -237,6 +244,48 @@ void PidEditor::DrawPIDValuesPanel(int yOffset, String title, uint16_t borderCol
 
 DialogButtonType PidEditor::Touched(int x, int y)
 {
+	// Number pad
+	if (_activeTB != PIDED_NONE) {
+		if (_numberPad->Touched(x, y)) {
+			_numberPad->Hide();
+			if (_numberPad->GetNumber() != 0) {
+				switch (_activeTB) {
+				case PIDED_KP:
+					_currentPID_Kp->Update(_numberPad->GetNumber());
+					break;
+				case PIDED_KI:
+					_currentPID_Ki->Update(_numberPad->GetNumber());
+					break;
+				case PIDED_KD:
+					_currentPID_Kd->Update(_numberPad->GetNumber());
+					break;
+				}
+			}
+
+			_tft->dmaWait();
+			delete(_numberPad);
+			_numberPad = nullptr;
+			_activeTB = PIDED_NONE;
+			Redraw();
+		}
+		return DB_NONE;
+	}
+
+	// Text Boxes
+	if (_currentPID_Kp->Touched(x, y)) {
+		OpenNumberPad(PIDED_KP, _currentPID_Kp->GetText().toFloat());
+		return DB_NONE;
+	}
+	if (_currentPID_Ki->Touched(x, y)) {
+		OpenNumberPad(PIDED_KI, _currentPID_Ki->GetText().toFloat());
+		return DB_NONE;
+	}
+	if (_currentPID_Kd->Touched(x, y)) {
+		OpenNumberPad(PIDED_KD, _currentPID_Kd->GetText().toFloat());
+		return DB_NONE;
+	}
+
+
 	if (_closeButton->Touched(x, y)) {
 		return _closeButton->GetType();
 	}
@@ -250,6 +299,7 @@ DialogButtonType PidEditor::Touched(int x, int y)
 		return DB_NONE;
 	}
 
+	// Set buttons
 	if (_setMidPID->Touched(x, y)) {
 		SetCurrentValues(_pidData.midKp, _pidData.midKi, _pidData.midKd);
 		return DB_NONE;
@@ -279,17 +329,20 @@ void PidEditor::Redraw()
 
 void PidEditor::ShowHideButtons()
 {
-	if (_currentPID_Kp->GetText() == String(_origKp) ||
-		_currentPID_Ki->GetText() == String(_origKi) ||
+
+	if (_currentPID_Kp->GetText() == String(_origKp) &&
+		_currentPID_Ki->GetText() == String(_origKi) &&
 		_currentPID_Kd->GetText() == String(_origKd)) {
 		_saveButton->Visible(false);
 		_cancelButton->Visible(false);
+		Serial.println("NOT Showing buttons");
 	}
 	else {
 		_saveButton->Visible(true);
 		_cancelButton->Visible(true);
 		_saveButton->Draw(_sprite);
 		_cancelButton->Draw(_sprite);
+		Serial.println("Showing buttons");
 	}
 }
 
@@ -323,4 +376,32 @@ void PidEditor::SaveCurrentValues()
 	_origKd = GetPidKD();
 	ResetCurrentValuesToOrig();
 	Redraw();
+}
+
+void PidEditor::OpenNumberPad(PIDED_ACTIVE_TEXT_BOX textBox, float initialValue)
+{
+	_activeTB = textBox;
+	String title = "";
+	switch (textBox) {
+	case PIDED_KP:
+		title = "Kp";
+		break;
+	case PIDED_KI:
+		title = "Ki";
+		break;
+	case PIDED_KD:
+		title = "Kd";
+		break;
+	default:
+		title = "Oops";
+		break;
+	}
+
+	if (_numberPad == nullptr) {
+		_numberPad = new NumberPadDialogBox(_tft, title, true);
+		_numberPad->SetNumber(String(initialValue));
+
+		//Hide();
+		_numberPad->Show();
+	}
 }

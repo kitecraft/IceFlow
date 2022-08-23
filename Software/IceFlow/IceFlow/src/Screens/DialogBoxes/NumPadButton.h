@@ -19,6 +19,7 @@ enum NUM_PAD_BUTTON {
 	NPB_NINE,
 	NPB_BSP,
 	NPB_ENTER,
+	NPB_DECIMAL,
 	NPB_NO_BUTTON,
 };
 
@@ -38,5 +39,7 @@ public:
 	
 	void Draw(TFT_eSprite* sprite);
 	NUM_PAD_BUTTON Touched(int x, int y);
+
+	void Visible(bool visible) { _button->Visible(visible); }
 };
 

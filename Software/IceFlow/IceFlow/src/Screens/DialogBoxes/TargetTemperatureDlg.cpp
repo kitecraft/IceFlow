@@ -107,7 +107,7 @@ void TargetTemperatureDlg::OpenNumberPad()
 	if (_numberPadDlg == nullptr) {
 
 		_numberPadDlg = new NumberPadDialogBox(_tft, "Target");
-		_numberPadDlg->SetNumber(_targetTemperature);
+		_numberPadDlg->SetNumber(String(_targetTemperature));
 
 		//Hide();
 		_numberPadDlg->Show();
@@ -117,7 +117,7 @@ void TargetTemperatureDlg::OpenNumberPad()
 void TargetTemperatureDlg::CloseNumberPad()
 {
 	_numberPadDlg->Hide();
-	UpdateValue(_numberPadDlg->GetNumber());
+	UpdateValue((int)_numberPadDlg->GetNumber());
 	//Show();
 
 	_tft->dmaWait();

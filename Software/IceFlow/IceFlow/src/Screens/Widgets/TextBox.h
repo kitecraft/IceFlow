@@ -29,14 +29,20 @@ public:
     ~TextBox();
 
     bool Touched(int x, int y);
+    
     void Draw(TFT_eSprite* sprite, String text, bool useDark = false);
     void Draw(TFT_eSprite* sprite, const char* text, bool useDark = false);
     void Draw(TFT_eSprite* sprite, const int number, bool useDark = false);
+    void Draw(TFT_eSprite* sprite, const float number, bool useDark = false);
     void Draw(TFT_eSprite* sprite, String text, uint16_t bgColor);
+
+
     void Update(const char* text, bool useDark = false);
     void Update(const int number, bool useDark = false);
+    void Update(const float number, bool useDark = false);
     void Update(String text, bool useDark = false);
     void Update(String text, uint16_t bgColor);
+    
     static int DrawTextBox(TFT_eSprite* sprite, TextBoxDto configDto, const char* text);
     String GetText() { return _text; }
 };
