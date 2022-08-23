@@ -195,10 +195,10 @@ void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 {
 	DialogButtonType ret = _keyboard->Touched(x, y);
 
-	if (ret == DB_Cancel) {
+	if (ret == DB_CANCEL) {
 		CloseKeyboard();
 	}
-	else if (ret == DB_Continue) {
+	else if (ret == DB_CONTINUE) {
 		String newName = _keyboard->GetValue();
 		newName.trim();
 		if (newName.isEmpty()) {
@@ -236,13 +236,13 @@ void EditProfileScreen::EndMessageBox()
 
 void EditProfileScreen::HandleSaveAsMessageBox(DialogButtonType buttonPressed)
 {
-	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+	if (buttonPressed != DB_CONTINUE && buttonPressed != DB_CANCEL) {
 		return;
 	}
 
 	EndMessageBox();
 
-	if (buttonPressed == DB_Continue) {
+	if (buttonPressed == DB_CONTINUE) {
 		String newName = _keyboard->GetValue();
 		_profile.name = newName;
 		if (ProfileManager.SaveProfileAsNewToDisk(_profile)) {
@@ -275,13 +275,13 @@ void EditProfileScreen::HandleSaveAsMessageBox(DialogButtonType buttonPressed)
 
 void EditProfileScreen::HandleSaveProfileMessageBox(DialogButtonType buttonPressed)
 {
-	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+	if (buttonPressed != DB_CONTINUE && buttonPressed != DB_CANCEL) {
 		return;
 	}
 
 	EndMessageBox();
 
-	if (buttonPressed == DB_Continue) {
+	if (buttonPressed == DB_CONTINUE) {
 		if (ProfileManager.SaveProfileToDisk(_profile)) {
 			_profileCopy = _profile;
 			Draw();
@@ -322,12 +322,12 @@ void EditProfileScreen::HandleDeleteSuccessMessageBox(DialogButtonType buttonPre
 
 void EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
 {
-	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+	if (buttonPressed != DB_CONTINUE && buttonPressed != DB_CANCEL) {
 		return;
 	}
 	EndMessageBox();
 
-	if (buttonPressed == DB_Continue) {
+	if (buttonPressed == DB_CONTINUE) {
 		DisplayQueue.QueueScreenChange(SN_PROFILES_SCREEN);
 	}
 
@@ -336,13 +336,13 @@ void EditProfileScreen::HandleExitMessageBox(DialogButtonType buttonPressed)
 
 void EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 {
-	if (buttonPressed != DB_Continue && buttonPressed != DB_Cancel) {
+	if (buttonPressed != DB_CONTINUE && buttonPressed != DB_CANCEL) {
 		return;
 	}
 
 	EndMessageBox();
 
-	if (buttonPressed == DB_Continue) {
+	if (buttonPressed == DB_CONTINUE) {
 		bool ret = ProfileManager.DeleteProfile(_profile.filename);
 		if (ret) {
 			_profile = Profile();

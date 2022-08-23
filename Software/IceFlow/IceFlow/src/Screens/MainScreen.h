@@ -4,6 +4,7 @@
 #include "Panels/SideBar.h"
 #include "DialogBoxes/TargetTemperatureDlg.h"
 #include "DialogBoxes/MessageBox.h"
+#include "DialogBoxes/PidEditor.h"
 
 
 #define MANAUAL_HEAT_TARGET_TEMPERATURE_DIALOG_TITLE "Manual Heat"
@@ -35,6 +36,9 @@ private:
 	MessageBox* _messageBox = nullptr;
 	MS_MESSAGE_BOX_TYPE _activeMessageBox = MS_NO_MB;
 
+	PidEditor* _pidEditor = nullptr;
+	bool _pidEditorActive = false;
+
 	void DrawScreen();
 	void DisplayTime();
 
@@ -52,6 +56,11 @@ private:
 	void HandleMessageBoxTouch(int x, int y);
 	void EndMessageBox();
 	bool HandleOKMessageBox(DialogButtonType buttonPressed);
+
+	void DisableAllSideBarIconsEnableStop();
+	void ResetSideBarIcons();
+
+	void HandleAutoTuneComplete();
 
 public:
 	MainScreen(TFT_eSPI* tft);

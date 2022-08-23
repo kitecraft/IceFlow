@@ -80,5 +80,6 @@ public:
 	void ReflowIconEnabled(bool enabled);
 	void StopIconEnabled(bool enabled);
 	void SettingsIconEnabled(bool enabled);
+	void ProfileIconEnabled(bool enabled);
 };
 

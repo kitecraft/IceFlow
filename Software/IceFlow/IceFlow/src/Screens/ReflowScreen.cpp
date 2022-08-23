@@ -181,7 +181,7 @@ void ReflowScreen::HandleMessageBoxTouch(int x, int y)
 
 	switch (_activeMessageBox) {
 	case RFS_CANCEL_MB:
-		if (mbRet == DB_Continue) {
+		if (mbRet == DB_CONTINUE) {
 			CommandQueue.QueueCommand(CC_STOP_OVEN);
 			DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
 		}

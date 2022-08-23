@@ -16,7 +16,7 @@ TargetTemperatureDlg::TargetTemperatureDlg(TFT_eSPI* tft, String title)
 			DMCoordinates(MANAUAL_HEAT_CONTINUE_BTN_X, MANAUAL_HEAT_BTN_Y, 0, 0, _coordinates.p_x + MANAUAL_HEAT_CONTINUE_BTN_X, _coordinates.p_y + MANAUAL_HEAT_BTN_Y),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Continue),
+			DB_CONTINUE),
 		_tft
 	);
 
@@ -25,7 +25,7 @@ TargetTemperatureDlg::TargetTemperatureDlg(TFT_eSPI* tft, String title)
 			DMCoordinates(MANAUAL_HEAT_CANCEL_BTN_X, MANAUAL_HEAT_BTN_Y, 0, 0, _coordinates.p_x + MANAUAL_HEAT_CANCEL_BTN_X, _coordinates.p_y + MANAUAL_HEAT_BTN_Y),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Cancel),
+			DB_CANCEL),
 		_tft
 	);
 
@@ -75,10 +75,10 @@ DialogButtonType TargetTemperatureDlg::Touched(int x, int y)
 			CloseNumberPad();
 		}
 	} else if (_continueButton->Touched(x, y)) {
-		return DB_Continue;
+		return DB_CONTINUE;
 	}
 	else if (_cancelButton->Touched(x, y)) {
-		return DB_Cancel;
+		return DB_CANCEL;
 	}
 	else if (_textBox->Touched(x, y)) {
 		OpenNumberPad();

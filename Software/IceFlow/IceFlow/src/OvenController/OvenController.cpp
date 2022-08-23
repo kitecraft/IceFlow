@@ -2,7 +2,7 @@
 #include "../Utilities/PreferencesManager.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
-
+#include "PidData.h"
 
 bool OvenController::Init()
 {
@@ -26,13 +26,6 @@ bool OvenController::Init()
     _kp = GetPidKP();
     _ki = GetPidKI();
     _kd = GetPidKD();
-    
-    Serial.print("PID: ");
-    Serial.print(_kp);
-    Serial.print(" - ");
-    Serial.print(_ki);
-    Serial.print(" - ");
-    Serial.println(_kd);
     _pidController = new PID_v2(_kp, _ki, _kd, PID::Direct);
     _pidController->SetSampleTime(20);
 
@@ -50,6 +43,15 @@ bool OvenController::Init()
     );
 
     return true;
+}
+
+void OvenController::ResetPIDs()
+{
+    _kp = GetPidKP();
+    _ki = GetPidKI();
+    _kd = GetPidKD();
+    _pidController->SetTunings(_kp, _ki, _kd);
+
 }
 
 void OvenController::CheckConvectionFanStatus()
@@ -130,13 +132,13 @@ void OvenController::FetchPrimaryTemperature()
 {
     if (_nextTemperatureUpdate < millis()) {
         _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
-        double prevTemp = _temperaturePrimary;
+        float prevTemp = _temperaturePrimary;
         int ret = _primaryTemperatureSensor.read();
         if (ret != STATUS_OK) {
             Serial.println("Something wrong with thermocouple!");
         }
         else {
-            _temperaturePrimary = (double)_primaryTemperatureSensor.getTemperature();
+            _temperaturePrimary = (float)_primaryTemperatureSensor.getTemperature();
             if (_temperaturePrimary == 0 || isnan(_temperaturePrimary)) {
                 Serial.println("ISNAN error!");
                 _temperaturePrimary = prevTemp;
@@ -188,7 +190,7 @@ void OvenController::FetchTemperatures()
 
 void OvenController::HandleOvenHeatersWithPID()
 {
-    const double output = _pidController->Run(_temperaturePrimary);
+    const float output = _pidController->Run(_temperaturePrimary);
     if (output == 0 && _heatersOn)
     {
         DisableOvenHeaters();
@@ -283,6 +285,16 @@ void OvenController::SendTargetTemperatureToDisplay()
 
 void OvenController::StartAutoTune(float targetTemperature)
 {
+    PidData pidData;
+    if (pidData.GetData()) {
+        Serial.println("\n\nCurrent PID Data: ");
+        Serial.println(pidData.ToJsonString());
+        Serial.println("\n");
+    }
+    else {
+        Serial.println("\n\nNo current PID Data found\n");
+    }
+
     Serial.println("Starting PID Auto Tune!");
     if (_ovenStatus != OS_IDLE && _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
         Serial.print("Oven must be idle or in manaul mode to start Auto Tune.\nCurrent State: ");
@@ -337,7 +349,7 @@ void OvenController::HandleAutoTune()
             if (_autoTune->cycles > 0)
             {
 
-                Serial.printf("maxTemp: %f  minTemp: %f\n", _autoTune->maxTemp, _autoTune->minTemp);
+                Serial.printf("\nmaxTemp: %f  minTemp: %f\n", _autoTune->maxTemp, _autoTune->minTemp);
                 if (_autoTune->cycles > 2)
                 {
                     // Parameter according Ziegler¡§CNichols method: http://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_method
@@ -378,22 +390,53 @@ void OvenController::HandleAutoTune()
     if (_autoTune->cycles > 5)
     {
         DisableOvenHeaters();
-        Serial.println("AutoTune: FINSIHED!");
+
+
+        Serial.println("\n\n**AutoTune: FINSIHED!**");
+        PidData pidData;
+        if (pidData.GetData()) {
+            Serial.println("Current PID Data: ");
+            Serial.println(pidData.ToJsonString());
+            Serial.println("");
+        }
+        else {
+            Serial.println("No current PID Data found");
+        }
+
+        
+        pidData.midKp = _autoTune->Kp;
+        pidData.midKi = _autoTune->Ki;
+        pidData.midKd = _autoTune->Kd;
         Serial.printf("Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
+
 
         _autoTune->Kp = 0.33* _autoTune->Ku;
         _autoTune->Ki = _autoTune->Kp/ _autoTune->Tu;
         _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
+        pidData.lowKp = _autoTune->Kp;
+        pidData.lowKi = _autoTune->Ki;
+        pidData.lowKd = _autoTune->Kd;
         Serial.printf("Some overshoot:   Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
 
         _autoTune->Kp = 0.2* _autoTune->Ku;
         _autoTune->Ki = 2* _autoTune->Kp/ _autoTune->Tu;
         _autoTune->Kd = _autoTune->Kp* _autoTune->Tu/3;
+        pidData.highKp = _autoTune->Kp;
+        pidData.highKi = _autoTune->Ki;
+        pidData.highKd = _autoTune->Kd;
         Serial.printf("No overshoot:   Kp: %f  Ki: %f  Kd %f\n", _autoTune->Kp, _autoTune->Ki, _autoTune->Kd);
 
         Serial.println("ALL VALUES ARE EXPERIMENTAL.\nNO WARRANTIES OR GUARANTEES ARE MADE AT ALL.\n\n****DO YOU HAVE A FIRE EXTINGUISHER HANDY?****\n\n");
         StopOven();
+
+        Serial.println("\nJSON:");
+        Serial.println(pidData.ToJsonString());
+        if (!pidData.SaveData()) {
+            Serial.println("Failed to save PID Data to file.");
+        }
+
+        DisplayQueue.QueueKey(suk_Oven_AutoTune_Complete);
         return;
     }
 }

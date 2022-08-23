@@ -47,6 +47,9 @@ void setup() {
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
 
+    SavePidKP(3.00);
+    SavePidKI(3.00);
+    SavePidKD(1.2);
     //Init the oven
     OvenManager.Init();
 
@@ -126,6 +129,9 @@ void HandleCommandQueue()
             break;
         case CC_STOP_OVEN:
             OvenManager.StopOven();
+            break;
+        case CC_OVEN_RESET_PIDS:
+            OvenManager.ResetPIDs();
             break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);

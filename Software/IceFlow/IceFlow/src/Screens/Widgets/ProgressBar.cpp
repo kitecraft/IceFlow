@@ -65,7 +65,7 @@ void ProgressBar::Update(int progress)
 	_sprite->fillSprite(_config.barBackGroundColor);
 	_sprite->setTextColor(_config.theme.textColor);
 	
-	int w = round(((double)progress / 100.0) * (double)_updateW);
+	int w = round(((float)progress / 100.0) * (float)_updateW);
 	_sprite->fillRect(0, 0, w, _updateH, _config.barFillColor);
 	String msg = String(progress) + " %";
 	_sprite->drawString(msg, _updateW / 2, _updateH / 2 - TEXT_Y_OFFSET);

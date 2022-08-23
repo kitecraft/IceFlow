@@ -136,7 +136,7 @@ void MessageBox::CreateOKCancel()
 			DMCoordinates(_dualButtons_ButtonB_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonA_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Cancel),
+			DB_CANCEL),
 		_tft
 	);
 	_buttonA->Draw(_sprite);
@@ -172,7 +172,7 @@ void MessageBox::CreateSubmitCancel()
 			DMCoordinates(_dualButtons_ButtonB_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonA_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Cancel),
+			DB_CANCEL),
 		_tft
 	);
 	_buttonA->Draw(_sprite);
@@ -186,7 +186,7 @@ void MessageBox::CreateContinue()
 			DMCoordinates(_dualButtons_ButtonA_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonA_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Continue),
+			DB_CONTINUE),
 		_tft
 	);
 	_buttonA->Draw(_sprite);
@@ -199,7 +199,7 @@ void MessageBox::CreateContinueCancel()
 			DMCoordinates(_dualButtons_ButtonA_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonA_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Continue),
+			DB_CONTINUE),
 		_tft
 	);
 
@@ -208,7 +208,7 @@ void MessageBox::CreateContinueCancel()
 			DMCoordinates(_dualButtons_ButtonB_X, _buttonY, 0, 0, _coordinates.p_x + _dualButtons_ButtonB_X, _coordinates.p_y + _buttonY),
 			GlobalTheme,
 			MEDIUM_FONT,
-			DB_Cancel),
+			DB_CANCEL),
 		_tft
 	);
 	_buttonA->Draw(_sprite);

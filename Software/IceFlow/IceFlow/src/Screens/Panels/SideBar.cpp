@@ -39,8 +39,6 @@ SideBar::SideBar(TFT_eSPI* tft, DMCoordinates coordinates)
 			DMCoordinates(ICON_X, STOP_ICON_Y, ICON_WIDTH, ICON_HEIGHT - ICON_H_PADDING, _coordinates.p_x + ICON_X, _coordinates.p_y + STOP_ICON_Y),
 			GlobalTheme),
 		_tft);
-
-	_stopIcon->SetEnabled(false);
 }
 
 SideBar::~SideBar()
@@ -147,4 +145,9 @@ void SideBar::StopIconEnabled(bool enabled)
 void SideBar::SettingsIconEnabled(bool enabled)
 {
 	_settingsIcon->SetEnabled(enabled);
+}
+
+void SideBar::ProfileIconEnabled(bool enabled)
+{
+	_profileIcon->SetEnabled(enabled);
 }

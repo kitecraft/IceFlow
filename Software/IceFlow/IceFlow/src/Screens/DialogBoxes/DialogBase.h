@@ -11,7 +11,7 @@ protected:
     TFT_eSPI* _tft;
     DMCoordinates _coordinates;
     DMTheme _theme;
-
+    String _title; 
     bool _visible = false;
 
     TFT_eSprite* _sprite = nullptr;
@@ -20,6 +20,8 @@ protected:
     uint16_t* _screenReadBuffer = nullptr;
     void ClearBuffer();
 
+    void Draw();
+    void ReShow();
 
 public:
 	DialogBase() {}

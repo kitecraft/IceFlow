@@ -6,11 +6,12 @@
 
 enum DialogButtonType {
 	DB_NONE = -1,
-	DB_Cancel,
-	DB_Save,
-	DB_Continue,
+	DB_CANCEL,
+	DB_SAVE,
+	DB_CONTINUE,
 	DB_OK,
-	DB_SUBMIT
+	DB_SUBMIT,
+	DB_CLOSE
 };
 
 class DialogButtonDto {

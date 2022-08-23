@@ -114,9 +114,9 @@ void PS_ProfileGraphPanel::DrawSprite(TFT_eSprite* sprite)
 
 void PS_ProfileGraphPanel::DrawProfileGraph(TFT_eSprite* sprite)
 {
-	double gridBottom = (double)GRID_Y + (double)GRID_H;
-	int pointA_X = round((double)GRID_X + ((double)_profile.pre_heat_ramp_time / (double)_maxTime) * (double)GRID_W);
-	int pointA_Y = round((gridBottom - ((double)_profile.pre_heat_target_temperature / (double)_maxTemp) * (double)GRID_H));
+	float gridBottom = (float)GRID_Y + (float)GRID_H;
+	int pointA_X = round((float)GRID_X + ((float)_profile.pre_heat_ramp_time / (float)_maxTime) * (float)GRID_W);
+	int pointA_Y = round((gridBottom - ((float)_profile.pre_heat_target_temperature / (float)_maxTemp) * (float)GRID_H));
 	
 	//The pre-heat segment
 	sprite->drawFastHLine(GRID_X, pointA_Y, pointA_X - GRID_X, GRID_LINE_COLOR);
@@ -131,8 +131,8 @@ void PS_ProfileGraphPanel::DrawProfileGraph(TFT_eSprite* sprite)
 	
 	//The pre-heat soak segment
 	int runTime = _profile.pre_heat_ramp_time + _profile.pre_heat_soak_time;
-	int pointB_X = round((double)GRID_X + ((double)runTime / (double)_maxTime) * (double)GRID_W);
-	int pointB_Y = round((gridBottom - ((double)_profile.pre_heat_soak_end_temperature / (double)_maxTemp) * (double)GRID_H));
+	int pointB_X = round((float)GRID_X + ((float)runTime / (float)_maxTime) * (float)GRID_W);
+	int pointB_Y = round((gridBottom - ((float)_profile.pre_heat_soak_end_temperature / (float)_maxTemp) * (float)GRID_H));
 	//if the start and end y points are too close together, then don't draw a full line
 	if (pointA_Y - pointB_Y > 2) {
 		sprite->drawFastHLine(GRID_X, pointB_Y, pointB_X - GRID_X, GRID_LINE_COLOR);
@@ -151,8 +151,8 @@ void PS_ProfileGraphPanel::DrawProfileGraph(TFT_eSprite* sprite)
 
 	//Ramp to reflow
 	runTime += _profile.reflow_ramp_time;
-	int pointC_X = round((double)GRID_X + ((double)runTime / (double)_maxTime) * (double)GRID_W);
-	int pointC_Y = round((gridBottom - ((double)_profile.reflow_target_temperature / (double)_maxTemp) * (double)GRID_H));
+	int pointC_X = round((float)GRID_X + ((float)runTime / (float)_maxTime) * (float)GRID_W);
+	int pointC_Y = round((gridBottom - ((float)_profile.reflow_target_temperature / (float)_maxTemp) * (float)GRID_H));
 
 	sprite->drawFastHLine(GRID_X, pointC_Y, pointC_X - GRID_X, GRID_LINE_COLOR);
 	sprite->drawFastVLine(pointC_X, pointC_Y, gridBottom - pointC_Y, GRID_LINE_COLOR);
@@ -170,7 +170,7 @@ void PS_ProfileGraphPanel::DrawProfileGraph(TFT_eSprite* sprite)
 
 	//Reflow
 	runTime += _profile.reflow_soak_time;
-	int pointD_X = round((double)GRID_X + ((double)runTime / (double)_maxTime) * (double)GRID_W);
+	int pointD_X = round((float)GRID_X + ((float)runTime / (float)_maxTime) * (float)GRID_W);
 
 	sprite->drawFastVLine(pointD_X, pointC_Y, gridBottom - pointC_Y, GRID_LINE_COLOR);
 	sprite->setTextDatum(BC_DATUM);

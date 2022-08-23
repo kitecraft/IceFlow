@@ -27,8 +27,8 @@ private:
 	unsigned long _nextTemperatureUpdate = 0;
 
 	unsigned long _nextTemperatureDisplayUpdate = 0;
-	double _temperaturePrimary = 15;
-	double _temperatureSecondary = 5;
+	float _temperaturePrimary = 15;
+	float _temperatureSecondary = 5;
 	bool _streamTemperatures = false;
 
 	//bool _testDirection = true;
@@ -36,9 +36,9 @@ private:
 	//PID
 	AutoTune* _autoTune = nullptr;
 	PID_v2* _pidController = nullptr;
-	double _kp;
-	double _ki;
-	double _kd;
+	float _kp;
+	float _ki;
+	float _kd;
 	void DeleteAutoTune();
 
 	Profile _profile;
@@ -76,6 +76,8 @@ public:
 
 	void StartAutoTune(float targetTemperature);
 	void SendStatus();
+
+	void ResetPIDs();
 };
 
 extern OvenController OvenManager;

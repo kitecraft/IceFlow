@@ -23,5 +23,7 @@ public:
 	PidData();
 	~PidData();
 	bool GetData();
+	bool SaveData();
+	String ToJsonString();
 };
 

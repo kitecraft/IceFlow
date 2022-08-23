@@ -9,21 +9,10 @@ DialogBase::DialogBase(TFT_eSPI* tft, DMCoordinates coordinates, DMTheme theme, 
 	_theme = theme;
 	_screenReadBuffer = nullptr;
 	_visible = false;
-
+	_title = title;
 	_sprite = new TFT_eSprite(_tft);
 	_sprPtr = (uint16_t*)_sprite->createSprite(_coordinates.w, _coordinates.h);
-
-	_sprite->fillSprite(_theme.panelLightColor);
-
-	DrawSquaredBox(_sprite, coordinates, theme, true);
-	TextBox::DrawTextBox(_sprite,
-		TextBoxDto(
-			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H, 0, 0),
-			GlobalTheme,
-			LARGE_FONT,
-			ML_DATUM,
-			true),
-		title.c_str());
+	Draw();
 }
 
 DialogBase::~DialogBase()
@@ -64,4 +53,27 @@ void DialogBase::Hide()
 	_tft->dmaWait();
 	_visible = false;
 	ClearBuffer();
+}
+
+void DialogBase::Draw()
+{
+	_sprite->fillSprite(_theme.panelLightColor);
+
+	DrawSquaredBox(_sprite, _coordinates, _theme, true);
+	TextBox::DrawTextBox(_sprite,
+		TextBoxDto(
+			DMCoordinates(0, 0, _coordinates.w, LARGE_FONT_TEXT_BOX_H, 0, 0),
+			GlobalTheme,
+			LARGE_FONT,
+			ML_DATUM,
+			true),
+		_title.c_str());
+}
+
+void DialogBase::ReShow()
+{
+	if (!_visible) {
+		return;
+	}
+	_tft->pushImageDMA(_coordinates.p_x, _coordinates.p_y, _coordinates.w, _coordinates.h, _sprPtr);
 }

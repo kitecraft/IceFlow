@@ -137,7 +137,7 @@ DialogButtonType KeyboardDialog::Touched(int x, int y)
 
 		switch (buttonPressed) {
 		case KBT_CANCEL:
-			return DB_Cancel;
+			return DB_CANCEL;
 			break;
 		case KBT_SHIFT:
 			_shiftSelected = !_shiftSelected;
@@ -147,7 +147,7 @@ DialogButtonType KeyboardDialog::Touched(int x, int y)
 			BackSpaceValue();
 			break;
 		case KBT_ENTER:
-			return DB_Continue;
+			return DB_CONTINUE;
 			break;
 		case KBT_NO_BUTTON:
 			break;

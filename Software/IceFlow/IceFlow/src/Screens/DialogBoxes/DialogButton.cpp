@@ -6,13 +6,13 @@ DialogButton::DialogButton(DialogButtonDto config, TFT_eSPI* tft)
 	_config = config;
 	String label = "";
 	switch (_config.type) {
-	case DB_Cancel:
+	case DB_CANCEL:
 		label = "Cancel";
 		break;
-	case DB_Save:
+	case DB_SAVE:
 		label = "Save";
 		break;
-	case DB_Continue:
+	case DB_CONTINUE:
 		label = "Continue";
 		break;
 	case DB_OK:
@@ -20,6 +20,9 @@ DialogButton::DialogButton(DialogButtonDto config, TFT_eSPI* tft)
 		break;
 	case DB_SUBMIT:
 		label = "Submit";
+		break;
+	case DB_CLOSE:
+		label = "Close";
 		break;
 	default:
 		label = "Nope";

@@ -50,4 +50,8 @@ void ProfileIcon::Draw(TFT_eSprite* sprite)
 		_config.coordinates.x + 43,
 		_config.coordinates.y + _config.coordinates.h - 11,
 		TFT_RED);
+
+	if (!_enabled) {
+		UpdateAsDisabled(sprite);
+	}
 }

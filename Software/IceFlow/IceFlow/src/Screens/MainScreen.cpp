@@ -16,6 +16,8 @@ MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 	_activeTargetTempDLG = MSTDLG_NONE;
 	_messageBox = nullptr;
 	_activeMessageBox = MS_NO_MB;
+	_pidEditor = nullptr;
+	_pidEditorActive = false;
 
 	_timeSprite = new TFT_eSprite(_tft);
 	_timeSprite->createSprite(BASE_TIME_W, BASE_TIME_H);
@@ -25,8 +27,9 @@ MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 
 
 	_sideBar = new SideBar(_tft,DMCoordinates(BASE_SIDEBAR_X, BASE_SIDEBAR_Y, SIDEBAR_W, SIDEBAR_H, BASE_SIDEBAR_X, BASE_SIDEBAR_Y));
-
+	ResetSideBarIcons();
 	DrawScreen();
+
 	CommandQueue.QueueCommand(CC_REQUEST_NET_STATUS);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	CommandQueue.QueueCommand(CC_REQUEST_OVEN_STATUS);
@@ -53,6 +56,10 @@ MainScreen::~MainScreen()
 
 	if (_messageBox != nullptr) {
 		delete _messageBox;
+	}
+
+	if (_pidEditorActive) {
+		delete _pidEditor;
 	}
 
 	Serial.println("");
@@ -93,10 +100,7 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 	case suk_Oven_Stopped:
 	case suk_Emergency_Oven_Stopped:
 		_graphPanel->IgnoreTertiary(true);
-		_sideBar->SettingsIconEnabled(true);
-		_sideBar->ManualHeatIconEnabled(true);
-		_sideBar->ReflowIconEnabled(true);
-		_sideBar->StopIconEnabled(false);
+		ResetSideBarIcons();
 		_sideBar->Draw();
 		break;
 	case suk_Oven_Heaters_On:
@@ -106,24 +110,21 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		DrawHeatersIcon(false);
 		break;
 	case suk_Oven_AutoTune_On:
-		_sideBar->SettingsIconEnabled(false);
-		_sideBar->ManualHeatIconEnabled(false);
-		_sideBar->ReflowIconEnabled(false);
-		_sideBar->StopIconEnabled(true);
+		DisableAllSideBarIconsEnableStop();
 		_sideBar->Draw();
-
 		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
 
 		break;
-	case suk_Oven_AutoTune_Off:
+	case suk_Oven_AutoTune_Complete:
 		_graphPanel->IgnoreTertiary(true);
-		_sideBar->SettingsIconEnabled(true);
-		_sideBar->ManualHeatIconEnabled(true);
-		_sideBar->ReflowIconEnabled(true);
-		_sideBar->StopIconEnabled(false);
+		ResetSideBarIcons();
 		_sideBar->Draw();
+		HandleAutoTuneComplete();
 		//display results here
+		_pidEditor = new PidEditor(_tft);
+		_pidEditor->Show();
+		_pidEditorActive = true;
 		break;
 	default:
 		break;
@@ -140,7 +141,8 @@ void MainScreen::UpdateScreenOnInterval()
 
 		if (_sideBar->IsPopUpOpen() ||
 			_activeTargetTempDLG != MSTDLG_NONE ||
-			_activeMessageBox != MS_NO_MB) {
+			_activeMessageBox != MS_NO_MB||
+			_pidEditorActive == true ) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
 		}
 		else {
@@ -167,6 +169,19 @@ void MainScreen::HandleTouch(int x, int y)
 
 void MainScreen::ProcessTouch(int x, int y)
 {
+	if (_pidEditorActive == true) {
+		DialogButtonType ret = _pidEditor->Touched(x, y);
+		if (ret == DB_CLOSE) {
+			_pidEditor->Hide();
+			delete _pidEditor;
+			_pidEditor = nullptr;
+			_pidEditorActive = false;
+			_graphPanel->ReDraw();
+			CommandQueue.QueueCommand(CC_OVEN_RESET_PIDS);
+		}
+		return;
+	}
+
 	// Handle message box if active
 	if (_activeMessageBox != MS_NO_MB) {
 		HandleMessageBoxTouch(x, y);
@@ -219,7 +234,7 @@ void MainScreen::HandleMessageBoxTouch(int x, int y)
 		EndMessageBox();
 		break;
 	case MS_START_REFLOW_MB:
-		if (mbRet == DB_Continue) {
+		if (mbRet == DB_CONTINUE) {
 			DisplayQueue.QueueScreenChange(SN_REFLOW_SCREEN);
 		}
 		EndMessageBox();
@@ -297,10 +312,15 @@ void MainScreen::AutoTuneTouched()
 {
 	EndTargetTempDlg();
 
+	_pidEditor = new PidEditor(_tft);
+	_pidEditor->Show();
+	_pidEditorActive = true;
+	/*
 	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, AUTOTUNE_TARGET_TEMPERATURE_DIALOG_TITLE);
 	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
 	_targetTemperatureDlg->Show();
 	_activeTargetTempDLG = MSTDLG_AUTO_TUNE;
+	*/
 }
 
 void MainScreen::ManualHeatTouched()
@@ -317,7 +337,7 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 {
 	int targetTemp = _targetTemperatureDlg->GetTargetTemperature();
 
-	if (action == DB_Continue) {
+	if (action == DB_CONTINUE) {
 		int highest = GetOvenDoNotExceedTemperature();
 		if (targetTemp > highest - 10) {
 			String message = "OVEN SAFETY LIMIT\nTarget can not be higher than '" + String(highest - 10) + " degrees Celcius'";
@@ -373,4 +393,27 @@ void MainScreen::DrawHeatersIcon(bool status)
 	_tft->pushImageDMA(BASE_HEATER_ICON_X, BASE_HEATER_ICON_Y, BASE_HEATER_ICON_W, BASE_HEATER_ICON_H, sprPtr);
 	_tft->dmaWait();
 	sprite.deleteSprite();
+}
+
+void MainScreen::ResetSideBarIcons()
+{
+	_sideBar->SettingsIconEnabled(true);
+	_sideBar->ProfileIconEnabled(true);
+	_sideBar->ManualHeatIconEnabled(true);
+	_sideBar->ReflowIconEnabled(true);
+	_sideBar->StopIconEnabled(false);
+}
+
+void MainScreen::DisableAllSideBarIconsEnableStop()
+{
+	_sideBar->SettingsIconEnabled(false);
+	_sideBar->ProfileIconEnabled(false);
+	_sideBar->ManualHeatIconEnabled(false);
+	_sideBar->ReflowIconEnabled(false);
+	_sideBar->StopIconEnabled(true);
+}
+
+void MainScreen::HandleAutoTuneComplete()
+{
+
 }
