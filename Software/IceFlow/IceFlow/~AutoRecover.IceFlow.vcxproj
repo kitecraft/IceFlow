@@ -156,6 +156,7 @@
     <ClInclude Include="src\Screens\DMFonts\segoeui7pt7b.h" />
     <ClInclude Include="src\Screens\DMFonts\segoeui9pt7b.h" />
     <ClInclude Include="src\Screens\EditProfileScreen.h" />
+    <ClInclude Include="src\Screens\InfoScreen.h" />
     <ClInclude Include="src\Screens\MainScreen.h" />
     <ClInclude Include="src\Screens\OTAScreen.h" />
     <ClInclude Include="src\Screens\Panels\GraphAutoScaler.h" />
@@ -219,6 +220,7 @@
     <ClCompile Include="src\Screens\DialogBoxes\NumberPadDialogBox.cpp" />
     <ClCompile Include="src\Screens\DialogBoxes\NumPadButton.cpp" />
     <ClCompile Include="src\Screens\EditProfileScreen.cpp" />
+    <ClCompile Include="src\Screens\InfoScreen.cpp" />
     <ClCompile Include="src\Screens\MainScreen.cpp" />
     <ClCompile Include="src\Screens\OTAScreen.cpp" />
     <ClCompile Include="src\Screens\Panels\GraphAutoScaler.cpp" />

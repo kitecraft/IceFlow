@@ -8,10 +8,10 @@ private:
 	TFT_eSPI* _tft;
 	ButtonDto _config;
 	String _label;
-	TFT_eSprite* _sprite = nullptr;
-	uint16_t* _sprPtr = nullptr;
 	bool _visible = true;
 	uint16_t _buttonColor = TFT_BLACK;
+	TFT_eSprite* _sprite = nullptr;
+	uint16_t* _sprPtr = nullptr;
 
 public:
 	Button();

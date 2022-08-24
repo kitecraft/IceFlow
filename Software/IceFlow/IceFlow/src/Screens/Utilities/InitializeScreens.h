@@ -9,6 +9,7 @@
 #include "../ProfilesScreen.h"
 #include "../EditProfileScreen.h"
 #include "../ReflowScreen.h"
+#include "../InfoScreen.h"
 
 static void LoadScreensIntoDM()
 {
@@ -64,6 +65,17 @@ static void LoadScreensIntoDM()
 			Update_ReflowScreen,
 			Update_ReflowScreen_OnInterval,
 			HandleTouch_ReflowScreen
+		)
+	);
+
+	Display.AddScreen(
+		SN_INFO_SCREEN,
+		ScreenContainer(
+			Create_InfoScreen,
+			Destroy_InfoScreen,
+			Update_InfoScreen,
+			NULL,
+			HandleTouch_InfoScreen
 		)
 	);
 }

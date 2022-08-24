@@ -36,7 +36,7 @@ void TemplateScreen::ProcessTouch(int x, int y)
 
 }
 
-void ReflowScreen::DrawScreen()
+void TemplateScreen::DrawScreen()
 {
 
 }

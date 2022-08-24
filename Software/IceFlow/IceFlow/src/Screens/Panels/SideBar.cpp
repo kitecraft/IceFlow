@@ -79,6 +79,9 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 			if (option == "PID Editor") {
 				return SB_AUTOTUNE_TOUCHED;
 			}
+			else if (option == "Info") {
+				return SB_INFO_TOUCHED;
+			}
 			return SB_MENU_CLOSED;
 		}
 
@@ -96,7 +99,9 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 
 	if (_settingsIcon->Touched(x, y)) {
-		String options[3] = { "Settings", "PID Editor", "Info" };		
+		const int numOptions = 2;
+		String options[numOptions] = { "PID Editor", "Info" };
+
 		_popUpMenu.Open(
 			PopUpMenuDto(
 				DMCoordinates(_settingsIcon->GetPX() - 3, _settingsIcon->GetPY(), 0, 0),
@@ -105,7 +110,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 				MEDIUM_FONT,
 				MEDIUM_FONT_TEXT_H),
 			options,
-			3,
+			numOptions,
 			_tft);
 		_activeIcon = SettingsIconID;
 		return SB_TOUCHED;

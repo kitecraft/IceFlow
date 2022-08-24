@@ -53,8 +53,6 @@ void setup() {
     //Init the oven
     OvenManager.Init();
 
-    //SaveProfileFilename("def_prof.json");
-
     //Initialize the DisplayManager
     Display.Init();
     LoadScreensIntoDM();

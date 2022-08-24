@@ -15,10 +15,11 @@ Button::~Button()
 
 Button::Button(ButtonDto config, String label, TFT_eSPI* tft, bool useSprite)
 {
-	_config = config;
-	_buttonColor = _config.buttonColor;
-	_label = label;
 	_tft = tft;
+	_config = config;
+	_label = label;
+	_visible = true;
+	_buttonColor = _config.buttonColor;
 	_sprite = nullptr;
 
 	if (useSprite) {

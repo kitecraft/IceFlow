@@ -1,10 +1,10 @@
 #pragma once
 
 //Default DMTheme settings				Bluish		Darkish
-#define DM_THEME_TEXT_COLOR				0xFFFF	//0xCE59
-#define DM_THEME_PANEL_DARK_COLOR		0x3BB6		//0x5AEB
-#define DM_THEME_PANEL_LIGHT_COLOR		 0x7D19		//0x738E
-#define DM_THEME_BOX_BORDER_COLOR		0x9DDB		//0x9CD3
+#define DM_THEME_TEXT_COLOR				0xFFFF		//0xCE59
+#define DM_THEME_PANEL_DARK_COLOR	0x528a//		0x3BB6		//0x5AEB
+#define DM_THEME_PANEL_LIGHT_COLOR	0xa534//	 0x7D19		//0x738E
+#define DM_THEME_BOX_BORDER_COLOR	0xe73c//	0x9DDB		//0x9CD3
 #define DM_THEME_BOX_DROP_SHADOW		0x63F2		//0x4208
 
 //Small font

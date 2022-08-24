@@ -219,6 +219,9 @@ void MainScreen::ProcessTouch(int x, int y)
 		_pidEditor->Show();
 		_pidEditorActive = true;
 		return;
+	case SB_INFO_TOUCHED:
+		DisplayQueue.QueueScreenChange(SN_INFO_SCREEN);
+		break;
 	case SB_START_REFLOW:
 		ReflowTouched();
 		break;

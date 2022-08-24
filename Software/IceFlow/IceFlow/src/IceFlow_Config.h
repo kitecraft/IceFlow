@@ -1,7 +1,9 @@
 #pragma once
 
 #define __DEVICE_NAME__ "IceFlow"
-#define __DEVICE_VERSION__ "0.1"
+#define __DEVICE_VERSION__ "1.0"
+#define __DEVICE_AUTHOR__ "Kitecraft"
+#define __DEVICE_GIT_URL__ "https://github.com/kitecraft/IceFlow"
 
 #define STACK_SIZE ESP_TASK_MAIN_STACK // Stack size for each new thread
 #define WEB_SERVER_PRIORITY (tskIDLE_PRIORITY+2)
