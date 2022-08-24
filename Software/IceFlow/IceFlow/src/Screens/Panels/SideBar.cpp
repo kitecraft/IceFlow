@@ -76,8 +76,8 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 			Serial.println(option);
 
 			_popUpMenu.Close();
-			if (option == "AutoTune") {
-				return SB_START_AUTO_TUNE;
+			if (option == "PID Editor") {
+				return SB_AUTOTUNE_TOUCHED;
 			}
 			return SB_MENU_CLOSED;
 		}
@@ -96,7 +96,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	}
 
 	if (_settingsIcon->Touched(x, y)) {
-		String options[3] = { "Settings", "AutoTune", "Info" };		
+		String options[3] = { "Settings", "PID Editor", "Info" };		
 		_popUpMenu.Open(
 			PopUpMenuDto(
 				DMCoordinates(_settingsIcon->GetPX() - 3, _settingsIcon->GetPY(), 0, 0),

@@ -86,22 +86,22 @@ void MessageBox::PrintMessage(String message)
 void MessageBox::SetButtons(MESSAGE_BOX_BUTTONS buttons)
 {
 	switch (buttons) {
-	case MESSAGE_BOX_OK:
+	case MESSAGE_BOX_BUTTONS_OK:
 		CreateOK();
 		break;
-	case MESSAGE_BOX_OK_CANCEL:
+	case MESSAGE_BOX_BUTTONS_OK_CANCEL:
 		CreateOKCancel();
 		break;
-	case MESSAGE_BOX_SUBMIT:
+	case MESSAGE_BOX_BUTTONS_SUBMIT:
 		CreateSubmit();
 		break;
-	case MESSAGE_BOX_SUBMIT_CANCEL:
+	case MESSAGE_BOX_BUTTONS_SUBMIT_CANCEL:
 		CreateSubmitCancel();
 		break;
-	case MESSAGE_BOX_CONTINUE:
+	case MESSAGE_BOX_BUTTONS_CONTINUE:
 		CreateContinue();
 		break;
-	case MESSAGE_BOX_CONTINUE_CANCEL:
+	case MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL:
 		CreateContinueCancel();
 		break;
 	}
@@ -244,16 +244,16 @@ void MessageBox::DrawIcon(MESSAGE_BOX_ICON icon)
 {
 	_sprite->drawFastVLine(_coordinates.w - 34, _coordinates.y, LARGE_FONT_TEXT_BOX_H, _theme.panelBorderColor);
 	switch (icon) {
-	case MESSAGE_BOX_ERROR:
+	case MESSAGE_BOX_ICON_ERROR:
 		DrawErrorIcon();
 		break;
-	case MESSAGE_BOX_WARNING:
+	case MESSAGE_BOX_ICON_WARNING:
 		DrawWarningIcon();
 		break;
-	case MESSAGE_BOX_INFORMATION:
+	case MESSAGE_BOX_ICON_INFORMATION:
 		DrawInfoIcon();
 		break;
-	case MESSAGE_BOX_QUESTION:
+	case MESSAGE_BOX_ICON_QUESTION:
 		DrawQuestionIcon();
 		break;
 	}

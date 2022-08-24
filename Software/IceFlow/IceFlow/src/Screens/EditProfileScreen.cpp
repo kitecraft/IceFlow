@@ -108,7 +108,7 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 			}
 			else {
 				String message = "Default profile can not be edited.";
-				_messageBox = new MessageBox(_tft, "No edit", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox = new MessageBox(_tft, "No edit", message, MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_OK);
 				_messageBox->Show();
 				_activeMessageBox = EPS_OK_MB;
 			}
@@ -118,7 +118,7 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 
 	if (_saveButton->Touched(x, y)) {
 		String message = "Save profile '" + String(_profile.name) + "'?";
-		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 		_messageBox->Show();
 		_activeMessageBox = EPS_SAVE_MB;
 		return;
@@ -135,7 +135,7 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 
 	if (_deleteButton->Touched(x, y)) {
 		String message = "Are you sure you want to delete profile '" + String(_profile.name) + "'?";
-		_messageBox = new MessageBox(_tft, "Confirm Delete", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox = new MessageBox(_tft, "Confirm Delete", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 		_messageBox->Show();
 		_activeMessageBox = EPS_DELETE_MB;
 		return;
@@ -144,7 +144,7 @@ void EditProfileScreen::ProcessTouch(int x, int y)
 	if (_exitButton->Touched(x, y)) {
 		if (_saveRequired) {
 			String message = "Profile has not been saved.\nContinue without saving?";
-			_messageBox = new MessageBox(_tft, "Unsaved Changes", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+			_messageBox = new MessageBox(_tft, "Unsaved Changes", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 			_messageBox->Show();
 			_activeMessageBox = EPS_EXIT_MB;
 			return;
@@ -203,7 +203,7 @@ void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 		newName.trim();
 		if (newName.isEmpty()) {
 			String message = "Profile name can not be empty.";
-			_messageBox = new MessageBox(_tft, "Missing name", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Missing name", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = EPS_OK_MB;
 			return;
@@ -211,7 +211,7 @@ void EditProfileScreen::HandleSaveAsKeyboard(int x, int y)
 
 		_keyboard->SetValue(newName);
 		String message = "Save profile '" + newName + "'?";
-		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox = new MessageBox(_tft, "Save profile", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 		_messageBox->Show();
 		_activeMessageBox = EPS_CONFIRM_SAVEAS_MB;
 	}
@@ -250,7 +250,7 @@ void EditProfileScreen::HandleSaveAsMessageBox(DialogButtonType buttonPressed)
 				ProfileManager.GetProfile(PROFILE_DEFAULT_FILE, &_profile);
 				CloseKeyboard();
 				String message = "Something incorrect has transpired.\nFailed to load new profile.";
-				_messageBox = new MessageBox(_tft, "Badness occured.", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox = new MessageBox(_tft, "Badness occured.", message, MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_OK);
 				_messageBox->Show();
 				_activeMessageBox = EPS_OK_MB;
 			}
@@ -258,14 +258,14 @@ void EditProfileScreen::HandleSaveAsMessageBox(DialogButtonType buttonPressed)
 				_profileCopy = _profile;
 				CloseKeyboard();
 				String message = "Profile has been successfully saved.";
-				_messageBox = new MessageBox(_tft, "Profile Saved.", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox = new MessageBox(_tft, "Profile Saved.", message, MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_OK);
 				_messageBox->Show();
 				_activeMessageBox = EPS_OK_MB;
 			}
 		}
 		else {
 			String message = "Failed to save profile.";
-			_messageBox = new MessageBox(_tft, "Save Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Save Failed", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = EPS_OK_MB;
 			return;
@@ -286,13 +286,13 @@ void EditProfileScreen::HandleSaveProfileMessageBox(DialogButtonType buttonPress
 			_profileCopy = _profile;
 			Draw();
 			String message = "The profile has been saved.";
-			_messageBox = new MessageBox(_tft, "Profile saved", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Profile saved", message, MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = EPS_OK_MB;
 		}
 		else {
 			String message = "Failed to save the profile.";
-			_messageBox = new MessageBox(_tft, "Error: ", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Error: ", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = EPS_OK_MB;
 		}
@@ -357,14 +357,14 @@ void EditProfileScreen::HandleDeleteMessageBox(DialogButtonType buttonPressed)
 			else {
 				ProfileManager.SaveProfileFileNameToPreferences(_profile.filename);
 				String message = "The profile has been deleted.\nPress OK to return to the Profile Manager.";
-				_messageBox = new MessageBox(_tft, "Profile delete", message, MESSAGE_BOX_INFORMATION, MESSAGE_BOX_OK);
+				_messageBox = new MessageBox(_tft, "Profile delete", message, MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_OK);
 				_messageBox->Show();
 				_activeMessageBox = EPS_DELETE_SUCCESS_MB;
 			}
 		}
 		else {
 			String message = "Failed to delete file '" + String(_profile.filename) + "'!";
-			_messageBox = new MessageBox(_tft, "Delete Failed", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Delete Failed", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_activeMessageBox = EPS_DELETE_SUCCESS_MB;
 			_messageBox->Show();
 		}

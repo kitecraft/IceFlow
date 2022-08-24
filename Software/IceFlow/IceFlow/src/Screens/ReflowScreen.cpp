@@ -166,7 +166,7 @@ void ReflowScreen::ProcessTouch(int x, int y)
 
 	if (_sidebar->CancelTouched(x, y)) {
 		String message = "Are you sure you want to cancel this reflow session?";
-		_messageBox = new MessageBox(_tft, "Cancel Reflow?", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+		_messageBox = new MessageBox(_tft, "Cancel Reflow?", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 		_messageBox->Show();
 		_activeMessageBox = RFS_CANCEL_MB;
 	}
@@ -215,8 +215,8 @@ void ReflowScreen::PopUpReflowCompleteMB(char* runTime)
 	_messageBox = new MessageBox(_tft,
 		"Reflow Complete.",
 		message,
-		MESSAGE_BOX_INFORMATION,
-		MESSAGE_BOX_OK
+		MESSAGE_BOX_ICON_INFORMATION,
+		MESSAGE_BOX_BUTTONS_OK
 	);
 	_messageBox->Show();
 	_activeMessageBox = RFS_COMPLETE_MB;

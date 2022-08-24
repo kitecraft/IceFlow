@@ -13,9 +13,18 @@ PidEditor::~PidEditor()
 	delete _currentPID_Ki;
 	delete _currentPID_Kd;
 
+	delete _cancelButton;
+	delete _saveButton;
+
 	delete _setMidPID;
 	delete _setLowPID;
 	delete _setHighPID;
+
+	delete _runAutoTune;
+
+	if (_messageBox != nullptr) {
+		delete _messageBox;
+	}
 
 	if (_numberPad != nullptr) {
 		delete _numberPad;
@@ -25,6 +34,10 @@ PidEditor::~PidEditor()
 PidEditor::PidEditor(TFT_eSPI* tft)
 	:DialogBase(tft, DMCoordinates(0, 0, PID_DLG_W, PID_DLG_H, PID_DLG_X, PID_DLG_Y), GlobalTheme, PID_DLG_TITLE)
 {
+	_messageBox = nullptr;
+	_messageBoxActive = PIDE_MB_NONE;
+	_saveRequired = false;
+
 	_pidData.GetData();
 	_origKp = GetPidKP();
 	_origKi = GetPidKI();
@@ -32,6 +45,24 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 	
 	_numberPad = nullptr;
 	_activeTB = PIDED_NONE;
+
+	_runAutoTune = new Button(
+		ButtonDto(
+			DMCoordinates(
+				PID_DLG_RUN_BUTTON_X,
+				PID_DLG_RUN_BUTTON_Y,
+				PID_DLG_RUN_BUTTON_W,
+				PID_DLG_ACTION_BUTTON_H,
+				_coordinates.p_x + PID_DLG_RUN_BUTTON_X,
+				_coordinates.p_y + PID_DLG_RUN_BUTTON_Y
+			),
+			GlobalTheme,
+			MEDIUM_FONT,
+			0x3dd0),
+		"Run Autotune",
+		_tft,
+		false
+	);
 
 	_closeButton = new DialogButton(
 		DialogButtonDto(
@@ -133,8 +164,8 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 			DMCoordinates(
 				PID_DLG_PANEL_SET_BTN_X,
 				PID_DLG_PANEL_Y_OFFSET_MID + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET,
-				20,
-				15,
+				PID_DLG_PANEL_SET_BTN_W,
+				PID_DLG_PANEL_SET_BTN_H,
 				_coordinates.p_x + PID_DLG_PANEL_SET_BTN_X,
 				_coordinates.p_y + PID_DLG_PANEL_Y_OFFSET_MID + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET
 			),
@@ -151,8 +182,8 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 			DMCoordinates(
 				PID_DLG_PANEL_SET_BTN_X,
 				PID_DLG_PANEL_Y_OFFSET_LOW + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET,
-				20,
-				15,
+				PID_DLG_PANEL_SET_BTN_W,
+				PID_DLG_PANEL_SET_BTN_H,
 				_coordinates.p_x + PID_DLG_PANEL_SET_BTN_X,
 				_coordinates.p_y + PID_DLG_PANEL_Y_OFFSET_LOW + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET
 			),
@@ -169,8 +200,8 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 			DMCoordinates(
 				PID_DLG_PANEL_SET_BTN_X,
 				PID_DLG_PANEL_Y_OFFSET_HIGH + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET,
-				20,
-				15,
+				PID_DLG_PANEL_SET_BTN_W,
+				PID_DLG_PANEL_SET_BTN_H,
 				_coordinates.p_x + PID_DLG_PANEL_SET_BTN_X,
 				_coordinates.p_y + PID_DLG_PANEL_Y_OFFSET_HIGH + PID_DLG_PANEL_SET_BUTTON_Y_OFFSET
 			),
@@ -215,6 +246,7 @@ void PidEditor::Draw()
 	_setLowPID->Draw(_sprite);
 	_setHighPID->Draw(_sprite);
 
+	_runAutoTune->Draw(_sprite);
 	_closeButton->Draw(_sprite);
 	ShowHideButtons();
 }
@@ -233,17 +265,42 @@ void PidEditor::DrawPIDValuesPanel(int yOffset, String title, uint16_t borderCol
 	_sprite->drawString("Ki: ", PID_DLG_KI_TEXTBOX_LABEL_X, yOffset + +(PID_DLG_PANEL_H / 2) - 2);
 	_sprite->drawString("Kd: ", PID_DLG_KD_TEXTBOX_LABEL_X, yOffset + +(PID_DLG_PANEL_H / 2) - 2);
 
-
+	/*
 	_sprite->drawSpot(PID_DLG_PANEL_HELP_X, yOffset + +(PID_DLG_PANEL_H / 2) - 2, 7, TFT_DARKGREY);	
 	_sprite->setFreeFont(MEDIUM_FONT);
 	_sprite->setTextColor(TFT_GREEN);
 	_sprite->setTextDatum(MC_DATUM);
 	_sprite->drawString("?", PID_DLG_PANEL_HELP_X, yOffset + +(PID_DLG_PANEL_H / 2) - 2);
+	*/
 }
 
 
 DialogButtonType PidEditor::Touched(int x, int y)
 {
+	if (_messageBoxActive != PIDE_MB_NONE) {
+		DialogButtonType ret = _messageBox->Touched(x, y);
+		if (ret != DB_NONE) {
+			if (ret == DB_CONTINUE) {
+				if (_messageBoxActive == PIDE_MB_CLOSE) {
+					ret = _closeButton->GetType();
+				}
+				else {
+					ret = DB_CONTINUE;
+				}
+			}
+			else {
+				ret = DB_NONE;
+			}
+			_messageBox->Hide();
+			_tft->dmaWait();
+			delete _messageBox;
+			_messageBox = nullptr;
+			_messageBoxActive = PIDE_MB_NONE;
+			return ret;
+		}
+	}
+
+
 	// Number pad
 	if (_activeTB != PIDED_NONE) {
 		if (_numberPad->Touched(x, y)) {
@@ -261,14 +318,22 @@ DialogButtonType PidEditor::Touched(int x, int y)
 					break;
 				}
 			}
-
 			_tft->dmaWait();
-			delete(_numberPad);
+			delete _numberPad;
 			_numberPad = nullptr;
 			_activeTB = PIDED_NONE;
 			Redraw();
 		}
 		return DB_NONE;
+	}
+
+	if (_runAutoTune->Touched(x, y)) {
+		if (_saveRequired) {
+			OpenSaveRequiredMessageBox(PIDE_MB_RUN);
+		}
+		else {
+			return DB_CONTINUE;
+		}
 	}
 
 	// Text Boxes
@@ -287,7 +352,12 @@ DialogButtonType PidEditor::Touched(int x, int y)
 
 
 	if (_closeButton->Touched(x, y)) {
-		return _closeButton->GetType();
+		if (_saveRequired) {
+			OpenSaveRequiredMessageBox(PIDE_MB_CLOSE);
+		}
+		else {
+			return _closeButton->GetType();
+		}
 	}
 
 	if (_cancelButton->Touched(x, y)) {
@@ -335,14 +405,14 @@ void PidEditor::ShowHideButtons()
 		_currentPID_Kd->GetText() == String(_origKd)) {
 		_saveButton->Visible(false);
 		_cancelButton->Visible(false);
-		Serial.println("NOT Showing buttons");
+		_saveRequired = false;
 	}
 	else {
 		_saveButton->Visible(true);
 		_cancelButton->Visible(true);
 		_saveButton->Draw(_sprite);
 		_cancelButton->Draw(_sprite);
-		Serial.println("Showing buttons");
+		_saveRequired = true;
 	}
 }
 
@@ -404,4 +474,11 @@ void PidEditor::OpenNumberPad(PIDED_ACTIVE_TEXT_BOX textBox, float initialValue)
 		//Hide();
 		_numberPad->Show();
 	}
+}
+
+void PidEditor::OpenSaveRequiredMessageBox(MESSAGE_BOX_ACTIVE_FOR forMB)
+{
+	_messageBox = new MessageBox(_tft, "Save Required", "Change have not been saved.\nAre you sure you want to continue?", MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
+	_messageBox->Show();
+	_messageBoxActive = forMB;
 }

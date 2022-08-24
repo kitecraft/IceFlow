@@ -81,24 +81,27 @@ bool NumberPadDialogBox::Touched(int x, int y)
 
 void NumberPadDialogBox::HandleButtonPress(NUM_PAD_BUTTON button)
 {
-	if (_textBoxSelected || _number == "0") {
+	if (_textBoxSelected) {
+		if (button == NPB_DECIMAL) {
+			return;
+		}
 		UpdateValue(String(button));
 	}
 	else {
 		if (button == NPB_DECIMAL) {
-			if (_number.indexOf(".") != -1) {
+			String tmp = _number;
+			if (tmp.indexOf(".") != -1) {
 				return;
 			}
-			UpdateValue(_number + ".");
+			tmp += ".";
+			UpdateValue(tmp);
+		}
+		else if (_number == "0") {
+			UpdateValue(String(button));
 		}
 		else {
 			UpdateValue(_number + String(button));
 		}
-		
-			
-		//char tmp[7];
-		//snprintf(tmp, 7, "%f%i", _number, (int)button);
-		//UpdateValue(atof(tmp));
 	}
 }
 

@@ -48,7 +48,7 @@ private:
 	bool ManualHeatDlgClosed(DialogButtonType action);
 	void EndTargetTempDlg();
 
-	void AutoTuneTouched();
+	void StartAutoTune();
 
 	void DrawHeatersIcon(bool status);
 

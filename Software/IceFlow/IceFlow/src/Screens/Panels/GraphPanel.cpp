@@ -174,6 +174,7 @@ void GraphPanel::Draw()
 
 void GraphPanel::ReDraw()
 {
+	CalculateNewMaxMins();
 	ReDrawTemperatureSprites();
 	DrawTemperatureLegends();
 	DrawTimeLegend();

@@ -68,7 +68,6 @@ void loop() {
         DisplayQueue.QueueKey(suk_DateTime);
         SendDatetimeUpdate = false;
     }
-    
 }
 
 

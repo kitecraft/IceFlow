@@ -170,13 +170,22 @@ void MainScreen::ProcessTouch(int x, int y)
 {
 	if (_pidEditorActive == true) {
 		DialogButtonType ret = _pidEditor->Touched(x, y);
+
 		if (ret == DB_CLOSE) {
+			_pidEditor->Hide();
+			CommandQueue.QueueCommand(CC_OVEN_RESET_PIDS);
+			delete _pidEditor;
+			_pidEditor = nullptr;
+			_pidEditorActive = false;
+			_graphPanel->ReDraw();
+		}
+		else if (ret == DB_CONTINUE) {
 			_pidEditor->Hide();
 			delete _pidEditor;
 			_pidEditor = nullptr;
 			_pidEditorActive = false;
 			_graphPanel->ReDraw();
-			CommandQueue.QueueCommand(CC_OVEN_RESET_PIDS);
+			StartAutoTune();
 		}
 		return;
 	}
@@ -204,8 +213,11 @@ void MainScreen::ProcessTouch(int x, int y)
 	case SB_START_MANUAL_HEAT:
 		ManualHeatTouched();
 		return;
-	case SB_START_AUTO_TUNE:
-		AutoTuneTouched();
+	case SB_AUTOTUNE_TOUCHED:
+		//StartAutoTune();
+		_pidEditor = new PidEditor(_tft);
+		_pidEditor->Show();
+		_pidEditorActive = true;
 		return;
 	case SB_START_REFLOW:
 		ReflowTouched();
@@ -295,31 +307,24 @@ void MainScreen::ReflowTouched()
 {
 	if (_primaryTemperature > MINIUM_OVEN_TEMPERATURE_REFLOW_START) {
 		String message = "Oven temperature must be below '" + String(MINIUM_OVEN_TEMPERATURE_REFLOW_START) + " degrees Celcius' to begin a Reflow session";
-		_messageBox = new MessageBox(_tft, "Over Minimum", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+		_messageBox = new MessageBox(_tft, "Over Minimum", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 		_messageBox->Show();
 		_activeMessageBox = MS_START_REFLOW_TEMP_ERROR_MB;
 		return;
 	}
 	
 	String message = "Start a Reflow sesion with '" + _currentProfile.name + "' ?";
-	_messageBox = new MessageBox(_tft, "Start Reflow", message, MESSAGE_BOX_QUESTION, MESSAGE_BOX_CONTINUE_CANCEL);
+	_messageBox = new MessageBox(_tft, "Start Reflow", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 	_messageBox->Show();
 	_activeMessageBox = MS_START_REFLOW_MB;
 }
 
-void MainScreen::AutoTuneTouched()
+void MainScreen::StartAutoTune()
 {
-	EndTargetTempDlg();
-
-	//_pidEditor = new PidEditor(_tft);
-	//_pidEditor->Show();
-	//_pidEditorActive = true;
-	
 	_targetTemperatureDlg = new TargetTemperatureDlg(_tft, AUTOTUNE_TARGET_TEMPERATURE_DIALOG_TITLE);
 	_targetTemperatureDlg->SetTargetTemperature(GetMaualHeatTargetTemperature());
 	_targetTemperatureDlg->Show();
 	_activeTargetTempDLG = MSTDLG_AUTO_TUNE;
-	
 }
 
 void MainScreen::ManualHeatTouched()
@@ -340,7 +345,7 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 		int highest = GetOvenDoNotExceedTemperature();
 		if (targetTemp > highest - 10) {
 			String message = "OVEN SAFETY LIMIT\nTarget can not be higher than '" + String(highest - 10) + " degrees Celcius'";
-			_messageBox = new MessageBox(_tft, "Over Limit", message, MESSAGE_BOX_ERROR, MESSAGE_BOX_OK);
+			_messageBox = new MessageBox(_tft, "Over Limit", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = MS_OVER_MAX_TEMP;
 			return false;
