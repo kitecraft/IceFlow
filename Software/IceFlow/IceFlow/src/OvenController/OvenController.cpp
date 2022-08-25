@@ -16,6 +16,7 @@ bool OvenController::Init()
 
     _autoTune = nullptr;
     _reflow = new Reflow();
+    UpdateDoNotExceedTemperature();
 
     Serial.println("Initializing sensor A...");
     _primaryTemperatureSensor.selectHSPI();
@@ -143,6 +144,11 @@ void OvenController::FetchPrimaryTemperature()
                 Serial.println("ISNAN error!");
                 _temperaturePrimary = prevTemp;
             }
+            if (_temperaturePrimary >= _doNotExceedTemperature) {
+                EmergencyStopOven();
+                delay(100);
+                DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
+            }
         }
     }
 
@@ -181,6 +187,11 @@ void OvenController::FetchTemperatures()
     * End of test/dev heat/cool code'/'stuff
     */
 
+    if (_temperaturePrimary >= _doNotExceedTemperature) {
+        EmergencyStopOven();
+        delay(100);
+        DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
+    }
     if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
         SendPrimaryTemperatureToDisplay();
         SendSecondaryTemperatureToDisplay();
@@ -508,6 +519,14 @@ void OvenController::SendStatus()
     else {
         DisplayQueue.QueueKey(suk_Oven_Heaters_Off);
     }
+}
+
+void OvenController::UpdateDoNotExceedTemperature()
+{
+    float x = (float)GetOvenDoNotExceedTemperature();
+    Serial.print("Temp:");
+    Serial.println(x);
+    _doNotExceedTemperature = (float)GetOvenDoNotExceedTemperature();
 }
 
 OvenController OvenManager;

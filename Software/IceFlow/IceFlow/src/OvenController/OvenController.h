@@ -22,6 +22,7 @@ private:
 	bool _heatersOn = false;
 	bool _convectionFanOn = false;
 	int _targetTemperature = 0;
+	float _doNotExceedTemperature = 0;
 
 	MAX31855 _primaryTemperatureSensor;
 	unsigned long _nextTemperatureUpdate = 0;
@@ -78,6 +79,7 @@ public:
 	void SendStatus();
 
 	void ResetPIDs();
+	void UpdateDoNotExceedTemperature();
 };
 
 extern OvenController OvenManager;

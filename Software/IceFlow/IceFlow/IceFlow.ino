@@ -36,6 +36,7 @@ void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
 
+
     xTaskCreate(
         StartNetworkStuff,
         "NetworkSetup",
@@ -48,6 +49,7 @@ void setup() {
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
 
+    //SaveOvenDoNotExceedTemperature(250);
     //SavePidKP(3.00);
     //SavePidKI(3.00);
     //SavePidKD(1.2);
@@ -153,6 +155,12 @@ void HandleCommandQueue()
             break;
         case CC_OVEN_RESET_PIDS:
             OvenManager.ResetPIDs();
+            break;
+        case CC_DELETE_TOUCH_CALIBRATION:
+            Display.DeleteTouchCalibrationFile();
+            break;
+        case CC_UPDATE_DO_NOT_EXCEED_TEMPERATURE:
+            OvenManager.UpdateDoNotExceedTemperature();
             break;
         default:
             Serial.printf("CommandQueue:  Shouldn't be here. command: %i, Value: \n", command);

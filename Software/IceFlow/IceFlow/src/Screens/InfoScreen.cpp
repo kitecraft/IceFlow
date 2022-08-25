@@ -11,6 +11,7 @@ InfoScreen::InfoScreen(TFT_eSPI* tft)
 {
 	_messageBox = nullptr;
 	_messageBoxActive = IS_MBAF_NONE;
+	_numberPad = nullptr;
 
 	_tft = tft;
 	_exitButton = new Button(
@@ -30,6 +31,57 @@ InfoScreen::InfoScreen(TFT_eSPI* tft)
 		_tft,
 		true
 	);
+
+	_deleteTouchCalibarationButton = new Button(
+		ButtonDto(
+			DMCoordinates(
+				IS_DISPLAY_DELETE_CALIBRATION_X,
+				IS_DISPLAY_DELETE_CALIBRATION_Y,
+				IS_DISPLAY_DELETE_CALIBRATION_W,
+				IS_DISPLAY_DELETE_CALIBRATION_H,
+				IS_DISPLAY_BOX_X + IS_DISPLAY_DELETE_CALIBRATION_X,
+				IS_DISPLAY_BOX_Y + IS_DISPLAY_DELETE_CALIBRATION_Y
+			),
+			GlobalTheme,
+			SMALL_FONT,
+			GlobalTheme.panelDarkColor),
+		"Delete Calibration",
+		_tft,
+		true
+	);
+
+	_maximumOvenTemperature = new TextBox(TextBoxDto(
+		DMCoordinates(
+			IS_DISPLAY_MAX_TEMP_TB_X,
+			IS_DISPLAY_MAX_TEMP_TB_Y,
+			IS_DISPLAY_MAX_TEMP_TB_W,
+			IS_DISPLAY_MAX_TEMP_TB_H,
+			IS_DISPLAY_MAX_TEMP_X + IS_DISPLAY_MAX_TEMP_TB_X,
+			IS_DISPLAY_MAX_TEMP_Y + IS_DISPLAY_MAX_TEMP_TB_Y
+		),
+		GlobalTheme,
+		MEDIUM_FONT,
+		ML_DATUM),
+		_tft);
+
+	_applyNewMaximumTemperature = new Button(
+		ButtonDto(
+			DMCoordinates(
+				IS_DISPLAY_APPLY_BUTTON_X,
+				IS_DISPLAY_APPLY_BUTTON_Y,
+				IS_DISPLAY_APPLY_BUTTON_W,
+				IS_DISPLAY_APPLY_BUTTON_H,
+				IS_DISPLAY_MAX_TEMP_X + IS_DISPLAY_APPLY_BUTTON_X,
+				IS_DISPLAY_MAX_TEMP_Y + IS_DISPLAY_APPLY_BUTTON_Y
+			),
+			GlobalTheme,
+			SMALL_FONT,
+			GlobalTheme.panelDarkColor),
+		"Apply",
+		_tft,
+		true
+	);
+
 	CreateNetworkWidgets();
 
 	Draw();
@@ -46,9 +98,16 @@ InfoScreen::~InfoScreen()
 	delete _networkIPAddressTB;
 	delete _macAddressTB;
 	delete _clearNetworkInfoButton;
+	delete _deleteTouchCalibarationButton;
+	delete _maximumOvenTemperature;
+	delete _applyNewMaximumTemperature;
 
 	if (_messageBox != nullptr) {
 		delete _messageBox;
+	}
+
+	if (_numberPad != nullptr) {
+		delete _numberPad;
 	}
 }
 
@@ -154,8 +213,43 @@ void InfoScreen::ProcessTouch(int x, int y)
 		return;
 	}
 
+	if (_numberPad != nullptr) {
+		if (_numberPad->Touched(x, y)) {
+			int num = (int)_numberPad->GetNumber();
+			if (num != 0) {
+				_maximumOvenTemperature->Update(int(_numberPad->GetNumber()));
+			}
+			_numberPad->Hide();
+			delete _numberPad;
+			_numberPad = nullptr;
+			return;
+		}
+	}
+
+	if (_applyNewMaximumTemperature->Touched(x, y)) {
+		SaveOvenDoNotExceedTemperature(_maximumOvenTemperature->GetText().toInt());
+
+		_messageBox = new MessageBox(
+			_tft,
+			"Maximum Saved",
+			String("The maximum allowed temperature has been saved."),
+			MESSAGE_BOX_ICON_QUESTION,
+			MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL
+		);
+		_messageBox->Show();
+		_messageBoxActive = IS_MBAF_SAVED_DO_NOT_EXCEED;
+		CommandQueue.QueueCommand(CC_UPDATE_DO_NOT_EXCEED_TEMPERATURE);
+		return;
+	}
+
+	if (_maximumOvenTemperature->Touched(x, y)) {
+		_numberPad = new NumberPadDialogBox(_tft, "Max");
+		_numberPad->SetNumber(_maximumOvenTemperature->GetText());
+		_numberPad->Show();
+		return;
+	}
+
 	if (_clearNetworkInfoButton->Touched(x, y)) {
-		
 		_messageBox = new MessageBox(
 			_tft,
 			"Clear Network?",
@@ -164,11 +258,26 @@ void InfoScreen::ProcessTouch(int x, int y)
 			MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL
 		);
 		_messageBox->Show();
-		_messageBoxActive = IS_MBAF_CLEAR_NETWORK;
+		_messageBoxActive = IS_MBAF_CONFRIM_CLEAR_NETWORK;
+		return;
+	}
+
+	if (_deleteTouchCalibarationButton->Touched(x, y)) {
+		_messageBox = new MessageBox(
+			_tft,
+			"Delete Calibration?",
+			String("This will delete the touch calibration data\nContinue?"),
+			MESSAGE_BOX_ICON_QUESTION,
+			MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL
+		);
+		_messageBox->Show();
+		_messageBoxActive = IS_MBAF_CONFIRM_DELETE_CALIBRATION;
+		return;
 	}
 
 	if (_exitButton->Touched(x, y)) {
 		DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
+		return;
 	}
 }
 
@@ -180,7 +289,7 @@ void InfoScreen::HandleMessageBoxTouch(int x, int y)
 	}
 
 	switch (_messageBoxActive) {
-	case IS_MBAF_CLEAR_NETWORK:
+	case IS_MBAF_CONFRIM_CLEAR_NETWORK:
 		EndMessageBox();
 		if (mbRet == DB_CONTINUE) {
 			SetSsid("");
@@ -200,6 +309,25 @@ void InfoScreen::HandleMessageBoxTouch(int x, int y)
 		EndMessageBox();
 		CommandQueue.QueueCommand(CC_REQUEST_NET_NAME);
 		CommandQueue.QueueCommand(CC_REQUEST_NET_IP);
+		break;
+	case IS_MBAF_CONFIRM_DELETE_CALIBRATION:
+		EndMessageBox();
+		if (mbRet == DB_CONTINUE) {
+			CommandQueue.QueueCommand(CC_DELETE_TOUCH_CALIBRATION);
+			_messageBox = new MessageBox(
+				_tft,
+				"Calibration deleted",
+				"The touchscreen will be recalibrated upon next system boot.",
+				MESSAGE_BOX_ICON_INFORMATION,
+				MESSAGE_BOX_BUTTONS_OK
+			);
+			_messageBox->Show();
+			_messageBoxActive = IS_MBAF_CALIBRATION_DELETED;
+		}
+		break;
+	case IS_MBAF_CALIBRATION_DELETED:
+	case IS_MBAF_SAVED_DO_NOT_EXCEED:
+		EndMessageBox();
 		break;
 	default:
 		break;
@@ -224,7 +352,8 @@ void InfoScreen::Draw()
 	_tft->startWrite();
 	DrawHeader();
 	DrawNetwork();
-	DrawDisplay();
+	DrawTouchCalibration();
+	DrawMaximumTemperature();
 
 	_exitButton->Draw();
 
@@ -288,7 +417,7 @@ void InfoScreen::DrawNetwork()
 	sprite.deleteSprite();
 }
 
-void InfoScreen::DrawDisplay()
+void InfoScreen::DrawTouchCalibration()
 {
 	TFT_eSprite sprite(_tft);
 	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(IS_DISPLAY_BOX_W, IS_DISPLAY_BOX_H);
@@ -297,12 +426,34 @@ void InfoScreen::DrawDisplay()
 	sprite.setTextColor(GlobalTheme.textColor);
 
 	DrawRoundedBox(&sprite, DMCoordinates(0, 0, IS_DISPLAY_BOX_W, IS_DISPLAY_BOX_H, 0, 0), IS_HEADER_H / 2, GlobalTheme);
-	sprite.drawString("Display Calibration data can be deleted and", 9, 5);
+	sprite.drawString("Touch Calibration data can be deleted and", 9, 5);
 	sprite.drawString("reset upon next system boot.", 9, 22);
 
-
+	_deleteTouchCalibarationButton->Draw(&sprite);
 	_tft->pushImageDMA(IS_DISPLAY_BOX_X, IS_DISPLAY_BOX_Y, IS_DISPLAY_BOX_W, IS_DISPLAY_BOX_H, sprPtr);
 
 	_tft->dmaWait();
 	sprite.deleteSprite();
+}
+
+void InfoScreen::DrawMaximumTemperature()
+{
+	TFT_eSprite sprite(_tft);
+	uint16_t* sprPtr = (uint16_t*)sprite.createSprite(IS_DISPLAY_MAX_TEMP_W, IS_DISPLAY_MAX_TEMP_H);
+	sprite.fillSprite(TFT_BLACK);
+	sprite.setFreeFont(MEDIUM_FONT);
+	sprite.setTextColor(GlobalTheme.textColor);
+
+	DrawRoundedBox(&sprite, DMCoordinates(0, 0, IS_DISPLAY_MAX_TEMP_W, IS_DISPLAY_MAX_TEMP_H, 0, 0), IS_HEADER_H / 2, GlobalTheme);
+	sprite.drawString("If the oven exceeds this temperature,", 9, 5);
+	sprite.drawString("it will be immediatly shut down.", 9, 22);
+
+	_maximumOvenTemperature->Draw(&sprite, GetOvenDoNotExceedTemperature());
+	_applyNewMaximumTemperature->Draw(&sprite);
+
+	_tft->pushImageDMA(IS_DISPLAY_MAX_TEMP_X, IS_DISPLAY_MAX_TEMP_Y, IS_DISPLAY_MAX_TEMP_W, IS_DISPLAY_MAX_TEMP_H, sprPtr);
+
+	_tft->dmaWait();
+	sprite.deleteSprite();
+
 }

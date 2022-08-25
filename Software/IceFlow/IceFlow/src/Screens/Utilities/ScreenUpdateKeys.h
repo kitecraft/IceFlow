@@ -24,6 +24,7 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Oven_AutoTune_Complete,
 	suk_Oven_Heaters_On,
 	suk_Oven_Heaters_Off,
+	suk_Oven_Exceeded_Max,
 	suk_Reflow_StageComplete_PreHeat,
 	suk_Reflow_StageComplete_Soak,
 	suk_Reflow_StageComplete_Ramp,

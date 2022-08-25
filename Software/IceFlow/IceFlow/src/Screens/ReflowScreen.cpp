@@ -165,7 +165,7 @@ void ReflowScreen::ProcessTouch(int x, int y)
 	}
 
 	if (_sidebar->CancelTouched(x, y)) {
-		String message = "Are you sure you want to cancel this reflow session?";
+		String message = "Press continue to exit the reflow session.\nPress Cancel to return.";
 		_messageBox = new MessageBox(_tft, "Cancel Reflow?", message, MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 		_messageBox->Show();
 		_activeMessageBox = RFS_CANCEL_MB;

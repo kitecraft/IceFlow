@@ -114,7 +114,6 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_sideBar->Draw();
 		_tertiaryTemperature = atof(value);
 		_graphPanel->IgnoreTertiary(false);
-
 		break;
 	case suk_Oven_AutoTune_Complete:
 		_graphPanel->IgnoreTertiary(true);
@@ -124,6 +123,11 @@ void MainScreen::UpdateScreen(int inKey, char* value)
 		_pidEditor = new PidEditor(_tft);
 		_pidEditor->Show();
 		_pidEditorActive = true;
+		break;
+	case suk_Oven_Exceeded_Max:
+		_messageBox = new MessageBox(_tft, "Oven temperature!", "The oven exceeded maximum temperature of '" + String(GetOvenDoNotExceedTemperature()) + " degrees Celcius' and was killed.", MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
+		_messageBox->Show();
+		_activeMessageBox = MS_OVEN_EXCEEDED_MAX;
 		break;
 	default:
 		break;
@@ -252,6 +256,10 @@ void MainScreen::HandleMessageBoxTouch(int x, int y)
 			DisplayQueue.QueueScreenChange(SN_REFLOW_SCREEN);
 		}
 		EndMessageBox();
+		break;
+	case MS_OVEN_EXCEEDED_MAX:
+		EndMessageBox();
+		break;
 	default:
 		break;
 	}
