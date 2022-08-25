@@ -4,6 +4,8 @@
 #include "Widgets/Button.h"
 #include "Utilities/DMTheme.h"
 #include "Utilities/DMCoordinates.h"
+#include "Widgets/TextBox.h"
+#include "DialogBoxes/MessageBox.h"
 
 #define IS_HEADER_X 0
 #define IS_HEADER_Y 0
@@ -22,7 +24,29 @@
 #define IS_NETWORK_BOX_X 0
 #define IS_NETWORK_BOX_Y IS_HEADER_H
 #define IS_NETWORK_BOX_W 320
-#define IS_NETWORK_BOX_H 60
+#define IS_NETWORK_BOX_H 82
+
+#define IS_NETWORK_NAME_TB_X 130
+#define IS_NETWORK_NAME_TB_Y 5
+#define IS_NETWORK_IP_ADDRESS_TB_X 90
+#define IS_NETWORK_IP_ADDRESS_TB_Y 29
+#define IS_NETWORK_MAC_ADDRESS_TB_X 90
+#define IS_NETWORK_MAC_ADDRESS_TB_Y 53
+#define IS_NETWORK_CLEAR_BUTTON_X 245
+#define IS_NETWORK_CLEAR_BUTTON_Y 29
+
+#define IS_DISPLAY_BOX_X 0
+#define IS_DISPLAY_BOX_Y (IS_NETWORK_BOX_Y + IS_NETWORK_BOX_H)
+#define IS_DISPLAY_BOX_W 320
+#define IS_DISPLAY_BOX_H 40
+
+
+
+enum IS_MESSAGE_BOX_ACTIVE_FOR {
+	IS_MBAF_NONE = 0,
+	IS_MBAF_CLEAR_NETWORK,
+	IS_MBAF_NETWORK_CLEARED,
+};
 
 class InfoScreen
 {
@@ -30,11 +54,24 @@ private:
 	TFT_eSPI* _tft;
 	Button* _exitButton = nullptr;
 
+	MessageBox* _messageBox = nullptr;
+	IS_MESSAGE_BOX_ACTIVE_FOR _messageBoxActive = IS_MBAF_NONE;
+
+	TextBox* _networkNameTB = nullptr;
+	TextBox* _networkIPAddressTB = nullptr;
+	TextBox* _macAddressTB = nullptr;
+	Button* _clearNetworkInfoButton = nullptr;
+
+	void CreateNetworkWidgets();
 
 	void Draw();
 	void DrawHeader();
+	void DrawNetwork();
+	void DrawDisplay();
 	
 	void ProcessTouch(int x, int y);
+	void HandleMessageBoxTouch(int x, int y);
+	void EndMessageBox();
 public:
 	InfoScreen(TFT_eSPI* tft);
 	~InfoScreen();

@@ -85,7 +85,7 @@ void RFS_Sidebar::Draw()
 	sprite.drawString(message, x, RFS_LABEL_PREHEAT + RFS_MSG_OFFSET);
 	sprite.drawFastHLine(3, 64, RFS_SIDEBAR_W - 6, GlobalTheme.panelBorderColor);
 
-	sprite.setTextColor(TFT_DARKGREY, GlobalTheme.panelLightColor);
+	sprite.setTextColor(GlobalTheme.panelDarkColor, GlobalTheme.panelLightColor);
 	message = String(_profile->pre_heat_soak_time) + " sec";
 	sprite.drawString("Soak", x, RFS_LABEL_SOAK);
 	sprite.drawString(message, x, RFS_LABEL_SOAK + RFS_MSG_OFFSET);

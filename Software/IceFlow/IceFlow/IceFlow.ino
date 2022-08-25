@@ -12,6 +12,7 @@
 #include "src/Utilities/ControlCommands.h"
 #include "src/Screens/Utilities/InitializeScreens.h"
 #include "src/OvenController/OvenController.h"
+#include "src/Utilities/PreferencesManager.h"
 
 #include "src/Network/IceNetwork.h"
 #include "src/Network/IceWebServer.h"
@@ -97,6 +98,29 @@ void HandleCommandQueue()
             case IF_NETWORK_STARTED:
                 DisplayQueue.QueueKey(suk_Network_Started);
             }
+            break;
+        case CC_REQUEST_NET_NAME:
+            switch (g_NetworkStatus) {
+            case IF_NETWORK_CONNECTED:
+                DisplayQueue.QueueKeyAndValue(suk_Network_Name, GetSsid().c_str());
+                break;
+            case IF_NETWORK_STARTED:
+                DisplayQueue.QueueKeyAndValue(suk_Network_Name, __DEVICE_NAME__);
+                break;
+            }
+            break;
+        case CC_REQUEST_NET_IP:
+            switch (g_NetworkStatus) {
+            case IF_NETWORK_CONNECTED:
+                DisplayQueue.QueueKeyAndValue(suk_IP_Address, WiFi.localIP().toString().c_str());
+                break;
+            case IF_NETWORK_STARTED:
+                DisplayQueue.QueueKeyAndValue(suk_IP_Address, WiFi.softAPIP().toString().c_str());
+                break;
+            }
+            break;
+        case CC_REQUEST_MAC_ADDRESS:
+            DisplayQueue.QueueKeyAndValue(suk_Mac_Address, WiFi.macAddress().c_str());
             break;
         case CC_START_TIME_UPATES:
             timerAlarmEnable(g_ClockTimer);

@@ -79,7 +79,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 			if (option == "PID Editor") {
 				return SB_AUTOTUNE_TOUCHED;
 			}
-			else if (option == "Info") {
+			else if (option == "Settings") {
 				return SB_INFO_TOUCHED;
 			}
 			return SB_MENU_CLOSED;
@@ -100,7 +100,7 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 
 	if (_settingsIcon->Touched(x, y)) {
 		const int numOptions = 2;
-		String options[numOptions] = { "PID Editor", "Info" };
+		String options[numOptions] = { "PID Editor", "Settings" };
 
 		_popUpMenu.Open(
 			PopUpMenuDto(

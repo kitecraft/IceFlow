@@ -222,9 +222,9 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 void PidEditor::Draw()
 {
 	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_CURRENT, "Current: ", TFT_GREEN);
-	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_MID, "Mid: ", TFT_YELLOW);
-	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_LOW, "Low: ", TFT_YELLOW);
-	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_HIGH, "High: ", TFT_YELLOW);
+	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_MID, "Mid: ", 0xFFF2);
+	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_LOW, "Low: ", 0xFFF2);
+	DrawPIDValuesPanel(PID_DLG_PANEL_Y_OFFSET_HIGH, "High: ", 0xFFF2);
 
 	_sprite->setFreeFont(SMALL_FONT);
 	_sprite->setTextDatum(ML_DATUM);

@@ -7,6 +7,8 @@ enum SCREEN_UPDATE_KEYS {
 	suk_Local_IP_Address,
 	suk_Network_Connected,
 	suk_Network_Started,
+	suk_IP_Address,
+	suk_Mac_Address,
 	suk_OTA_Progress,
 	suk_OTA_Complete,
 	suk_DateTime,

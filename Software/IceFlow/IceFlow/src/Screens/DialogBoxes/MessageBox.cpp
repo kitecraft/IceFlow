@@ -76,8 +76,10 @@ void MessageBox::PrintMessage(String message)
 
 			if (charAt >= message.length()) {
 				line = message.substring(currentLineStart, charAt);
-				_sprite->drawString(line, MESSAGE_BOX_TEXT_X, MESSAGE_BOX_TEXT_Y_START + (MESSAGE_BOX_LINE_HEIGHT * lineNumber));
-				continueLooking = false;
+				if (line.indexOf("\n") == -1) {
+					_sprite->drawString(line, MESSAGE_BOX_TEXT_X, MESSAGE_BOX_TEXT_Y_START + (MESSAGE_BOX_LINE_HEIGHT * lineNumber));
+					continueLooking = false;
+				}
 			}
 		}
 	}
