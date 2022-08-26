@@ -478,7 +478,7 @@ void PidEditor::OpenNumberPad(PIDED_ACTIVE_TEXT_BOX textBox, float initialValue)
 
 void PidEditor::OpenSaveRequiredMessageBox(MESSAGE_BOX_ACTIVE_FOR forMB)
 {
-	_messageBox = new MessageBox(_tft, "Save Required", "Change have not been saved.\nAre you sure you want to continue?", MESSAGE_BOX_ICON_INFORMATION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
+	_messageBox = new MessageBox(_tft, "Save Required", "Change have not been saved.\nAre you sure you want to continue?", MESSAGE_BOX_ICON_QUESTION, MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL);
 	_messageBox->Show();
 	_messageBoxActive = forMB;
 }

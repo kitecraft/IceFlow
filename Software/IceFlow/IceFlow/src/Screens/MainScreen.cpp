@@ -356,7 +356,7 @@ bool MainScreen::ManualHeatDlgClosed(DialogButtonType action)
 		int highest = GetOvenDoNotExceedTemperature();
 		if (targetTemp > highest - 10) {
 			String message = "OVEN SAFETY LIMIT\nTarget can not be higher than '" + String(highest - 10) + " degrees Celcius'";
-			_messageBox = new MessageBox(_tft, "Over Limit", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
+			_messageBox = new MessageBox(_tft, "Over Limit.", message, MESSAGE_BOX_ICON_ERROR, MESSAGE_BOX_BUTTONS_OK);
 			_messageBox->Show();
 			_activeMessageBox = MS_OVER_MAX_TEMP;
 			return false;

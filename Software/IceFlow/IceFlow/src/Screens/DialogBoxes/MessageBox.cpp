@@ -269,19 +269,44 @@ void MessageBox::DrawErrorIcon()
 		_sprite->drawFastHLine(_coordinates.w - 20 - i, _coordinates.y + 6 + (14 - i), 6 + (i * 2), TFT_RED);
 		_sprite->drawFastHLine(_coordinates.w - 25, _coordinates.y + 6 + (5 + i), 16, TFT_RED);
 	}
+	_sprite->setTextColor(TFT_WHITE);
+	_sprite->setFreeFont(MEDIUM_FONT);
+	_sprite->setTextDatum(MC_DATUM);
+	_sprite->drawString("X", _coordinates.w - 17, _coordinates.y + 13);
 }
 
 void MessageBox::DrawWarningIcon()
 {
-
+	//_sprite->drawFastVLine(_coordinates.w - 34, _coordinates.y, LARGE_FONT_TEXT_BOX_H, _theme.panelBorderColor);
+	_sprite->fillTriangle(
+		_coordinates.w - 20,
+		_coordinates.y + 6,
+		_coordinates.w - 28,
+		_coordinates.y + 21,
+		_coordinates.w - 12,
+		_coordinates.y + 21,
+		TFT_YELLOW
+	);
+	_sprite->setTextColor(TFT_BLACK);
+	_sprite->setFreeFont(MEDIUM_FONT);
+	_sprite->setTextDatum(MC_DATUM);
+	_sprite->drawString("!", _coordinates.w - 20, _coordinates.y + 13);
 }
 
 void MessageBox::DrawInfoIcon()
 {
-
+	_sprite->fillCircle(_coordinates.w - 20, _coordinates.y + 13, 7, TFT_BLUE);
+	_sprite->setTextColor(TFT_WHITE);
+	_sprite->setFreeFont(MEDIUM_FONT);
+	_sprite->setTextDatum(MC_DATUM);
+	_sprite->drawString("i", _coordinates.w - 20, _coordinates.y + 13);
 }
 
 void MessageBox::DrawQuestionIcon()
 {
-
+	_sprite->fillCircle(_coordinates.w - 20, _coordinates.y + 13, 7, TFT_BLUE);
+	_sprite->setTextColor(TFT_WHITE);
+	_sprite->setFreeFont(MEDIUM_FONT);
+	_sprite->setTextDatum(MC_DATUM);
+	_sprite->drawString("?", _coordinates.w - 20, _coordinates.y + 13);
 }

@@ -231,9 +231,9 @@ void InfoScreen::ProcessTouch(int x, int y)
 
 		_messageBox = new MessageBox(
 			_tft,
-			"Maximum Saved",
+			"Maximum Saved.",
 			String("The maximum allowed temperature has been saved."),
-			MESSAGE_BOX_ICON_QUESTION,
+			MESSAGE_BOX_ICON_INFORMATION,
 			MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL
 		);
 		_messageBox->Show();
@@ -296,7 +296,7 @@ void InfoScreen::HandleMessageBoxTouch(int x, int y)
 			SetSsidPassword("");
 			_messageBox = new MessageBox(
 				_tft,
-				"Network Cleared",
+				"Network Cleared.",
 				"The stored network info has been cleared.",
 				MESSAGE_BOX_ICON_INFORMATION,
 				MESSAGE_BOX_BUTTONS_OK
@@ -316,7 +316,7 @@ void InfoScreen::HandleMessageBoxTouch(int x, int y)
 			CommandQueue.QueueCommand(CC_DELETE_TOUCH_CALIBRATION);
 			_messageBox = new MessageBox(
 				_tft,
-				"Calibration deleted",
+				"Calibration deleted.",
 				"The touchscreen will be recalibrated upon next system boot.",
 				MESSAGE_BOX_ICON_INFORMATION,
 				MESSAGE_BOX_BUTTONS_OK
