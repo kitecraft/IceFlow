@@ -2,10 +2,10 @@
 #include <ESPDateTime.h>
 #include "Utilities/DMTheme.h"
 #include "Widgets/Box.h"
-#include "../Utilities/MemUseage.h"
 #include "../Utilities/PreferencesManager.h"
 #include "Utilities/ScreenNames.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
+#include "../Utilities/MemUseage.h"
 
 MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 {

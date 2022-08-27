@@ -25,6 +25,7 @@ private:
 	float _doNotExceedTemperature = 0;
 
 	MAX31855 _primaryTemperatureSensor;
+	MAX31855 _secondaryTemperatureSensor;
 	unsigned long _nextTemperatureUpdate = 0;
 
 	unsigned long _nextTemperatureDisplayUpdate = 0;

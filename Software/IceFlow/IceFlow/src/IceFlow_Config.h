@@ -35,10 +35,13 @@
 #define FILENAME_EXTENSION ".json"
 
 //Thermocouplers
-#define THERMOCOUPLER_CLK 14
-#define THERMOCOUPLER_DO 12
-#define THERMOCOUPLER_PRIMARY_CS 15
-#define THERMOCOUPLER_SECONDARY_CS 16
+//Sensor A (Primary Temperature) uses HSPI
+#define THERMOCOUPLER_PRIMARY_CS 15 
+
+//Sensor B (Secondary Temperature) bit bangs
+#define THERMOCOUPLER_B_CLK 27
+#define THERMOCOUPLER_B_DO 25
+#define THERMOCOUPLER_SECONDARY_CS 26
 
 //Hardware definintions
 #define RELAY_OFF LOW

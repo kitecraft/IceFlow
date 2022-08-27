@@ -1,10 +1,15 @@
 #include "ReflowScreen.h"
 #include "Utilities/ScreenNames.h"
 #include "../DisplayManager/Utilities/DisplayQueue.h"
+#include "../Utilities/MemUseage.h"
 
 ReflowScreen::ReflowScreen(TFT_eSPI* tft)
 	: BaseScreen(tft)
 {
+	Serial.println("");
+	Serial.println("ReflowScreen: Constuctor start: ");
+	PrintMemUseage();
+
 	CommandQueue.QueueCommand(CC_START_REFLOW);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
 	_sidebar = new RFS_Sidebar(_tft, &_currentProfile);
@@ -23,6 +28,9 @@ ReflowScreen::~ReflowScreen()
 
 	delete _sidebar;
 	EndMessageBox();
+	Serial.println("");
+	Serial.println("ReflowScreen: Destuctor end: ");
+	PrintMemUseage();
 }
 
 void ReflowScreen::UpdateScreen(int inKey, char* value)

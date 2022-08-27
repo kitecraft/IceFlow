@@ -21,8 +21,17 @@ bool OvenController::Init()
     Serial.println("Initializing sensor A...");
     _primaryTemperatureSensor.selectHSPI();
     _primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
+    _primaryTemperatureSensor.setSPIspeed(1000000);
     Serial.print("Status: ");
     Serial.println(_primaryTemperatureSensor.getStatus());
+
+    
+    Serial.println("Initializing sensor B...");
+    _secondaryTemperatureSensor.begin(THERMOCOUPLER_B_CLK, THERMOCOUPLER_SECONDARY_CS, THERMOCOUPLER_B_DO);
+    _secondaryTemperatureSensor.setSWSPIdelay(4);
+    Serial.print("Status: ");
+    Serial.println(_secondaryTemperatureSensor.getStatus());
+    
 
     _kp = GetPidKP();
     _ki = GetPidKI();
@@ -131,43 +140,54 @@ void OvenController::EmergencyStopOven()
 
 void OvenController::FetchPrimaryTemperature()
 {
-    if (_nextTemperatureUpdate < millis()) {
-        _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
-        float prevTemp = _temperaturePrimary;
-        int ret = _primaryTemperatureSensor.read();
-        if (ret != STATUS_OK) {
-            Serial.println("Something wrong with thermocouple!");
+    float prevTemp = _temperaturePrimary;
+    int ret = _primaryTemperatureSensor.read();
+    if (ret != STATUS_OK) {
+        Serial.println("Something wrong with thermocouple A!");
+    }
+    else {
+        _temperaturePrimary = _primaryTemperatureSensor.getTemperature();
+        if (_temperaturePrimary == 0.0 || isnan(_temperaturePrimary)) {
+            Serial.println("ISNAN error sensor A!");
+            _temperaturePrimary = prevTemp;
         }
-        else {
-            _temperaturePrimary = (float)_primaryTemperatureSensor.getTemperature();
-            if (_temperaturePrimary == 0 || isnan(_temperaturePrimary)) {
-                Serial.println("ISNAN error!");
-                _temperaturePrimary = prevTemp;
-            }
-            if (_temperaturePrimary >= _doNotExceedTemperature) {
-                EmergencyStopOven();
-                delay(100);
-                DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
-            }
+        if (_temperaturePrimary >= _doNotExceedTemperature) {
+            EmergencyStopOven();
+            delay(100);
+            DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
         }
     }
-
 }
 
 void OvenController::FetchSecondaryTemperature()
 {
-    _temperatureSecondary = _temperaturePrimary - 10;
+    float prevTemp = _temperatureSecondary;
+    int ret = _secondaryTemperatureSensor.read();
+    if (ret != STATUS_OK) {
+        Serial.println("Something wrong with thermocouple B!");
+    }
+    else {
+        _temperatureSecondary = _secondaryTemperatureSensor.getTemperature();
+        if (_temperatureSecondary == 0.0 || isnan(_temperatureSecondary)) {
+            Serial.println("ISNAN error sensor B!");
+            _temperatureSecondary = prevTemp;
+        }
+    }
 }
 
 void OvenController::FetchTemperatures()
 {
-    //FetchPrimaryTemperature();
-    //FetchSecondaryTemperature();
-
+    if (_nextTemperatureUpdate < millis()) {
+        _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
+        FetchPrimaryTemperature();
+        //_temperatureSecondary = _temperaturePrimary - 10;
+        FetchSecondaryTemperature();
+    }
 
     /*
     * Tempory heat/cooling 'algorithm' for testing/development
     */
+    /*
     if (_heatersOn) {
         _temperaturePrimary += 0.001;
         _temperatureSecondary += 0.001;
@@ -183,6 +203,7 @@ void OvenController::FetchTemperatures()
             _temperatureSecondary = 5;
         }
     }
+    */
     /*
     * End of test/dev heat/cool code'/'stuff
     */
