@@ -10,6 +10,8 @@
 #include "Reflow.h"
 #include "MAX31855.h"
 
+
+
 class OvenController
 {
 private:
@@ -26,14 +28,13 @@ private:
 
 	MAX31855 _primaryTemperatureSensor;
 	MAX31855 _secondaryTemperatureSensor;
+	
 	unsigned long _nextTemperatureUpdate = 0;
-
 	unsigned long _nextTemperatureDisplayUpdate = 0;
-	float _temperaturePrimary = 15;
-	float _temperatureSecondary = 5;
+	float _temperaturePrimary = 25;
+	float _temperatureSecondary = 25;
 	bool _streamTemperatures = false;
-
-	//bool _testDirection = true;
+	unsigned long _lastFanToggle = 0;
 
 	//PID
 	AutoTune* _autoTune = nullptr;
@@ -51,6 +52,8 @@ private:
 	void EnableOvenHeaters();
 	void DisableOvenHeaters();
 
+	void StartPrimaryTemperatureSensor();
+	void StartSecondaryTemperatureSensor();
 	void FetchPrimaryTemperature();
 	void FetchSecondaryTemperature();
 	void FetchTemperatures();
@@ -65,6 +68,7 @@ private:
 	void SendTargetTemperatureToDisplay();
 
 public:
+	OvenController();
 	bool Init();
 	void Run();
 

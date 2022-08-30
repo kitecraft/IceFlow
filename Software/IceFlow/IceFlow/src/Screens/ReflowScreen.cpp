@@ -6,9 +6,9 @@
 ReflowScreen::ReflowScreen(TFT_eSPI* tft)
 	: BaseScreen(tft)
 {
-	Serial.println("");
-	Serial.println("ReflowScreen: Constuctor start: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ReflowScreen: Constuctor start: ");
+	//PrintMemUseage();
 
 	CommandQueue.QueueCommand(CC_START_REFLOW);
 	CommandQueue.QueueCommand(CC_START_TEMPERATURE_STREAM);
@@ -28,9 +28,9 @@ ReflowScreen::~ReflowScreen()
 
 	delete _sidebar;
 	EndMessageBox();
-	Serial.println("");
-	Serial.println("ReflowScreen: Destuctor end: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ReflowScreen: Destuctor end: ");
+	//PrintMemUseage();
 }
 
 void ReflowScreen::UpdateScreen(int inKey, char* value)

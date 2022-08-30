@@ -36,7 +36,7 @@ MainScreen::MainScreen(TFT_eSPI* tft) : BaseScreen(tft)
 
 	//Serial.println("Constuctor end: ");
 	//PrintMemUseage();
-	Serial.println("");
+	//Serial.println("");
 }
 
 MainScreen::~MainScreen()
@@ -62,9 +62,9 @@ MainScreen::~MainScreen()
 		delete _pidEditor;
 	}
 
-	Serial.println("");
-	Serial.println("MainScreen: Destuctor end: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("MainScreen: Destuctor end: ");
+	//PrintMemUseage();
 }
 
 
@@ -144,6 +144,7 @@ void MainScreen::UpdateScreenOnInterval()
 
 		if (_sideBar->IsPopUpOpen() ||
 			_activeTargetTempDLG != MSTDLG_NONE ||
+			_activeMessageBox != MS_NO_MB||
 			_activeMessageBox != MS_NO_MB||
 			_pidEditorActive == true ) {
 			_graphPanel->UpdateValuesOnly(_primaryTemperature, _secondaryTemperature, _tertiaryTemperature);
@@ -296,13 +297,10 @@ void MainScreen::DrawScreen()
 	_tft->drawSpot(BASE_WIFI_X, BASE_WIFI_Y, BASE_WIFI_SPOT_R, TFT_WHITE, TFT_TRANSPARENT);
 
 	_tft->startWrite();
+	BaseScreen::DrawScreen();
+
 	_sideBar->Draw();
 
-	DrawHeader();
-	DrawFooter();
-	DrawHeatersIcon(false);
-	_graphPanel->Draw();
-	
 	_tft->dmaWait();
 	_tft->endWrite();
 }

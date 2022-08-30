@@ -17,8 +17,7 @@ public:
     long t_high;
     long t_low;
 
-    long bias = 127;
-    long d = 127;
+    long d = 196;
     float Ku, Tu;
     float Kp, Ki, Kd;
     float maxTemp = 20, minTemp = 20;
@@ -40,7 +39,6 @@ public:
         t_high;
         t_low;
 
-        bias = 127;
         d = 127;
         Ku, Tu;
         Kp, Ki, Kd;

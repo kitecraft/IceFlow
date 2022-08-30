@@ -18,7 +18,6 @@
 #include "src/Network/IceWebServer.h"
 #include "src/Network/IceOTAManager.h"
 
-
 TaskHandle_t g_WebServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
 
@@ -75,7 +74,6 @@ void HandleCommandQueue()
     while (CommandQueue.GetNextItem(key, data))
     {
         ControlCommands command = static_cast<ControlCommands>(key);
-
         switch (command) {
         case CC_START_OTA:
             OvenManager.StopOven();

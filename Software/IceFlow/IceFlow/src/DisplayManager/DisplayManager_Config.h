@@ -16,7 +16,7 @@
 #define DM_CORE 0
 
 //Set the priority of the DisplayManager task
-#define DM_PRIORITY (tskIDLE_PRIORITY + 4)
+#define DM_PRIORITY (configMAX_PRIORITIES - 10)
 
 //Set the stack size for the task which runs the Display.
 //You may need to increase this if you get a stack watchdog
