@@ -149,7 +149,7 @@ PidEditor::PidEditor(TFT_eSPI* tft)
 		DMCoordinates(
 			PID_DLG_KD_TEXTBOX_X,
 			PID_DLG_BODY_Y_OFFSET + PID_DLG_PANEL_TEXTBOX_Y_OFFSET,
-			PID_DLG_TEXTBOX_W,
+			PID_DLG_TEXTBOX_W + 10,
 			SMALL_FONT_TEXT_BOX_H,
 			_coordinates.p_x + PID_DLG_KD_TEXTBOX_X,
 			_coordinates.p_y + PID_DLG_BODY_Y_OFFSET + PID_DLG_PANEL_TEXTBOX_Y_OFFSET
@@ -305,19 +305,18 @@ DialogButtonType PidEditor::Touched(int x, int y)
 	if (_activeTB != PIDED_NONE) {
 		if (_numberPad->Touched(x, y)) {
 			_numberPad->Hide();
-			if (_numberPad->GetNumber() != 0) {
-				switch (_activeTB) {
-				case PIDED_KP:
-					_currentPID_Kp->Update(_numberPad->GetNumber());
-					break;
-				case PIDED_KI:
-					_currentPID_Ki->Update(_numberPad->GetNumber());
-					break;
-				case PIDED_KD:
-					_currentPID_Kd->Update(_numberPad->GetNumber());
-					break;
-				}
+			switch (_activeTB) {
+			case PIDED_KP:
+				_currentPID_Kp->Update(_numberPad->GetNumber());
+				break;
+			case PIDED_KI:
+				_currentPID_Ki->Update(_numberPad->GetNumber());
+				break;
+			case PIDED_KD:
+				_currentPID_Kd->Update(_numberPad->GetNumber());
+				break;
 			}
+
 			_tft->dmaWait();
 			delete _numberPad;
 			_numberPad = nullptr;

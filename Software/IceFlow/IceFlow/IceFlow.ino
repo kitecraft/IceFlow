@@ -35,6 +35,7 @@ void setup() {
     Serial.begin(115200);
     Serial.printf("\n\n----- %s v%s -----\n\n", __DEVICE_NAME__, __DEVICE_VERSION__);
 
+    OvenManager.Init();
 
     xTaskCreate(
         StartNetworkStuff,
@@ -48,7 +49,6 @@ void setup() {
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
 
-    OvenManager.Init();
 
     Display.Init();
     LoadScreensIntoDM();

@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "OvenController.h"
+#include "../IceFlow_Config.h"
 
 class AutoTune
 {
@@ -17,7 +18,7 @@ public:
     long t_high;
     long t_low;
 
-    long d = 196;
+    long d = PID_AUTOTUNE_D_VALUE;
     float Ku, Tu;
     float Kp, Ki, Kd;
     float maxTemp = 20, minTemp = 20;
@@ -39,7 +40,7 @@ public:
         t_high;
         t_low;
 
-        d = 127;
+        d = PID_AUTOTUNE_D_VALUE;
         Ku, Tu;
         Kp, Ki, Kd;
         maxTemp = 20, minTemp = 20;

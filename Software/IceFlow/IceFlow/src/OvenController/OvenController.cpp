@@ -19,10 +19,8 @@ bool OvenController::Init()
 
     pinMode(STOP_BUTTON, INPUT_PULLUP);
 
-    _lastFanToggle = 0;
     _autoTune = nullptr;
     _reflow = new Reflow();
-    _lastFanToggle = 0;
     UpdateDoNotExceedTemperature();
 
     delay(50);
@@ -55,7 +53,6 @@ void OvenController::StartPrimaryTemperatureSensor()
     _primaryTemperatureSensor.setSWSPIdelay(4);
     
     int readStatus = _primaryTemperatureSensor.read();
-    Serial.printf("read returned %i\n", readStatus);
     int errorCounter = 0;
     while(readStatus != STATUS_OK)
     {
@@ -76,7 +73,6 @@ void OvenController::StartPrimaryTemperatureSensor()
         readStatus = _primaryTemperatureSensor.read();
     }
     _temperaturePrimary = _primaryTemperatureSensor.getTemperature();
-    Serial.println(_temperaturePrimary);
 }
 
 void OvenController::StartSecondaryTemperatureSensor()
@@ -122,7 +118,7 @@ void OvenController::ResetPIDs()
 
 void OvenController::CheckConvectionFanStatus()
 {
-    if (_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+    if (_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN_OFF) {
         return;
     }
 
@@ -135,12 +131,12 @@ void OvenController::CheckConvectionFanStatus()
         return;
     }
 
-    if(_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN){
+    if(_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON){
         EnableConvectionFan();
         return;
     }
 
-    if (_ovenStatus == OS_IDLE && _convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+    if (_ovenStatus == OS_IDLE && _convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN_OFF) {
         DisableConvectionFan();
         return;
     }
@@ -148,24 +144,14 @@ void OvenController::CheckConvectionFanStatus()
 
 void OvenController::EnableConvectionFan()
 {
-    if (millis() - _lastFanToggle < CONVECTION_FAN_MINIMUM_TOGGLE_TIME)
-    {
-        return;
-    }
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_ON);
     _convectionFanOn = true;
-    _lastFanToggle = millis();
 }
 
 void OvenController::DisableConvectionFan()
 {
-    if (millis() - _lastFanToggle < CONVECTION_FAN_MINIMUM_TOGGLE_TIME)
-    {
-        return;
-    }
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
     _convectionFanOn = false;
-    _lastFanToggle = millis();
 }
 
 void OvenController::EnableOvenHeaters()
@@ -225,14 +211,20 @@ void OvenController::FetchPrimaryTemperature()
             if (_primaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
         }
         else {
-            float prevTemp = _temperaturePrimary;
-            _temperaturePrimary = _primaryTemperatureSensor.getTemperature();
-            float gap = _temperaturePrimary - prevTemp;
+            float actualTemperature = _primaryTemperatureSensor.getTemperature();
+            float gap = actualTemperature - _temperaturePrimary;
             if (gap < 0) {
                 gap = gap * -1;
             }
             if (gap < MAXIMUM_TEMPERATURE_DEVIATION) {
                 goodValue = true;
+                _temperaturePrimary = actualTemperature;
+            }
+            else {
+                Serial.print("Bad gap on Sensor A. Actual: ");
+                Serial.print(actualTemperature);
+                Serial.print("  Current: ");
+                Serial.println(_temperaturePrimary);
             }
         }
     }
@@ -303,21 +295,19 @@ void OvenController::StartManualHeat(int targetTemperature)
 
 bool OvenController::StartReflowSession()
 {
-    if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
-        Serial.print("Oven must be below: ");
-        Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN);
-        Serial.println(" degrees Celcius before Reflow can begin");
+    if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON) {
         return false;
     }
 
     _ovenStatus = OS_REFLOW_ACTIVE;
-    DisplayQueue.QueueKey(suk_Oven_Reflow_On);
     if (!_reflow->Start(_temperaturePrimary)) {
         return false;
     }
     int startT = _reflow->GetStartingTemperature();
     SetTargetTemperature(startT);
     SendTargetTemperatureToDisplay();
+    delay(100);
+    DisplayQueue.QueueKey(suk_Oven_Reflow_On);
     return true;
 }
 
@@ -331,7 +321,6 @@ void OvenController::HandleReflowSession()
         StopOven();
         break;
     case RPR_ERROR:
-        Serial.print("HandleReflowSession Exiting here:");
         StopOven();
         break;
     case RPR_OK:
@@ -368,19 +357,12 @@ void OvenController::SendTargetTemperatureToDisplay()
 void OvenController::StartAutoTune(float targetTemperature)
 {
     PidData pidData;
-    if (pidData.GetData()) {
-        Serial.println("\n\nCurrent PID Data: ");
-        Serial.println(pidData.ToJsonString());
-        Serial.println("\n");
-    }
-    else {
+    if (!pidData.GetData()) {
         Serial.println("\n\nNo current PID Data found\n");
     }
 
     Serial.println("Starting PID Auto Tune!");
     if (_ovenStatus != OS_IDLE && _ovenStatus != OS_MANUAL_HEAT_ACTIVE) {
-        Serial.print("Oven must be idle or in manaul mode to start Auto Tune.\nCurrent State: ");
-        Serial.println(_ovenStatus);
         return;
     }
 
@@ -595,7 +577,7 @@ void OvenController::SendStatus()
 void OvenController::UpdateDoNotExceedTemperature()
 {
     float x = (float)GetOvenDoNotExceedTemperature();
-    Serial.print("Temp:");
+    Serial.print("Exceeed safe temperature: ");
     Serial.println(x);
     _doNotExceedTemperature = (float)GetOvenDoNotExceedTemperature();
 }

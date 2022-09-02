@@ -34,7 +34,6 @@ private:
 	float _temperaturePrimary = 25;
 	float _temperatureSecondary = 25;
 	bool _streamTemperatures = false;
-	unsigned long _lastFanToggle = 0;
 
 	//PID
 	AutoTune* _autoTune = nullptr;
