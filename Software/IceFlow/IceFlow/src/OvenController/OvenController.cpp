@@ -23,9 +23,9 @@ bool OvenController::Init()
     _reflow = new Reflow();
     UpdateDoNotExceedTemperature();
 
-    delay(50);
-    StartPrimaryTemperatureSensor();
-    //StartSecondaryTemperatureSensor();
+    delay(500);
+    _primaryTemperatureSensor = new Adafruit_MAX31855(THERMOCOUPLER_CLK, THERMOCOUPLER_PRIMARY_CS, THERMOCOUPLER_DO);
+
     FetchTemperatures();
     _kp = GetPidKP();
     _ki = GetPidKI();
@@ -47,65 +47,6 @@ bool OvenController::Init()
     return true;
 }
 
-void OvenController::StartPrimaryTemperatureSensor()
-{
-    _primaryTemperatureSensor.begin(THERMOCOUPLER_CLK, THERMOCOUPLER_PRIMARY_CS, THERMOCOUPLER_DO);  // sw SPI
-    _primaryTemperatureSensor.setSWSPIdelay(4);
-    
-    int readStatus = _primaryTemperatureSensor.read();
-    int errorCounter = 0;
-    while(readStatus != STATUS_OK)
-    {
-        errorCounter++;
-        if (errorCounter == 10) {
-            Serial.print("Failed to initialize sensor A");
-            _temperaturePrimary = -1.0;
-            return;
-        }
-        Serial.print("error:\t\t");
-        if (_primaryTemperatureSensor.shortToGND())   Serial.println("SHORT TO GROUND");
-        if (_primaryTemperatureSensor.shortToVCC())   Serial.println("SHORT TO VCC");
-        if (_primaryTemperatureSensor.openCircuit())  Serial.println("OPEN CIRCUIT");
-        if (_primaryTemperatureSensor.genericError()) Serial.println("GENERIC ERROR");
-        if (_primaryTemperatureSensor.noRead())       Serial.println("NO READ");
-        if (_primaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
-        delay(2);
-        readStatus = _primaryTemperatureSensor.read();
-    }
-    _temperaturePrimary = _primaryTemperatureSensor.getTemperature();
-}
-
-void OvenController::StartSecondaryTemperatureSensor()
-{
-    /*
-    _secondaryTemperatureSensor.selectHSPI();
-    _secondaryTemperatureSensor.begin(THERMOCOUPLER_SECONDARY_CS);
-
-    int readStatus = _secondaryTemperatureSensor.read();
-    Serial.printf("read returned %i\n", readStatus);
-    if (_secondaryTemperatureSensor.getStatus())
-    {
-        Serial.print("error:\t\t");
-        if (_secondaryTemperatureSensor.shortToGND())   Serial.println("SHORT TO GROUND");
-        if (_secondaryTemperatureSensor.shortToVCC())   Serial.println("SHORT TO VCC");
-        if (_secondaryTemperatureSensor.openCircuit())  Serial.println("OPEN CIRCUIT");
-        if (_secondaryTemperatureSensor.genericError()) Serial.println("GENERIC ERROR");
-        if (_secondaryTemperatureSensor.noRead())       Serial.println("NO READ");
-        if (_secondaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
-    }
-
-    int max = 20;
-    float total = 0.00;
-    for (int i = 0; i < max; i++) {
-        int ret = _secondaryTemperatureSensor.read();
-        if (ret == STATUS_OK) {
-            total += _secondaryTemperatureSensor.getTemperature();
-        }
-        delay(1);
-    }
-    _temperatureSecondary = total / (float)max;
-    */
-}
 
 void OvenController::ResetPIDs()
 {
@@ -192,43 +133,21 @@ void OvenController::EmergencyStopOven()
 
 void OvenController::FetchPrimaryTemperature()
 {
-    int errorCounter = -1;
-    bool goodValue = false;
-    while (!goodValue) {
-        errorCounter++;
-        if (errorCounter == 3) {
-            Serial.println("Failed to get valid temperature from Sensor A.");
+    float currentTemperature = _primaryTemperatureSensor->readCelsius();
+
+    int errorCount = 0;
+    if (isnan(currentTemperature)) {
+        errorCount++;
+        if (errorCount >= 3) {
+            Serial.println("Something wrong with thermocouple A!");
             return;
         }
-        int ret = _primaryTemperatureSensor.read(); 
-        if (ret != STATUS_OK) {
-            Serial.print("_temperaturePrimary error:\t\t");
-            if (_primaryTemperatureSensor.shortToGND())   Serial.println("SHORT TO GROUND");
-            if (_primaryTemperatureSensor.shortToVCC())   Serial.println("SHORT TO VCC");
-            if (_primaryTemperatureSensor.openCircuit())  Serial.println("OPEN CIRCUIT");
-            if (_primaryTemperatureSensor.genericError()) Serial.println("GENERIC ERROR");
-            if (_primaryTemperatureSensor.noRead())       Serial.println("NO READ");
-            if (_primaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
-        }
-        else {
-            float actualTemperature = _primaryTemperatureSensor.getTemperature();
-            float gap = actualTemperature - _temperaturePrimary;
-            if (gap < 0) {
-                gap = gap * -1;
-            }
-            if (gap < MAXIMUM_TEMPERATURE_DEVIATION) {
-                goodValue = true;
-                _temperaturePrimary = actualTemperature;
-            }
-            else {
-                Serial.print("Bad gap on Sensor A. Actual: ");
-                Serial.print(actualTemperature);
-                Serial.print("  Current: ");
-                Serial.println(_temperaturePrimary);
-            }
-        }
+        delay(2);
+        currentTemperature = _primaryTemperatureSensor->readCelsius();
     }
-    //Serial.println(_temperaturePrimary);
+    _temperaturePrimary = currentTemperature;
+
+    Serial.println(_temperaturePrimary);
 }
 
 void OvenController::FetchSecondaryTemperature()

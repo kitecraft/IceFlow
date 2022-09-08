@@ -8,7 +8,8 @@
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
 #include "AutoTune.h"
 #include "Reflow.h"
-#include "MAX31855.h"
+//#include "MAX31855.h"
+#include "Adafruit_MAX31855.h"
 
 
 
@@ -26,8 +27,8 @@ private:
 	int _targetTemperature = 0;
 	float _doNotExceedTemperature = 0;
 
-	MAX31855 _primaryTemperatureSensor;
-	MAX31855 _secondaryTemperatureSensor;
+	Adafruit_MAX31855 *_primaryTemperatureSensor;
+	Adafruit_MAX31855 *_secondaryTemperatureSensor;
 	
 	unsigned long _nextTemperatureUpdate = 0;
 	unsigned long _nextTemperatureDisplayUpdate = 0;
@@ -51,8 +52,6 @@ private:
 	void EnableOvenHeaters();
 	void DisableOvenHeaters();
 
-	void StartPrimaryTemperatureSensor();
-	void StartSecondaryTemperatureSensor();
 	void FetchPrimaryTemperature();
 	void FetchSecondaryTemperature();
 	void FetchTemperatures();
