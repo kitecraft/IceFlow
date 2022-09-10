@@ -40,8 +40,6 @@ bool GraphAutoScaler::AddItem(float temperature)
 	currentItem->temperature = temperature;
 	currentItem->nextItem = nullptr;
 	currentItem->prevItem = nullptr;
-	//Serial.print("ADDING ITEM: ");
-	//Serial.println(currentItem->ToString());
 
 	if (_itemListRoot == nullptr) {
 		_maximum = currentItem->temperature;
@@ -130,14 +128,6 @@ void GraphAutoScaler::RecalculateMaxMins()
 		//	vTaskDelay(1);
 		//}
 	}
-	
-	/*
-	Serial.print("Maximum Temp found is: ");
-	Serial.println(_maximum);
-	Serial.print("Minimum Temp found is: ");
-	Serial.println(_minimum);
-	Serial.printf("Total count is: %i  and counter is %i\n",_numberOfValuesToTrack, counter);
-	*/
 }
 
 float GraphAutoScaler::GetNewest()

@@ -234,7 +234,7 @@ void InfoScreen::ProcessTouch(int x, int y)
 			"Maximum Saved.",
 			String("The maximum allowed temperature has been saved."),
 			MESSAGE_BOX_ICON_INFORMATION,
-			MESSAGE_BOX_BUTTONS_CONTINUE_CANCEL
+			MESSAGE_BOX_BUTTONS_OK
 		);
 		_messageBox->Show();
 		_messageBoxActive = IS_MBAF_SAVED_DO_NOT_EXCEED;

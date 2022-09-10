@@ -8,7 +8,9 @@
 #include "../Screens/Utilities/ScreenUpdateKeys.h"
 #include "AutoTune.h"
 #include "Reflow.h"
-#include "MAX31855.h"
+//#include "MAX31855.h"
+
+
 
 class OvenController
 {
@@ -24,15 +26,14 @@ private:
 	int _targetTemperature = 0;
 	float _doNotExceedTemperature = 0;
 
-	MAX31855 _primaryTemperatureSensor;
+	//Adafruit_MAX31855 *_primaryTemperatureSensor;
+	//Adafruit_MAX31855 *_secondaryTemperatureSensor;
+	
 	unsigned long _nextTemperatureUpdate = 0;
-
 	unsigned long _nextTemperatureDisplayUpdate = 0;
-	float _temperaturePrimary = 15;
-	float _temperatureSecondary = 5;
+	float _temperaturePrimary = 25;
+	float _temperatureSecondary = 25;
 	bool _streamTemperatures = false;
-
-	//bool _testDirection = true;
 
 	//PID
 	AutoTune* _autoTune = nullptr;

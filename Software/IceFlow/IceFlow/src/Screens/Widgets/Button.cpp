@@ -71,7 +71,7 @@ void Button::Draw(TFT_eSprite* sprite)
 
 		sprite->fillSmoothRoundRect(
 			_config.coordinates.x + 2,
-			_config.coordinates.y + 3,
+			_config.coordinates.y + 2,
 			_config.coordinates.w - 4,
 			_config.coordinates.h - 4,
 			radius,

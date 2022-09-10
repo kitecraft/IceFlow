@@ -20,6 +20,7 @@
 
 
 TaskHandle_t g_networkStartupHandle = nullptr;
+
 TaskHandle_t g_WebServerHandle = nullptr;
 TaskHandle_t g_OTAHandle = nullptr;
 
@@ -38,6 +39,7 @@ void HandleCommandQueue()
     while (CommandQueue.GetNextItem(key, data))
     {
         ControlCommands command = static_cast<ControlCommands>(key);
+
         switch (command) {
         case CC_START_OTA:
             OvenManager.StopOven();
@@ -196,6 +198,7 @@ void setup() {
     g_ClockTimer = timerBegin(0, 80, true);
     timerAttachInterrupt(g_ClockTimer, &onTimer, true);
     timerAlarmWrite(g_ClockTimer, 1000000, true);
+
 }
 
 void loop() {

@@ -18,13 +18,12 @@ bool OvenController::Init()
     _reflow = new Reflow();
     UpdateDoNotExceedTemperature();
 
-    //Serial.println("Initializing sensor A...");
+    Serial.println("Initializing sensor A...");
     //_primaryTemperatureSensor.selectHSPI();
     //_primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
     //Serial.print("Status: ");
     //Serial.println(_primaryTemperatureSensor.getStatus());
     //FetchPrimaryTemperature();
-    _temperaturePrimary = 25.0;
 
     _kp = GetPidKP();
     _ki = GetPidKI();

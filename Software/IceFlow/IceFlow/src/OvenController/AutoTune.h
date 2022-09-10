@@ -37,10 +37,13 @@ public:
         temp_millis = millis();
         t1 = temp_millis;
         t2 = temp_millis;
+        t_high;
+        t_low;
 
         d = PID_AUTOTUNE_D_VALUE;
-        maxTemp = 20;
-        minTemp = 20;
+        Ku, Tu;
+        Kp, Ki, Kd;
+        maxTemp = 20, minTemp = 20;
     }
 };
 

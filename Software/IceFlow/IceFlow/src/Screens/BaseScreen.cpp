@@ -192,8 +192,8 @@ void BaseScreen::DrawFooter()
 	sprite.setTextColor(SEC_TEMPERATURE_COLOR, GlobalTheme.panelLightColor);
 	sprite.drawString("Sec: ", BASE_SEC_TEMPERATURE_LABEL_X, BASE_TEMPERATURE_LABEL_Y);
 
-	_primaryTemperatureTB->Draw(&sprite, "888.88 C");
-	_secondaryTemperatureTB->Draw(&sprite, "888.88 C");
+	_primaryTemperatureTB->Draw(&sprite, "0.0 C");
+	_secondaryTemperatureTB->Draw(&sprite, "0.0 C");
 
 	_tft->pushImageDMA(BASE_FOOTER_X, BASE_FOOTER_Y, BASE_FOOTER_W, BASE_FOOTER_H, sprPtr);
 	_tft->dmaWait();
