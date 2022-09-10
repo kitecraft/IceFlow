@@ -98,9 +98,9 @@ ProfilesScreen::~ProfilesScreen()
 	delete(_profileListPanel);
 	delete(_graphPanel);
 
-	Serial.println("");
-	Serial.println("ProfilesScreen: Destructor end: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("ProfilesScreen: Destructor end: ");
+	//PrintMemUseage();
 }
 
 

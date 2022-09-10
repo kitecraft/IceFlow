@@ -72,9 +72,6 @@ SB_TOUCHED_RETURN SideBar::Touched(int x, int y)
 	if (_popUpMenu.isOpen()) {
 		String option;
 		if (_popUpMenu.Touched(x, y, option)) {
-			Serial.print("Option touched: ");
-			Serial.println(option);
-
 			_popUpMenu.Close();
 			if (option == "PID Editor") {
 				return SB_AUTOTUNE_TOUCHED;

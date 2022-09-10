@@ -67,9 +67,9 @@ EditProfileScreen::~EditProfileScreen()
 		delete _textBoxes[i];
 	}
 
-	Serial.println("");
-	Serial.println("EditProfileScreen: Destructor End: ");
-	PrintMemUseage();
+	//Serial.println("");
+	//Serial.println("EditProfileScreen: Destructor End: ");
+	//PrintMemUseage();
 }
 
 void EditProfileScreen::HandleTouch(int x, int y)
