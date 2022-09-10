@@ -18,11 +18,13 @@ bool OvenController::Init()
     _reflow = new Reflow();
     UpdateDoNotExceedTemperature();
 
-    Serial.println("Initializing sensor A...");
-    _primaryTemperatureSensor.selectHSPI();
-    _primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
-    Serial.print("Status: ");
-    Serial.println(_primaryTemperatureSensor.getStatus());
+    //Serial.println("Initializing sensor A...");
+    //_primaryTemperatureSensor.selectHSPI();
+    //_primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
+    //Serial.print("Status: ");
+    //Serial.println(_primaryTemperatureSensor.getStatus());
+    //FetchPrimaryTemperature();
+    _temperaturePrimary = 25.0;
 
     _kp = GetPidKP();
     _ki = GetPidKI();
@@ -30,7 +32,6 @@ bool OvenController::Init()
     _pidController = new PID_v2(_kp, _ki, _kd, PID::Direct);
     _pidController->SetSampleTime(20);
 
-    FetchPrimaryTemperature();
     _pidController->Start(_temperaturePrimary, 0, 0);
 
     xTaskCreatePinnedToCore(
@@ -133,6 +134,8 @@ void OvenController::FetchPrimaryTemperature()
 {
     if (_nextTemperatureUpdate < millis()) {
         _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
+        _temperaturePrimary = 25.0;
+        /*
         float prevTemp = _temperaturePrimary;
         int ret = _primaryTemperatureSensor.read();
         if (ret != STATUS_OK) {
@@ -150,6 +153,7 @@ void OvenController::FetchPrimaryTemperature()
                 DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
             }
         }
+        */
     }
 
 }
