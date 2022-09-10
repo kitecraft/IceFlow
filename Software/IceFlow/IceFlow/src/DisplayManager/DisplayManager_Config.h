@@ -26,7 +26,7 @@
 //Use this to set the TFT screen rotation.
 //You can of course change the orientation at 
 //any time in your own screen classes
-#define DM_SCREEN_ROTATION 1
+#define DM_SCREEN_ROTATION 3
 
 //Maximum size of payload
 //Wold be nice to change payload
