@@ -24,7 +24,7 @@ BaseScreen::BaseScreen(TFT_eSPI* tft)
 			BASE_GRAPHPANEL_H,
 			BASE_GRAPHPANEL_X,
 			BASE_GRAPHPANEL_Y),
-		true,
+		false,
 		true
 	);
 

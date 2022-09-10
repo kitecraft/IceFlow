@@ -28,6 +28,7 @@
 
 //PID Data
 #define PID_DATA_SPIFFS_FILE_DIRECTORY "/d/"
+#define PID_AUTOTUNE_D_VALUE 255
 
 //Profile Manager
 #define PROFILE_SPIFFS_FILE_DIRECTORY "/p/"
