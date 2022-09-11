@@ -19,11 +19,14 @@ bool OvenController::Init()
     UpdateDoNotExceedTemperature();
 
     Serial.println("Initializing sensor A...");
-    //_primaryTemperatureSensor.selectHSPI();
-    //_primaryTemperatureSensor.begin( THERMOCOUPLER_PRIMARY_CS);
-    //Serial.print("Status: ");
-    //Serial.println(_primaryTemperatureSensor.getStatus());
-    //FetchPrimaryTemperature();
+    _primaryTemperatureSensor.begin(THERMOCOUPLER_CLK, THERMOCOUPLER_PRIMARY_CS, THERMOCOUPLER_DO);
+    _primaryTemperatureSensor.setSWSPIdelay(4);
+
+    Serial.println("Initializing sensor B...");
+    _secondaryTemperatureSensor.begin(THERMOCOUPLER_CLK, THERMOCOUPLER_SECONDARY_CS, THERMOCOUPLER_DO);
+    _secondaryTemperatureSensor.setSWSPIdelay(4);
+
+    FetchTemperatures();
 
     _kp = GetPidKP();
     _ki = GetPidKI();
@@ -57,7 +60,7 @@ void OvenController::ResetPIDs()
 
 void OvenController::CheckConvectionFanStatus()
 {
-    if (_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+    if (_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON) {
         return;
     }
 
@@ -70,12 +73,12 @@ void OvenController::CheckConvectionFanStatus()
         return;
     }
 
-    if(_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN){
+    if(_ovenStatus == OS_IDLE && !_convectionFanOn && _temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON){
         EnableConvectionFan();
         return;
     }
 
-    if (_ovenStatus == OS_IDLE && _convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+    if (_ovenStatus == OS_IDLE && _convectionFanOn && _temperaturePrimary < MINIUM_OVEN_TEMPERATURE_FOR_FAN_OFF) {
         DisableConvectionFan();
         return;
     }
@@ -131,74 +134,68 @@ void OvenController::EmergencyStopOven()
 
 void OvenController::FetchPrimaryTemperature()
 {
-    if (_nextTemperatureUpdate < millis()) {
-        _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
-        _temperaturePrimary = 25.0;
-        /*
-        float prevTemp = _temperaturePrimary;
-        int ret = _primaryTemperatureSensor.read();
-        if (ret != STATUS_OK) {
-            Serial.println("Something wrong with thermocouple!");
+    int ret = _primaryTemperatureSensor.read();
+    int errorCount = 0;
+    while (ret != STATUS_OK) {
+        errorCount++;
+        if (errorCount >= 3) {
+            Serial.println("Failed to get valid temperature from sensor A.");
+            return;
         }
-        else {
-            _temperaturePrimary = (float)_primaryTemperatureSensor.getTemperature();
-            if (_temperaturePrimary == 0 || isnan(_temperaturePrimary)) {
-                Serial.println("ISNAN error!");
-                _temperaturePrimary = prevTemp;
-            }
-            if (_temperaturePrimary >= _doNotExceedTemperature) {
-                EmergencyStopOven();
-                delay(100);
-                DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
-            }
-        }
-        */
+        Serial.print("error:\t\t");
+        if (_primaryTemperatureSensor.shortToGND())   Serial.println("SHORT TO GROUND");
+        if (_primaryTemperatureSensor.shortToVCC())   Serial.println("SHORT TO VCC");
+        if (_primaryTemperatureSensor.openCircuit())  Serial.println("OPEN CIRCUIT");
+        if (_primaryTemperatureSensor.genericError()) Serial.println("GENERIC ERROR");
+        if (_primaryTemperatureSensor.noRead())       Serial.println("NO READ");
+        if (_primaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
+        delay(2);
+        ret = _primaryTemperatureSensor.read();
     }
-
+    _temperaturePrimary = _primaryTemperatureSensor.getTemperature();
 }
 
 void OvenController::FetchSecondaryTemperature()
 {
-    _temperatureSecondary = _temperaturePrimary - 10;
+    int ret = _secondaryTemperatureSensor.read();
+    int errorCount = 0;
+    while (ret != STATUS_OK) {
+        errorCount++;
+        if (errorCount >= 3) {
+            Serial.println("Failed to get valid temperature from sensor B.");
+            return;
+        }
+        Serial.print("error:\t\t");
+        if (_secondaryTemperatureSensor.shortToGND())   Serial.println("SHORT TO GROUND");
+        if (_secondaryTemperatureSensor.shortToVCC())   Serial.println("SHORT TO VCC");
+        if (_secondaryTemperatureSensor.openCircuit())  Serial.println("OPEN CIRCUIT");
+        if (_secondaryTemperatureSensor.genericError()) Serial.println("GENERIC ERROR");
+        if (_secondaryTemperatureSensor.noRead())       Serial.println("NO READ");
+        if (_secondaryTemperatureSensor.noCommunication()) Serial.println("NO COMMUNICATION");
+        delay(2);
+        ret = _secondaryTemperatureSensor.read();
+    }
+    _temperatureSecondary = _secondaryTemperatureSensor.getTemperature();
 }
 
 void OvenController::FetchTemperatures()
 {
-    //FetchPrimaryTemperature();
-    //FetchSecondaryTemperature();
+    if (_nextTemperatureUpdate < millis()) {
+        _nextTemperatureUpdate = millis() + OVEN_TEMPERATURE_UPDATE_RATE;
 
+        FetchPrimaryTemperature();
+        FetchSecondaryTemperature();
 
-    /*
-    * Tempory heat/cooling 'algorithm' for testing/development
-    */
-    if (_heatersOn) {
-        _temperaturePrimary += 0.001;
-        _temperatureSecondary += 0.001;
-    }
-    else {
-        _temperaturePrimary -= 0.001;
-        _temperatureSecondary -= 0.001;
-
-        if (_temperaturePrimary < 15) {
-            _temperaturePrimary = 15;
+        if (_temperaturePrimary >= _doNotExceedTemperature) {
+            EmergencyStopOven();
+            delay(100);
+            DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
         }
-        if (_temperatureSecondary < 5) {
-            _temperatureSecondary = 5;
+        if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
+            SendPrimaryTemperatureToDisplay();
+            SendSecondaryTemperatureToDisplay();
+            _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
         }
-    }
-    /*
-    * End of test/dev heat/cool code'/'stuff
-    */
-
-    if (_temperaturePrimary >= _doNotExceedTemperature) {
-        EmergencyStopOven();
-        delay(100);
-        DisplayQueue.QueueKey(suk_Oven_Exceeded_Max);
-    }
-    if (_streamTemperatures && _nextTemperatureDisplayUpdate < millis()) {
-        SendPrimaryTemperatureToDisplay();
-        SendSecondaryTemperatureToDisplay();
-        _nextTemperatureDisplayUpdate = millis() + TEMPERATURE_DISPLAY_REFRESH_RATE;
     }
 }
 
@@ -235,9 +232,9 @@ void OvenController::StartManualHeat(int targetTemperature)
 
 bool OvenController::StartReflowSession()
 {
-    if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN) {
+    if (_temperaturePrimary > MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON) {
         Serial.print("Oven must be below: ");
-        Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN);
+        Serial.print(MINIUM_OVEN_TEMPERATURE_FOR_FAN_ON);
         Serial.println(" degrees Celcius before Reflow can begin");
         return false;
     }
@@ -271,7 +268,13 @@ void OvenController::HandleReflowSession()
             SetTargetTemperature(newTarget);
             SendTargetTemperatureToDisplay();
         }
-        HandleOvenHeatersWithPID();
+        if (_reflow->GetReflowStage() != RS_COOLING)
+        {
+            HandleOvenHeatersWithPID();
+        }
+        else if (_heatersOn) {
+            DisableOvenHeaters();
+        }        
         break;
     }
 }

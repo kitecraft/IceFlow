@@ -45,5 +45,6 @@ public:
 	void Stop();
 	ReflowProcessReturn Process(float currentTemperature, int& targetTemperature);
 	int GetStartingTemperature() { return _startTemperature; }
+	REFLOW_STAGE GetReflowStage() { return _stage; }
 };
 
