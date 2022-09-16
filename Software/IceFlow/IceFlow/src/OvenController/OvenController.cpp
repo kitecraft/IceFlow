@@ -202,6 +202,9 @@ void OvenController::FetchTemperatures()
 void OvenController::HandleOvenHeatersWithPID()
 {
     const float output = _pidController->Run(_temperaturePrimary);
+
+    float delta = _pidController->GetSetpoint() - _temperaturePrimary;
+
     if (output == 0 && _heatersOn)
     {
         DisableOvenHeaters();
@@ -209,6 +212,22 @@ void OvenController::HandleOvenHeatersWithPID()
     else if (output > 0 && !_heatersOn) {
         EnableOvenHeaters();
     }
+    /*
+    if (delta > TEMPERATURE_DELTA_OVERRIDE) {
+        if (!_heatersOn) {
+            EnableOvenHeaters();
+        }
+    }
+    else {
+        if (output == 0 && _heatersOn)
+        {
+            DisableOvenHeaters();
+        }
+        else if (output > 0 && !_heatersOn) {
+            EnableOvenHeaters();
+        }
+    }
+    */
 }
 
 void OvenController::SetTargetTemperature(float target)
