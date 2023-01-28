@@ -12,7 +12,7 @@ bool OvenController::Init()
     pinMode(RELAY_CONVECTION_FAN, OUTPUT);
     digitalWrite(RELAY_CONVECTION_FAN, RELAY_OFF);
 
-    pinMode(STOP_BUTTON, INPUT_PULLUP);
+    //pinMode(STOP_BUTTON, INPUT_PULLUP);
 
     _autoTune = nullptr;
     _reflow = new Reflow();
@@ -202,9 +202,6 @@ void OvenController::FetchTemperatures()
 void OvenController::HandleOvenHeatersWithPID()
 {
     const float output = _pidController->Run(_temperaturePrimary);
-
-    float delta = _pidController->GetSetpoint() - _temperaturePrimary;
-
     if (output == 0 && _heatersOn)
     {
         DisableOvenHeaters();
@@ -212,22 +209,6 @@ void OvenController::HandleOvenHeatersWithPID()
     else if (output > 0 && !_heatersOn) {
         EnableOvenHeaters();
     }
-    /*
-    if (delta > TEMPERATURE_DELTA_OVERRIDE) {
-        if (!_heatersOn) {
-            EnableOvenHeaters();
-        }
-    }
-    else {
-        if (output == 0 && _heatersOn)
-        {
-            DisableOvenHeaters();
-        }
-        else if (output > 0 && !_heatersOn) {
-            EnableOvenHeaters();
-        }
-    }
-    */
 }
 
 void OvenController::SetTargetTemperature(float target)
@@ -480,13 +461,14 @@ void OvenController::HandleAutoTune()
 void OvenController::Run()
 {
     while (true) {
-
+        /*
         if (digitalRead(STOP_BUTTON) == LOW) {
             if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
                 EmergencyStopOven();
                 _lastButtonPress = millis();
             }
         }
+        */
 
         FetchTemperatures();
 

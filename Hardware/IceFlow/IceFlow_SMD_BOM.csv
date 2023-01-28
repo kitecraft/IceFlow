@@ -1,0 +1,16 @@
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+,,,,,
+Ref,Qnty,Value,Cmp name,Footprint,Description
+"C1, C2, ",2,10 µF - 25V,C_Polarized,Capacitor_SMD:CP_Elec_4x5.7,Polarized capacitor
+"C3, ",1,1 µF,C,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,Unpolarized capacitor
+"C4, ",1,22 µF,C,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,Unpolarized capacitor
+"C5, ",1,0.1 µF,C,Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder,Unpolarized capacitor
+"D1, ",1,LED,LED,LED_SMD:LED_1206_3216Metric_Pad1.42x1.75mm_HandSolder,Light emitting diode
+"R1, ",1,10K,R_Small_US,Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder,"Resistor, small US symbol"
+"R2, ",1,64.9R,R_Small_US,Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder,"Resistor, small US symbol"
+"S1, S2, ",2,PTS636,PTS636,Kitecraft_Buttons:TACTILE_SWITCH_SMD_6.0X3.5MM,SWITCH PUSHBUTTON SPST 0.05A @ 12VDC	
+"U1, ",1,NCP1117-3.3_SOT223,NCP1117-3.3_SOT223,Package_TO_SOT_SMD:SOT-223-3_TabPin2,"1A Low drop-out regulator, Fixed Output 3.3V, SOT-223"
+"U2, ",1,ESP32-WROVER-E,ESP32-WROVER-E,Kitecraft_Boards:ESP32-WROVER-E_No_Thermals,ESP32-WROVER-E

@@ -10,8 +10,6 @@
 #include "Reflow.h"
 #include "MAX31855.h"
 
-
-
 class OvenController
 {
 private:

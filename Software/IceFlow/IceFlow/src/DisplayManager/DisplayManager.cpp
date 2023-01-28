@@ -21,7 +21,9 @@ void DisplayManager::Init()
 
 	_tft.init();
 #ifdef DM_USE_DMA
-	_tft.initDMA();
+	if (!_tft.initDMA()) {
+		Serial.println("Failed to initialized tft DMA!");
+	}
 #endif
 
 	_tft.setRotation(DM_SCREEN_ROTATION);

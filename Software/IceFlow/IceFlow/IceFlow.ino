@@ -184,6 +184,8 @@ void setup() {
     LoadScreensIntoDM();
     DisplayQueue.QueueScreenChange(SN_MAIN_SCREEN);
 
+    delay(1000);
+
     //Init the oven
     OvenManager.Init();
 

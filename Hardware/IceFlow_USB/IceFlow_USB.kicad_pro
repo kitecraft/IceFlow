@@ -382,7 +382,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "../IceFlow.step",
+      "step": "../IceFlow_USB.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
