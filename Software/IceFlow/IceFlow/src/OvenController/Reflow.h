@@ -3,7 +3,6 @@
 #include "ReflowStage.h"
 #include "../ProfileManager/ProfileManager.h"
 
-#define REFLOW_MIN_TEMPERATURE 30
 
 enum ReflowProcessReturn {
 	RPR_OK = 0,

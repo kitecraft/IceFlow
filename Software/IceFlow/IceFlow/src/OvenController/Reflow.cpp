@@ -197,7 +197,7 @@ void Reflow::ProcessRamp()
 void Reflow::ProcessReflow()
 {
 	_processReturn = RPR_OK;
-	if (_stageCountDown <= 0 && _currentTemperature < _profile.reflow_target_temperature + 2) {
+	if (_stageCountDown <= 0) { //&& _currentTemperature < _profile.reflow_target_temperature + 2) {
 		_stageRunTimes[RS_REFLOW] = millis() - _stageStartTime;
 		char val[7];
 		snprintf(val, 7, "%f", _stageRunTimes[RS_REFLOW] / 1000.0);

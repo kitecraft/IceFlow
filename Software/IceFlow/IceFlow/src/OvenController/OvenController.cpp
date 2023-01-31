@@ -461,15 +461,6 @@ void OvenController::HandleAutoTune()
 void OvenController::Run()
 {
     while (true) {
-        /*
-        if (digitalRead(STOP_BUTTON) == LOW) {
-            if (millis() - STOP_BUTTON_DEBOUNCE_TIME > _lastButtonPress) {
-                EmergencyStopOven();
-                _lastButtonPress = millis();
-            }
-        }
-        */
-
         FetchTemperatures();
 
         switch (_ovenStatus) {
